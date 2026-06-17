@@ -1,0 +1,522 @@
+/* =========================================================
+   e活 サイト スタイル
+   - 配色・余白などはこの :root 内の変数を変えると一括で調整できます
+   ========================================================= */
+:root {
+  --color-bg: #ffffff;
+  --color-ink: #14110f;        /* 基本の文字色 */
+  --color-muted: #8c8682;      /* 補助テキスト */
+  --color-line: #e6e2dd;       /* 区切り線 */
+  --color-accent: #14110f;     /* リンク・ボタン */
+
+  --font-base: "Noto Sans JP", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+
+  --maxw: 760px;               /* 本文の最大幅 */
+  --section-gap: clamp(6rem, 14vw, 12rem); /* セクション間の余白 */
+}
+
+/* ---------- リセット ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-base);
+  color: var(--color-ink);
+  background: var(--color-bg);
+  font-weight: 300;
+  line-height: 2;
+  letter-spacing: 0.06em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { display: block; max-width: 100%; height: auto; }
+
+a { color: inherit; text-decoration: none; }
+
+/* =========================================================
+   左右の縦書き固定テキスト
+   ========================================================= */
+.side-rail {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  font-size: 0.72rem;
+  letter-spacing: 0.35em;
+  color: var(--color-muted);
+  z-index: 50;
+  user-select: none;
+}
+.side-rail--left  { left: 1.6rem; }
+.side-rail--right { right: 1.6rem; }
+
+/* =========================================================
+   ヘッダー（ナビ＋ロゴ）
+   ========================================================= */
+.site-header {
+  text-align: center;
+  padding: 2.4rem 1rem 1rem;
+}
+.nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: clamp(1.2rem, 4vw, 3rem);
+  font-size: 0.86rem;
+  letter-spacing: 0.18em;
+}
+.nav a {
+  position: relative;
+  padding-bottom: 4px;
+  color: var(--color-ink);
+  transition: opacity 0.25s;
+}
+.nav a::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%; height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+.nav a:hover { opacity: 0.6; }
+.nav a:hover::after { transform: scaleX(1); }
+
+.brand {
+  display: inline-block;
+  margin-top: 2.2rem;
+}
+.brand img { width: clamp(92px, 12vw, 120px); }
+
+/* =========================================================
+   セクション共通
+   ========================================================= */
+.section {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  margin-top: var(--section-gap);
+}
+
+.eyebrow {
+  font-size: 0.78rem;
+  letter-spacing: 0.3em;
+  color: var(--color-muted);
+  text-transform: lowercase;
+  text-align: center;
+  margin-bottom: 2.4rem;
+}
+.eyebrow::after {
+  content: "";
+  display: block;
+  width: 28px; height: 1px;
+  background: var(--color-line);
+  margin: 1rem auto 0;
+}
+
+/* =========================================================
+   ヒーロー（山の風景）
+   ========================================================= */
+.hero { margin-top: 3.5rem; }
+.hero__media {
+  position: relative;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+.hero__media > img:first-child {
+  width: 100%;
+  aspect-ratio: 2000 / 900;
+  object-fit: cover;
+}
+.hero__logo {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(64px, 9vw, 96px);
+  filter: invert(1) drop-shadow(0 2px 12px rgba(0,0,0,0.35));
+}
+
+/* =========================================================
+   ご挨拶（メッセージ）
+   ========================================================= */
+.message { text-align: center; }
+.message__lead {
+  font-size: clamp(1rem, 2.4vw, 1.18rem);
+  line-height: 2.4;
+  margin-bottom: 3rem;
+}
+.message__lead:last-child { margin-bottom: 0; }
+
+/* =========================================================
+   project（地方 × eスポーツ × VTuber）
+   ========================================================= */
+.project { text-align: center; }
+.project__title {
+  font-size: clamp(1.5rem, 5vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  margin-bottom: 2.6rem;
+}
+.project__title span { color: var(--color-muted); margin: 0 0.3em; font-weight: 300; }
+.project__body {
+  font-size: 0.98rem;
+  text-align: left;
+  margin-bottom: 1.6rem;
+}
+.project__body:last-child { margin-bottom: 0; }
+
+/* =========================================================
+   私たちの活動（カード 01〜04）
+   ========================================================= */
+.card {
+  display: flex;
+  gap: clamp(1.2rem, 4vw, 2.6rem);
+  padding: 3rem 0;
+  border-top: 1px solid var(--color-line);
+}
+.activity .card:last-child { border-bottom: 1px solid var(--color-line); }
+.card__num {
+  flex: none;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--color-muted);
+  letter-spacing: 0.1em;
+  min-width: 2.4em;
+}
+.card__body { flex: 1; }
+.card__title {
+  font-size: 1.18rem;
+  font-weight: 500;
+  margin-bottom: 1.1rem;
+  letter-spacing: 0.08em;
+}
+.card__body p {
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+.card--feature .card__feature-text {
+  font-size: 1.05rem;
+  line-height: 2.4;
+  letter-spacing: 0.1em;
+}
+
+/* ボタン / リンク */
+.btn {
+  display: inline-block;
+  margin-top: 0.8rem;
+  padding: 0.7em 1.8em;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  border: 1px solid var(--color-ink);
+  border-radius: 999px;
+  transition: background 0.25s, color 0.25s;
+}
+.btn:hover { background: var(--color-ink); color: var(--color-bg); }
+.btn--primary { background: var(--color-ink); color: var(--color-bg); }
+.btn--primary:hover { opacity: 0.78; }
+
+/* =========================================================
+   VTuber プロフィール
+   ========================================================= */
+.vt-group-title {
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-align: center;
+  margin-top: 3.5rem;
+}
+.vt-group-title:first-of-type { margin-top: 0; }
+.vt-group-lead {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  text-align: center;
+  margin: 0.8rem 0 2.6rem;
+}
+.vt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2.4rem 2rem;
+}
+.vt-card { text-align: center; }
+.vt-card__photo {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1rem;
+  background: #efece8;
+}
+.vt-card__name {
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+.vt-card__bio {
+  font-size: 0.86rem;
+  color: var(--color-muted);
+  line-height: 1.9;
+  margin-bottom: 0.9rem;
+}
+.vt-card__links {
+  display: flex;
+  justify-content: center;
+  gap: 0.9rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+.vt-card__links a {
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--color-line);
+  transition: border-color 0.25s, opacity 0.25s;
+}
+.vt-card__links a:hover { border-color: var(--color-ink); opacity: 0.7; }
+
+/* VTuber 募集セクション */
+.vt-recruit {
+  margin-top: 4rem;
+  padding: 3rem 2rem;
+  border-top: 1px solid var(--color-line);
+  text-align: center;
+}
+.vt-recruit__title {
+  font-size: clamp(1.2rem, 3vw, 1.7rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  margin: 0.6rem 0 1.2rem;
+}
+.vt-recruit__body {
+  font-size: 0.93rem;
+  color: var(--color-muted);
+  line-height: 2;
+  margin-bottom: 1.8rem;
+}
+.vt-recruit__actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   活動記事（works）ページ
+   ========================================================= */
+.page-head {
+  max-width: var(--maxw);
+  margin: 4.5rem auto 0;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+.page-head__title {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+.page-head__lead {
+  font-size: 0.92rem;
+  color: var(--color-muted);
+  margin-top: 1rem;
+}
+
+.works {
+  max-width: 980px;
+  margin: var(--section-gap) auto 0;
+  padding: 0 1.5rem;
+}
+.works__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 3rem 2.4rem;
+}
+.work-card { display: block; color: inherit; }
+.work-card__thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #efece8;
+  margin-bottom: 1.1rem;
+}
+.work-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  color: var(--color-muted);
+  margin-bottom: 0.6rem;
+}
+.work-card__cat {
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 0.15em 0.9em;
+}
+.work-card__title {
+  font-size: 1.12rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1.7;
+  margin-bottom: 0.7rem;
+  transition: opacity 0.25s;
+}
+.work-card:hover .work-card__title { opacity: 0.6; }
+.work-card:hover .work-card__thumb { opacity: 0.92; }
+.work-card__excerpt {
+  font-size: 0.88rem;
+  color: var(--color-muted);
+  line-height: 1.9;
+}
+.works__empty {
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  padding: 3rem 0;
+}
+
+/* =========================================================
+   お知らせ
+   ========================================================= */
+.news__grid { display: flex; flex-direction: column; }
+.news-card {
+  display: flex;
+  gap: 1.2rem;
+  padding: 1.2rem 0;
+  border-top: 1px solid var(--color-line);
+  text-decoration: none;
+  color: var(--color-ink);
+  align-items: flex-start;
+}
+.news-card:last-child { border-bottom: 1px solid var(--color-line); }
+.news-card:hover .news-card__title { text-decoration: underline; }
+.news-card__thumb {
+  width: 140px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: var(--color-line);
+}
+.news-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.news-card time {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  letter-spacing: 0.08em;
+}
+.news-card__title {
+  font-size: 0.93rem;
+  line-height: 1.6;
+}
+.news__more {
+  margin-top: 2rem;
+  text-align: center;
+}
+.news-page,
+.vtuber-page {
+  max-width: var(--maxw);
+  margin: var(--section-gap) auto;
+  padding: 0 1.5rem;
+}
+
+/* =========================================================
+   会社情報
+   ========================================================= */
+.company { text-align: center; }
+.company__catch {
+  font-size: clamp(1.2rem, 3.6vw, 1.6rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  margin-bottom: 2.2rem;
+}
+.company__intro {
+  font-size: 0.96rem;
+  text-align: left;
+  margin-bottom: 1.4rem;
+}
+.company__table {
+  margin-top: 3rem;
+  text-align: left;
+  border-top: 1px solid var(--color-line);
+}
+.company__table > div {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.2rem 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.company__table dt {
+  flex: none;
+  min-width: 7em;
+  color: var(--color-muted);
+  font-size: 0.88rem;
+}
+.company__table dd { font-size: 0.96rem; }
+
+/* =========================================================
+   お問い合わせ
+   ========================================================= */
+.contact { text-align: center; }
+.contact__lead {
+  font-size: 0.98rem;
+  margin-bottom: 2.6rem;
+}
+.contact__actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* =========================================================
+   フッター
+   ========================================================= */
+.site-footer {
+  text-align: center;
+  margin-top: var(--section-gap);
+  padding: 4rem 1.5rem 3rem;
+  border-top: 1px solid var(--color-line);
+}
+.site-footer__logo { margin: 0 auto 1.2rem; opacity: 0.85; }
+.site-footer__copy {
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  color: var(--color-muted);
+}
+
+/* =========================================================
+   スクロールで「ふわっ」と表示
+   ========================================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* =========================================================
+   レスポンシブ（スマホ）
+   ========================================================= */
+@media (max-width: 720px) {
+  .side-rail { display: none; }          /* 縦書きレールはスマホで非表示 */
+  body { letter-spacing: 0.04em; }
+  .card { flex-direction: column; gap: 0.6rem; }
+  .card__num { font-size: 1.2rem; }
+  .news__item { flex-direction: column; gap: 0.2rem; }
+  .nav { gap: 1rem 1.4rem; font-size: 0.8rem; }
+}

@@ -1,0 +1,11 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node（npx serve などを使った場合の生成物）
+node_modules/
+npm-debug.log*
+
+# 内部ドキュメント（公開リポジトリに含めない）
+CLAUDE.md

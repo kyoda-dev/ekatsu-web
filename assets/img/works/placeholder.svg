@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="活動記事サムネイル">
+  <rect width="320" height="180" fill="#efece8"/>
+  <path d="M0 150 L70 105 L120 135 L195 80 L260 120 L320 92 L320 180 L0 180 Z" fill="#ddd6cf"/>
+  <circle cx="250" cy="48" r="20" fill="#e4ddd5"/>
+  <text x="160" y="96" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#9a938b" letter-spacing="2">e活</text>
+</svg>

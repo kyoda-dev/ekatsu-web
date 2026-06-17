@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>VTuber ｜ e活</title>
+  <meta name="description" content="e活パートナーVTuber・ネクストVTuberのプロフィール一覧です。" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="VTuber ｜ e活" />
+  <meta property="og:description" content="e活パートナーVTuber・ネクストVTuberのプロフィール一覧です。" />
+  <meta property="og:image" content="assets/img/hero.jpg" />
+
+  <link rel="icon" type="image/webp" href="assets/img/logo.webp" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+
+  <!-- ===== 左右の縦書き固定テキスト ===== -->
+  <span class="side-rail side-rail--left">A&amp;L project 株式会社</span>
+  <span class="side-rail side-rail--right">eスポーツに社会的意義を</span>
+
+  <!-- ===== ヘッダー（ナビ＋ロゴ） ===== -->
+  <header class="site-header" id="top">
+    <nav class="nav">
+      <a href="index.html#message">ご挨拶</a>
+      <a href="works.html">協賛大会</a>
+      <a href="vtuber.html">VTuber</a>
+      <a href="news.html">お知らせ</a>
+      <a href="index.html#company">会社情報</a>
+      <a href="index.html#contact">お問い合わせ</a>
+    </nav>
+    <a href="index.html" class="brand">
+      <img src="assets/img/logo.webp" alt="e活 ロゴ" width="120" />
+    </a>
+  </header>
+
+  <main>
+
+    <!-- ===== ページタイトル ===== -->
+    <section class="page-head reveal">
+      <p class="eyebrow">vtuber</p>
+      <h1 class="page-head__title">VTuber</h1>
+    </section>
+
+    <!-- =========================================================
+         VTuber プロフィール一覧
+         VTuberを追加する手順：
+         1. assets/img/vtuber/ に正方形の画像を置く（例: hanako.webp）
+         2. 下の <article class="vt-card"> を1つコピーして追加
+         3. 画像パス・名前・ひとこと・SNSリンクを書き換える
+         ========================================================= -->
+    <section class="vtuber-page">
+
+      <h2 class="vt-group-title reveal">パートナーVTuber</h2>
+      <p class="vt-group-lead reveal">e活と一緒に活動してくれている公式パートナーVTuberです。</p>
+      <div class="vt-grid reveal">
+
+        <article class="vt-card">
+          <img class="vt-card__photo" src="assets/img/vtuber/koyori.webp" alt="葉月こより" width="200" height="200" />
+          <h3 class="vt-card__name">葉月こより</h3>
+          <p class="vt-card__bio">ゆったりした配信で、リスナーの治安の良さが魅力。VALORANT / LoL。</p>
+          <div class="vt-card__links">
+            <a href="https://x.com/HadukiKoyori" target="_blank" rel="noopener">X</a>
+            <a href="https://www.youtube.com/@HadukiKoyori" target="_blank" rel="noopener">YouTube</a>
+          </div>
+        </article>
+
+        <article class="vt-card">
+          <img class="vt-card__photo" src="assets/img/vtuber/shiramine.webp" alt="白峰 凱志" width="200" height="200" />
+          <h3 class="vt-card__name">白峰 凱志</h3>
+          <p class="vt-card__bio">FPS・RPG・雑談など幅広く。元気な配信とゲーム解説が持ち味。</p>
+          <div class="vt-card__links">
+            <a href="https://x.com/shiraminekaito" target="_blank" rel="noopener">X</a>
+            <a href="https://youtube.com/@shiraminekaito" target="_blank" rel="noopener">YouTube</a>
+          </div>
+        </article>
+
+        <article class="vt-card">
+          <img class="vt-card__photo" src="assets/img/vtuber/magmag.webp" alt="まぐまぐです" width="200" height="200" />
+          <h3 class="vt-card__name">まぐまぐです</h3>
+          <p class="vt-card__bio">雑談多めのゆるい配信を心がけています。VALORANT。</p>
+          <div class="vt-card__links">
+            <a href="https://x.com/magmag_live" target="_blank" rel="noopener">X</a>
+            <a href="https://www.twitch.tv/magmag_game" target="_blank" rel="noopener">Twitch</a>
+          </div>
+        </article>
+
+      </div>
+
+      <h2 class="vt-group-title reveal">ネクストVTuber</h2>
+      <p class="vt-group-lead reveal">これから一緒に伸びていく、注目の駆け出しVTuberです。</p>
+      <div class="vt-grid reveal">
+
+        <article class="vt-card">
+          <img class="vt-card__photo" src="assets/img/vtuber/m4gari.webp" alt="M4gari（まがり）" width="200" height="200" />
+          <h3 class="vt-card__name">M4gari（まがり）</h3>
+          <p class="vt-card__bio">ゲーム配信中心。声がデカい（121dB）。GTA / R6 / FPS・TPS。</p>
+          <div class="vt-card__links">
+            <a href="https://x.com/M4gari_619" target="_blank" rel="noopener">X</a>
+            <a href="https://www.twitch.tv/m4gari_619" target="_blank" rel="noopener">Twitch</a>
+          </div>
+        </article>
+
+        <article class="vt-card">
+          <img class="vt-card__photo" src="assets/img/vtuber/placeholder.svg" alt="茅花まりえ" width="200" height="200" />
+          <h3 class="vt-card__name">茅花まりえ</h3>
+          <p class="vt-card__bio">ふんわりした声と叫び声のギャップが魅力。VALORANT / Dead by Daylight。</p>
+          <div class="vt-card__links">
+            <a href="https://x.com/kayahanamarie" target="_blank" rel="noopener">X</a>
+            <a href="https://www.twitch.tv/Kayahanamarie" target="_blank" rel="noopener">Twitch</a>
+          </div>
+        </article>
+
+        <article class="vt-card">
+          <img class="vt-card__photo" src="assets/img/vtuber/placeholder.svg" alt="ぱわぁぱふこだま" width="200" height="200" />
+          <h3 class="vt-card__name">ぱわぁぱふこだま</h3>
+          <p class="vt-card__bio">雑談しながらランク配信。上手くないのがアピールポイント。OW2 / VALORANT / APEX / スト6。</p>
+          <div class="vt-card__links">
+            <a href="https://x.com/pwpkdm29" target="_blank" rel="noopener">X</a>
+            <a href="https://www.youtube.com/@%E3%81%92%E3%82%93%E3%82%84%E3%81%A8%E3%81%A0%E3%83%BC%E3%81%93" target="_blank" rel="noopener">YouTube</a>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- ===== 募集 ===== -->
+      <div class="vt-recruit reveal">
+        <p class="eyebrow">join us</p>
+        <h2 class="vt-recruit__title">パートナーVTuber募集中</h2>
+        <p class="vt-recruit__body">
+          e活では、一緒に活動してくれるパートナーVTuberを随時募集しています。<br>
+          コミュニティeスポーツ大会のミラー配信や、地方企業とのコラボ案件など、<br>
+          あなたの配信に新しい「ネタ」と「つながり」をご提供します。<br>
+          活動の幅を狭めるような制約はありません。お気軽にご応募ください。
+        </p>
+        <div class="vt-recruit__actions">
+          <a class="btn btn--primary" href="https://forms.gle/VKx1aVXBe6A8mctS7" target="_blank" rel="noopener">パートナー申請はこちら</a>
+          <a class="btn" href="https://x.com/e_ekatsu" target="_blank" rel="noopener">公式X（@e_ekatsu）</a>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ===== フッター ===== -->
+  <footer class="site-footer">
+    <img src="assets/img/logo.webp" alt="e活 ロゴ" width="90" class="site-footer__logo" />
+    <p class="site-footer__copy">&copy; A&amp;L project 株式会社 / e活</p>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
