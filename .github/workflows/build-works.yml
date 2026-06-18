@@ -1,0 +1,35 @@
+name: works.html 自動更新
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # 6時間ごとに実行（日本時間 3/9/15/21時）
+  workflow_dispatch:          # 手動実行ボタン
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 依存パッケージをインストール
+        run: cd tools && npm install
+
+      - name: works.html を生成
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          MASTER_SCHEDULE_ID: ${{ secrets.MASTER_SCHEDULE_ID }}
+        run: cd tools && node build-works.js
+
+      - name: 変更があればコミット＆プッシュ
+        run: |
+          git config user.name "e-katsu-bot"
+          git config user.email "k_yoda@alonzo.jp"
+          git add works.html assets/img/works/
+          git diff --cached --quiet || git commit -m "auto: works.html を更新"
+          git push
