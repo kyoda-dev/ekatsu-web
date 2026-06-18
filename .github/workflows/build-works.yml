@@ -5,6 +5,9 @@ on:
     - cron: '0 */6 * * *'   # 6時間ごとに実行（日本時間 3/9/15/21時）
   workflow_dispatch:          # 手動実行ボタン
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
