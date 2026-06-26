@@ -55,14 +55,25 @@
          このカード群は「大会スケジュール_マスター」スプレッドシートから
          tools/build-works.js で自動生成されます。
          更新方法： cd tools && node build-works.js
-         （マスターの「情報公開」列が ○ の大会だけ掲載されます）
+         （マスターに大会名がある行は全件掲載。情報公開フラグでの絞り込みは廃止）
+         画像： M列にKV画像があれば取得。無ければ assets/img/works/<slug>.<ext> を探し、それも無ければ placeholder
          ※ WORKS:START 〜 WORKS:END の間は手動編集しないでください（再生成で上書きされます）
          ========================================================= -->
     <section class="works">
       <div class="works__grid">
         <!-- WORKS:START -->
+        <a class="work-card reveal" href="https://japanrematchleague.com/" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/2026-06-27-japan-rematch-league.jpg" alt="Japan REMATCH League" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-06-27">2026.06.27</time>
+            
+          </div>
+          <h2 class="work-card__title">Japan REMATCH League</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
         <a class="work-card reveal" href="https://www.youtube.com/live/YEVbjHrfrkA?si=S72vcOVkdh_h2hJN" target="_blank" rel="noopener">
-          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="深影杯ｰMIKAGE CUPｰ" width="320" height="180" loading="lazy" />
+          <img class="work-card__thumb" src="assets/img/works/2026-06-13-mikage-cup.jpg" alt="深影杯ｰMIKAGE CUPｰ" width="320" height="180" loading="lazy" />
           <div class="work-card__meta">
             <time datetime="2026-06-13">2026.06.13</time>
             <span class="work-card__cat">Overwatch 2</span>
@@ -71,8 +82,28 @@
           <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
         </a>
 
+        <a class="work-card reveal" href="https://www.youtube.com/@fc_comm" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/2026-06-13-fc-26-asia-summer-final.jpg" alt="FCコミュニティシリーズ26 Asia Summer Final" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-06-13">2026.06.13</time>
+            <span class="work-card__cat">EA SPORTS FC</span>
+          </div>
+          <h2 class="work-card__title">FCコミュニティシリーズ26 Asia Summer Final</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
+        <a class="work-card reveal" href="https://fukuesports-festa.studio.site/" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/2026-06-06-fukuesports-festa.jpg" alt="FUKUeSPORTS FESTA" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-06-06">2026.06.06</time>
+            <span class="work-card__cat">各種タイトル</span>
+          </div>
+          <h2 class="work-card__title">FUKUeSPORTS FESTA</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
         <a class="work-card reveal" href="https://www.youtube.com/live/TefRsyCpaUo?si=3qOHxe4duTa_u9IT" target="_blank" rel="noopener">
-          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="ALEC Vol.2(Apex Legends EXE Custum)" width="320" height="180" loading="lazy" />
+          <img class="work-card__thumb" src="assets/img/works/2026-05-30-alec-vol-2-apex-legends-exe-custum.png" alt="ALEC Vol.2(Apex Legends EXE Custum)" width="320" height="180" loading="lazy" />
           <div class="work-card__meta">
             <time datetime="2026-05-30">2026.05.30</time>
             <span class="work-card__cat">APEX</span>
@@ -81,8 +112,18 @@
           <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
         </a>
 
+        <a class="work-card reveal" href="https://www.twitch.tv/himakiwa1" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/2026-05-23-lock-on.jpg" alt="LOCK-ON" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-05-23">2026.05.23</time>
+            <span class="work-card__cat">Tom Clancy's Rainbow Six Siege</span>
+          </div>
+          <h2 class="work-card__title">LOCK-ON</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
         <a class="work-card reveal" href="https://collegeproject.reignite.jp/cep-apex-legends-custom/" target="_blank" rel="noopener">
-          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="新入生歓迎 Apex Legends CUSTOM" width="320" height="180" loading="lazy" />
+          <img class="work-card__thumb" src="assets/img/works/2026-05-17-apex-legends-custom.jpg" alt="新入生歓迎 Apex Legends CUSTOM" width="320" height="180" loading="lazy" />
           <div class="work-card__meta">
             <time datetime="2026-05-17">2026.05.17</time>
             <span class="work-card__cat">APEX</span>
@@ -91,8 +132,18 @@
           <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
         </a>
 
+        <a class="work-card reveal" href="https://www.twitch.tv/himakiwa1" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/2026-05-06-ccc.jpg" alt="CCC" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-05-06">2026.05.06</time>
+            <span class="work-card__cat">Tom Clancy's Rainbow Six Siege</span>
+          </div>
+          <h2 class="work-card__title">CCC</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
         <a class="work-card reveal" href="https://www.youtube.com/live/3AjfVtEezFg?si=xA6uBNZ-lCqxBcQD" target="_blank" rel="noopener">
-          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="REVATI" width="320" height="180" loading="lazy" />
+          <img class="work-card__thumb" src="assets/img/works/2026-05-05-revati.webp" alt="REVATI" width="320" height="180" loading="lazy" />
           <div class="work-card__meta">
             <time datetime="2026-05-05">2026.05.05</time>
             <span class="work-card__cat">Overwatch 2</span>
@@ -102,7 +153,7 @@
         </a>
 
         <a class="work-card reveal" href="https://www.twitch.tv/shiyouizuri" target="_blank" rel="noopener">
-          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="I RISE CUP（アイライズカップ）" width="320" height="180" loading="lazy" />
+          <img class="work-card__thumb" src="assets/img/works/2026-05-02-i-rise-cup.jpg" alt="I RISE CUP（アイライズカップ）" width="320" height="180" loading="lazy" />
           <div class="work-card__meta">
             <time datetime="2026-05-02">2026.05.02</time>
             <span class="work-card__cat">VALORANT</span>
@@ -111,8 +162,18 @@
           <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
         </a>
 
+        <a class="work-card reveal" href="https://x.com/e_ekatsu/status/2045438117654692154" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/2026-05-02-valorant-ludovate-cup-vol-2.jpg" alt="VALORANT Ludovate Cup vol.2" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-05-02">2026.05.02</time>
+            <span class="work-card__cat">VALORANT</span>
+          </div>
+          <h2 class="work-card__title">VALORANT Ludovate Cup vol.2</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
         <a class="work-card reveal" href="https://www.twitch.tv/soikingdom" target="_blank" rel="noopener">
-          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="そいキン" width="320" height="180" loading="lazy" />
+          <img class="work-card__thumb" src="assets/img/works/2026-04-15-tour.jpg" alt="そいキン" width="320" height="180" loading="lazy" />
           <div class="work-card__meta">
             <time datetime="2026-04-15">2026.04.15</time>
             <span class="work-card__cat">STREET FIGHTER 6</span>
@@ -121,8 +182,18 @@
           <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
         </a>
 
+        <a class="work-card reveal" href="https://x.com/GHA_OfficialJP/status/2029134757666406493" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/2026-03-20-gambit-hounds-arena-2026-spring.jpg" alt="Gambit Hounds Arena 2026 Spring" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-03-20">2026.03.20</time>
+            <span class="work-card__cat">Escape From Tarkov:Arena</span>
+          </div>
+          <h2 class="work-card__title">Gambit Hounds Arena 2026 Spring</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
         <a class="work-card reveal" href="https://www.youtube.com/watch?v=R63TceXaNFc&amp;t=1733s" target="_blank" rel="noopener">
-          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="TURUGICUP" width="320" height="180" loading="lazy" />
+          <img class="work-card__thumb" src="assets/img/works/2026-03-07-turugicup.jpg" alt="TURUGICUP" width="320" height="180" loading="lazy" />
           <div class="work-card__meta">
             <time datetime="2026-03-07">2026.03.07</time>
             <span class="work-card__cat">ロケットリーグ</span>
@@ -132,7 +203,7 @@
         </a>
 
         <a class="work-card reveal" href="https://www.twitch.tv/functionkyoto" target="_blank" rel="noopener">
-          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="FunctionCUP" width="320" height="180" loading="lazy" />
+          <img class="work-card__thumb" src="assets/img/works/2026-03-02-functioncup.png" alt="FunctionCUP" width="320" height="180" loading="lazy" />
           <div class="work-card__meta">
             <time datetime="2026-03-02">2026.03.02</time>
             <span class="work-card__cat">Tom Clancy's Rainbow Six Siege</span>
@@ -152,12 +223,112 @@
         </a>
 
         <a class="work-card reveal" href="https://www.youtube.com/@NOABOX-p2c" target="_blank" rel="noopener">
-          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="AMAZINGAREA" width="320" height="180" loading="lazy" />
+          <img class="work-card__thumb" src="assets/img/works/x-amazingarea.png" alt="AMAZINGAREA" width="320" height="180" loading="lazy" />
           <div class="work-card__meta">
             <span>定期開催</span>
             <span class="work-card__cat">2XKO</span>
           </div>
           <h2 class="work-card__title">AMAZINGAREA</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
+        <a class="work-card reveal" href="https://twitch.tv/agamingrl" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="α-LEAGUE 2026" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-10-17">2026.10.17</time>
+            <span class="work-card__cat">RocketLeague</span>
+          </div>
+          <h2 class="work-card__title">α-LEAGUE 2026</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
+        <a class="work-card reveal" href="https://twitch.tv/agamingrl" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="α-LEAGUE 2026" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-08-22">2026.08.22</time>
+            <span class="work-card__cat">RocketLeague</span>
+          </div>
+          <h2 class="work-card__title">α-LEAGUE 2026</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
+        <a class="work-card reveal" href="https://www.cocoyoko.net/e-sports/tournament/archive_2026_1.html" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="YOKOSUKA e-Sports CUP Day2" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-08-18">2026.08.18</time>
+            <span class="work-card__cat">VALORANT</span>
+          </div>
+          <h2 class="work-card__title">YOKOSUKA e-Sports CUP Day2</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
+        <a class="work-card reveal" href="#">
+          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="Gambit Hounds Arena 2026 Summer Day4" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-08-02">2026.08.02</time>
+            
+          </div>
+          <h2 class="work-card__title">Gambit Hounds Arena 2026 Summer Day4</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
+        <a class="work-card reveal" href="#">
+          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="Gambit Hounds Arena 2026 Summer Day3" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-08-01">2026.08.01</time>
+            
+          </div>
+          <h2 class="work-card__title">Gambit Hounds Arena 2026 Summer Day3</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
+        <a class="work-card reveal" href="#">
+          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="Gambit Hounds Arena 2026 Summer Day2" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-07-26">2026.07.26</time>
+            
+          </div>
+          <h2 class="work-card__title">Gambit Hounds Arena 2026 Summer Day2</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
+        <a class="work-card reveal" href="#">
+          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="Gambit Hounds Arena 2026 Summer Day1" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-07-25">2026.07.25</time>
+            
+          </div>
+          <h2 class="work-card__title">Gambit Hounds Arena 2026 Summer Day1</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
+        <a class="work-card reveal" href="https://www.cocoyoko.net/e-sports/tournament/archive_2026_1.html" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="YOKOSUKA e-Sports CUP Day1" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-07-20">2026.07.20</time>
+            <span class="work-card__cat">VALORANT</span>
+          </div>
+          <h2 class="work-card__title">YOKOSUKA e-Sports CUP Day1</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
+        <a class="work-card reveal" href="https://twitch.tv/agamingrl" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="α-LEAGUE 2026" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-07-11">2026.07.11</time>
+            <span class="work-card__cat">RocketLeague</span>
+          </div>
+          <h2 class="work-card__title">α-LEAGUE 2026</h2>
+          <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
+        </a>
+
+        <a class="work-card reveal" href="https://www.twitch.tv/kcarz5" target="_blank" rel="noopener">
+          <img class="work-card__thumb" src="assets/img/works/placeholder.svg" alt="KCARZ CUP Vol.2" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            <time datetime="2026-06-28">2026.06.28</time>
+            <span class="work-card__cat">Escape From Tarkov:Arena</span>
+          </div>
+          <h2 class="work-card__title">KCARZ CUP Vol.2</h2>
           <p class="work-card__excerpt">e活が協賛・ミラー配信でサポートしたコミュニティ大会です。</p>
         </a>
         <!-- WORKS:END -->

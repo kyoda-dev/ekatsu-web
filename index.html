@@ -87,38 +87,59 @@
     <section class="section activity" id="activity">
       <p class="eyebrow reveal">e活から</p>
 
+      <!-- 01〜03 はクリックで開くアコーディオン（初期状態は閉じる） -->
+
       <!-- 01 -->
-      <article class="card reveal">
-        <span class="card__num">01</span>
-        <div class="card__body">
-          <h3 class="card__title">eスポーツ大会主催様へ</h3>
+      <details class="acc reveal">
+        <summary class="acc__summary">
+          <span class="card__num">01</span>
+          <span class="acc__head">
+            <span class="acc__title">eスポーツ大会主催様へ</span>
+            <span class="acc__teaser">「支援」と「技術サポート」を協賛します</span>
+          </span>
+          <span class="acc__icon" aria-hidden="true"></span>
+        </summary>
+        <div class="acc__content">
           <p>
             コミュニティeスポーツ主催団体に「支援」と「技術サポート」を協賛いたします。
             すでにある程度活動をしている団体を対象といたしますが、熱量と内容によっては幅広く支援したいと考えています。
           </p>
           <a class="btn" href="https://discord.gg/mMfHK6t7aj" target="_blank" rel="noopener">協賛依頼はこちらから</a>
         </div>
-      </article>
+      </details>
 
       <!-- 02 -->
-      <article class="card reveal">
-        <span class="card__num">02</span>
-        <div class="card__body">
-          <h3 class="card__title">個人VTuber／活動者様へ</h3>
+      <details class="acc reveal">
+        <summary class="acc__summary">
+          <span class="card__num">02</span>
+          <span class="acc__head">
+            <span class="acc__title">個人VTuber／活動者様へ</span>
+            <span class="acc__teaser">パートナーVTuberを募集しています</span>
+          </span>
+          <span class="acc__icon" aria-hidden="true"></span>
+        </summary>
+        <div class="acc__content">
           <p>
             普段から活動している個人VTuber様へ、e活パートナーVTuberを募集しています。
             e活からはコミュニティ大会のミラー配信や地方企業案件の紹介をお願いしております。
-            他にも簡単な支援やお手伝いを考えております。活動の幅を狭めるような事項や契約内容はないのでお気軽にご相談ください。
+            他にも、歌ってみたのイラスト制作費の負担や、自主大会への実況解説アテンドなど、一人ひとりの「やりたいこと」に合わせた支援も行っています。活動の幅を狭めるような事項や契約内容はないのでお気軽にご相談ください。
           </p>
+          <a class="btn" href="vtuber.html#support">パートナー支援の実例を見る</a>
           <a class="btn" href="https://forms.gle/VKx1aVXBe6A8mctS7" target="_blank" rel="noopener">パートナー申請はこちらから</a>
         </div>
-      </article>
+      </details>
 
       <!-- 03 -->
-      <article class="card reveal">
-        <span class="card__num">03</span>
-        <div class="card__body">
-          <h3 class="card__title">自治体／地域型企業様へ</h3>
+      <details class="acc reveal">
+        <summary class="acc__summary">
+          <span class="card__num">03</span>
+          <span class="acc__head">
+            <span class="acc__title">自治体／地域型企業様へ</span>
+            <span class="acc__teaser">地域の小さなeスポーツ大会へ共同協賛しませんか</span>
+          </span>
+          <span class="acc__icon" aria-hidden="true"></span>
+        </summary>
+        <div class="acc__content">
           <p>
             小規模なeスポーツ大会やVTuber文化へ共同協賛していただき、若年層への直接的な宣伝をしてみませんか？
             私たちが支援しているのは、決して大規模なものではなく、地域の「草野球」のような等身大の小さなeスポーツ大会が多いです。規模は小さくとも、そこには若者たちの確かな熱量とコミュニティが存在します。
@@ -129,7 +150,7 @@
           </p>
           <a class="btn" href="works.html">協賛大会へ</a>
         </div>
-      </article>
+      </details>
 
       <!-- 04 -->
       <article class="card card--feature reveal">
@@ -154,92 +175,37 @@
          3. 画像パス・名前・ひとこと・SNSリンクを書き換える
          （画像がまだ無いときは src を assets/img/vtuber/placeholder.svg のままに）
          ========================================================= -->
+    <!-- トップは顔ぶれ（一覧絵）だけ。各VTuberのプロフィール詳細は vtuber.html へ -->
     <section class="section vtuber" id="vtuber">
       <p class="eyebrow reveal">VTuber</p>
+      <p class="vt-lead reveal">e活と一緒に活動してくれる、<br>公式パートナーVTuberがいます。</p>
 
-      <!-- ---- パートナーVTuber ---- -->
-      <h3 class="vt-group-title reveal">パートナーVTuber</h3>
-      <p class="vt-group-lead reveal">e活と一緒に活動してくれている公式パートナーVTuberです。</p>
-      <div class="vt-grid reveal">
+      <a class="vt-lineup reveal" href="vtuber.html" aria-label="VTuberのプロフィール一覧を見る">
+        <span class="vt-lineup__item">
+          <img src="assets/img/vtuber/koyori.webp" alt="葉月こより" width="120" height="120" loading="lazy" />
+          <span class="vt-lineup__name">葉月こより</span>
+        </span>
+        <span class="vt-lineup__item">
+          <img src="assets/img/vtuber/shiramine.webp" alt="白峰 凱志" width="120" height="120" loading="lazy" />
+          <span class="vt-lineup__name">白峰 凱志</span>
+        </span>
+        <span class="vt-lineup__item">
+          <img src="assets/img/vtuber/magmag.webp" alt="まぐまぐです" width="120" height="120" loading="lazy" />
+          <span class="vt-lineup__name">まぐまぐです</span>
+        </span>
+        <span class="vt-lineup__item">
+          <img src="assets/img/vtuber/m4gari.webp" alt="M4gari（まがり）" width="120" height="120" loading="lazy" />
+          <span class="vt-lineup__name">M4gari</span>
+        </span>
+      </a>
 
-        <article class="vt-card">
-          <img class="vt-card__photo" src="assets/img/vtuber/koyori.webp" alt="葉月こより" width="200" height="200" />
-          <h4 class="vt-card__name">葉月こより</h4>
-          <p class="vt-card__bio">ゆったりした配信で、リスナーの治安の良さが魅力。VALORANT / LoL。</p>
-          <div class="vt-card__links">
-            <a href="https://x.com/HadukiKoyori" target="_blank" rel="noopener">X</a>
-            <a href="https://www.youtube.com/@HadukiKoyori" target="_blank" rel="noopener">YouTube</a>
-            <a href="https://www.twitch.tv/hadukikoyori" target="_blank" rel="noopener">Twitch</a>
-          </div>
-        </article>
-
-        <article class="vt-card">
-          <img class="vt-card__photo" src="assets/img/vtuber/shiramine.webp" alt="白峰 凱志" width="200" height="200" />
-          <h4 class="vt-card__name">白峰 凱志</h4>
-          <p class="vt-card__bio">FPS・RPG・雑談など幅広く。元気な配信とゲーム解説が持ち味。</p>
-          <div class="vt-card__links">
-            <a href="https://x.com/shiraminekaito" target="_blank" rel="noopener">X</a>
-            <a href="https://youtube.com/@shiraminekaito" target="_blank" rel="noopener">YouTube</a>
-            <a href="https://www.twitch.tv/shiraminekaito" target="_blank" rel="noopener">Twitch</a>
-          </div>
-        </article>
-
-        <article class="vt-card">
-          <img class="vt-card__photo" src="assets/img/vtuber/magmag.webp" alt="まぐまぐです" width="200" height="200" />
-          <h4 class="vt-card__name">まぐまぐです</h4>
-          <p class="vt-card__bio">雑談多めのゆるい配信を心がけています。VALORANT。</p>
-          <div class="vt-card__links">
-            <a href="https://x.com/magmag_live" target="_blank" rel="noopener">X</a>
-            <a href="https://www.twitch.tv/magmag_game" target="_blank" rel="noopener">Twitch</a>
-            <a href="https://www.youtube.com/@magmag_game" target="_blank" rel="noopener">YouTube</a>
-          </div>
-        </article>
-
-      </div>
-
-      <!-- ---- ネクストVTuber ---- -->
-      <h3 class="vt-group-title reveal">ネクストVTuber</h3>
-      <p class="vt-group-lead reveal">これから一緒に伸びていく、注目の駆け出しVTuberです。</p>
-      <div class="vt-grid reveal">
-
-        <article class="vt-card">
-          <img class="vt-card__photo" src="assets/img/vtuber/m4gari.webp" alt="M4gari（まがり）" width="200" height="200" />
-          <h4 class="vt-card__name">M4gari（まがり）</h4>
-          <p class="vt-card__bio">ゲーム配信中心。声がデカい（121dB）。GTA / R6 / FPS・TPS。</p>
-          <div class="vt-card__links">
-            <a href="https://x.com/M4gari_619" target="_blank" rel="noopener">X</a>
-            <a href="https://www.twitch.tv/m4gari_619" target="_blank" rel="noopener">Twitch</a>
-          </div>
-        </article>
-
-        <article class="vt-card">
-          <img class="vt-card__photo" src="assets/img/vtuber/placeholder.svg" alt="茅花まりえ" width="200" height="200" />
-          <h4 class="vt-card__name">茅花まりえ</h4>
-          <p class="vt-card__bio">ふんわりした声と叫び声のギャップが魅力。VALORANT / Dead by Daylight。</p>
-          <div class="vt-card__links">
-            <a href="https://x.com/kayahanamarie" target="_blank" rel="noopener">X</a>
-            <a href="https://www.twitch.tv/Kayahanamarie" target="_blank" rel="noopener">Twitch</a>
-          </div>
-        </article>
-
-        <article class="vt-card">
-          <img class="vt-card__photo" src="assets/img/vtuber/placeholder.svg" alt="ぱわぁぱふこだま" width="200" height="200" />
-          <h4 class="vt-card__name">ぱわぁぱふこだま</h4>
-          <p class="vt-card__bio">雑談しながらランク配信。上手くないのがアピールポイント。OW2 / VALORANT / APEX / スト6。</p>
-          <div class="vt-card__links">
-            <a href="https://x.com/pwpkdm29" target="_blank" rel="noopener">X</a>
-            <a href="https://www.youtube.com/@%E3%81%92%E3%82%93%E3%82%84%E3%81%A8%E3%81%A0%E3%83%BC%E3%81%93" target="_blank" rel="noopener">YouTube</a>
-          </div>
-        </article>
-
-      </div>
       <div class="news__more reveal">
-        <a href="vtuber.html" class="btn">VTuber一覧を見る</a>
+        <a href="vtuber.html" class="btn">VTuberのプロフィールを見る</a>
       </div>
     </section>
 
     <!-- ===== お知らせ ===== -->
-    <!-- 新しいお知らせは NEWS:START のすぐ下に追加（新しいものを先頭に）。トップは5件表示。全件は news.html へ。 -->
+    <!-- 新しいお知らせは NEWS:START のすぐ下に追加（新しいものを先頭に）。トップは2件表示。全件は news.html へ。 -->
     <section class="section news" id="news">
       <p class="eyebrow reveal">お知らせ</p>
       <div class="news__grid reveal">
@@ -256,27 +222,6 @@
           <div class="news-card__body">
             <time datetime="2026-05-17">2026.05.17</time>
             <p class="news-card__title">【プロジェクト近況】活動開始から2ヶ月、5月に入り20件以上のeスポーツ大会からご相談をいただいております！</p>
-          </div>
-        </a>
-        <a class="news-card" href="news/shiramine.html">
-          <img class="news-card__thumb" src="assets/img/news/shiramine.webp" alt="" width="140" height="88" loading="lazy" />
-          <div class="news-card__body">
-            <time datetime="2026-05-17">2026.05.17</time>
-            <p class="news-card__title">パートナーVtuber契約！【白峰 凱志】</p>
-          </div>
-        </a>
-        <a class="news-card" href="news/vtuber-recruit.html">
-          <img class="news-card__thumb" src="assets/img/news/vtuber-recruit.webp" alt="" width="140" height="88" loading="lazy" />
-          <div class="news-card__body">
-            <time datetime="2026-05-17">2026.05.17</time>
-            <p class="news-card__title">【パートナーVTuber募集】eスポーツ大会の熱狂を一緒に届けてくれる方を募集しています！</p>
-          </div>
-        </a>
-        <a class="news-card" href="news/ekatsu-cup.html">
-          <img class="news-card__thumb" src="assets/img/news/ekatsu-cup.webp" alt="" width="140" height="88" loading="lazy" />
-          <div class="news-card__body">
-            <time datetime="2026-05-17">2026.05.17</time>
-            <p class="news-card__title">自社イベント【e活CUP!! – MIMESIS EDITION Vol.1】開催！</p>
           </div>
         </a>
         <!-- NEWS:END -->
@@ -312,11 +257,22 @@
     <section class="section contact" id="contact">
       <p class="eyebrow reveal">お問い合わせ</p>
       <p class="contact__lead reveal">
-        弊社へのお問い合わせは下記フォームよりお願いいたします。<br />
+        ご用件に合わせて、下記の窓口をご利用ください。<br />
+        各申請は専用窓口から、それ以外は一般のお問い合わせフォームよりお願いいたします。
+      </p>
+
+      <!-- 申請（専用窓口）。一般の問い合わせフォームに申請が混ざらないよう分離 -->
+      <div class="contact__actions reveal">
+        <a class="btn btn--primary" href="https://discord.gg/mMfHK6t7aj" target="_blank" rel="noopener">大会協賛の申請はこちらから</a>
+        <a class="btn btn--primary" href="https://forms.gle/VKx1aVXBe6A8mctS7" target="_blank" rel="noopener">VTuber申請はこちらから</a>
+      </div>
+
+      <p class="contact__lead reveal contact__lead--sub">
+        上記以外のご相談・お問い合わせはこちら。<br />
         2営業日以内にご返信させていただきます。
       </p>
       <div class="contact__actions reveal">
-        <a class="btn btn--primary" href="https://forms.gle/kSByU9JLqwRWNXHo6" target="_blank" rel="noopener">お問い合わせフォームを開く</a>
+        <a class="btn" href="https://forms.gle/kSByU9JLqwRWNXHo6" target="_blank" rel="noopener">お問い合わせフォームを開く</a>
         <a class="btn" href="https://x.com/e_ekatsu" target="_blank" rel="noopener">公式X（@e_ekatsu）</a>
       </div>
     </section>

@@ -48,10 +48,21 @@ function asciiSlug(name, fallback) {
   return s || fallback;
 }
 
-// M列の画像（Drive リンク or http URL）を assets/img/works/ に取得。失敗時は placeholder。
+// 既に assets/img/works/ に置かれているローカル画像（<slug>.<ext>）を探す。
+// スプレッドシートのM列が空でも、手動で用意したKV画像を使えるようにする。無ければ placeholder。
+function localOrPlaceholder(slug) {
+  for (const ext of ["webp", "jpg", "jpeg", "png"]) {
+    const file = `${slug}.${ext}`;
+    if (fs.existsSync(path.join(IMG_DIR, file))) return `assets/img/works/${file}`;
+  }
+  return PLACEHOLDER;
+}
+
+// M列の画像（Drive リンク or http URL）を assets/img/works/ に取得。
+// M列が空 or 取得失敗時は、ローカルの <slug>.<ext> → placeholder の順でフォールバック。
 async function fetchImage(drive, cell, slug) {
   const val = String(cell || "").trim();
-  if (!val) return PLACEHOLDER;
+  if (!val) return localOrPlaceholder(slug);
   try {
     let buf, ext = "jpg";
     const driveId = (val.match(/\/file\/d\/([A-Za-z0-9_-]+)/) || val.match(/[?&]id=([A-Za-z0-9_-]+)/) || [])[1];
@@ -74,8 +85,8 @@ async function fetchImage(drive, cell, slug) {
     fs.writeFileSync(path.join(IMG_DIR, file), buf);
     return `assets/img/works/${file}`;
   } catch (e) {
-    console.warn(`  画像取得失敗 (${slug}): ${e.message} → プレースホルダー`);
-    return PLACEHOLDER;
+    console.warn(`  画像取得失敗 (${slug}): ${e.message} → ローカル画像 or プレースホルダー`);
+    return localOrPlaceholder(slug);
   }
 }
 
@@ -101,9 +112,10 @@ async function main() {
   const res = await sheets.spreadsheets.values.get({ spreadsheetId: MASTER_ID, range: `${tab}!A2:M` });
   const rows = res.data.values || [];
 
-  // 情報公開(D列=index3) が ○ の大会だけ
-  const pub = rows.filter((r) => (r[3] || "").trim() === "○" && (r[0] || "").trim());
-  console.log(`公開対象: ${pub.length} 件 / 全 ${rows.filter((r) => (r[0] || "").trim()).length} 件`);
+  // 大会名がある行はすべて掲載（情報公開フラグでの絞り込みは廃止）。
+  // ※「情報公開」列(D)は残してあるが現在は不問。将来は主催者側の掲載可否選択などに転用予定。
+  const pub = rows.filter((r) => (r[0] || "").trim());
+  console.log(`掲載対象: ${pub.length} 件（全件・情報公開フラグは不問）`);
 
   const items = [];
   for (const r of pub) {
@@ -119,8 +131,34 @@ async function main() {
     const excerpt = "e活が協賛・ミラー配信でサポートしたコミュニティ大会です。";
     items.push({ name, date, game, link, img, excerpt });
   }
-  // 日付の新しい順
-  items.sort((a, b) => b.date.t - a.date.t);
+
+  // Web掲載専用の追加分（マスターに無い過去大会など）を extra-works.json から合成。
+  // ※ Botも使うマスターに行を足さずに、サイトだけに載せたい実績を管理するため。
+  const EXTRA_PATH = path.join(__dirname, "extra-works.json");
+  if (fs.existsSync(EXTRA_PATH)) {
+    const extras = JSON.parse(fs.readFileSync(EXTRA_PATH, "utf8"));
+    for (const e of extras) {
+      const name = (e.name || "").trim();
+      if (!name) continue;
+      const date = parseDate(e.date);
+      const slug = `${date.iso || "x"}-${asciiSlug(name, "tour")}`.slice(0, 60);
+      const img = e.img || localOrPlaceholder(slug); // 画像は assets/img/works/<slug>.<ext> を自動利用
+      items.push({
+        name,
+        date,
+        game: (e.game || "").trim(),
+        link: (e.link || "").trim() || "#",
+        img,
+        excerpt: e.excerpt || "e活が協賛・ミラー配信でサポートしたコミュニティ大会です。",
+      });
+    }
+    console.log(`追加分（extra-works.json）: ${extras.length} 件`);
+  }
+
+  // 並び順: KV画像があるもの（＝見せたい実績）を優先して上に。各グループ内は日付の新しい順。
+  // 画像未設定（placeholder）の大会は後ろにまとめる。
+  const hasImg = (x) => x.img && !x.img.includes("placeholder");
+  items.sort((a, b) => (hasImg(b) - hasImg(a)) || (b.date.t - a.date.t));
 
   const cards = items.length ? items.map(cardHtml).join("\n\n") : `        <p class="works__empty">公開中の活動はまだありません。</p>`;
 

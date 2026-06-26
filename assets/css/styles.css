@@ -206,6 +206,66 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0.1em;
 }
 
+/* ---- 開閉アコーディオン（活動カード01〜03） ---- */
+.acc {
+  border-top: 1px solid var(--color-line);
+}
+.activity .acc:last-of-type { border-bottom: 1px solid var(--color-line); }
+.acc__summary {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.2rem, 4vw, 2.6rem);
+  padding: 1.8rem 0;
+  cursor: pointer;
+  list-style: none;                /* デフォルトの三角を消す */
+  transition: opacity 0.25s;
+}
+.acc__summary::-webkit-details-marker { display: none; }
+.acc__summary:hover { opacity: 0.6; }
+.acc__head {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.acc__title {
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+.acc__teaser {
+  font-size: 0.86rem;
+  color: var(--color-muted);
+  line-height: 1.7;
+}
+.acc__icon {
+  flex: none;
+  position: relative;
+  width: 16px;
+  height: 16px;
+}
+.acc__icon::before,
+.acc__icon::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 14px; height: 1px;
+  background: var(--color-ink);
+  transform: translate(-50%, -50%);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.acc__icon::after { transform: translate(-50%, -50%) rotate(90deg); }
+.acc[open] .acc__icon::after { opacity: 0; transform: translate(-50%, -50%) rotate(0); }
+.acc__content {
+  padding: 0 0 2.4rem;
+  /* 番号カラム（card__num の min-width 2.4em = 1.5rem 基準で 3.6rem）＋ gap ぶん字下げし、見出しと左端を揃える */
+  margin-left: calc(3.6rem + clamp(1.2rem, 4vw, 2.6rem));
+}
+.acc__content p {
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
 /* ボタン / リンク */
 .btn {
   display: inline-block;
@@ -278,6 +338,42 @@ a { color: inherit; text-decoration: none; }
 }
 .vt-card__links a:hover { border-color: var(--color-ink); opacity: 0.7; }
 
+/* トップの顔ぶれ（一覧絵） */
+.vt-lead {
+  font-size: clamp(1rem, 2.6vw, 1.2rem);
+  line-height: 2.2;
+  text-align: center;
+  margin-bottom: 2.8rem;
+}
+.vt-lineup {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.8rem 2rem;
+}
+.vt-lineup__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  width: 120px;
+}
+.vt-lineup__item img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #efece8;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.vt-lineup:hover .vt-lineup__item img { opacity: 0.55; }
+.vt-lineup__item:hover img { opacity: 1; transform: translateY(-4px); }
+.vt-lineup__name {
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+}
+
 /* VTuber 募集セクション */
 .vt-recruit {
   margin-top: 4rem;
@@ -302,6 +398,91 @@ a { color: inherit; text-decoration: none; }
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+/* =========================================================
+   パートナーへの支援例
+   ========================================================= */
+.vt-support {
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--color-line);
+  text-align: center;
+}
+.vt-support__title {
+  font-size: clamp(1.2rem, 3vw, 1.7rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  margin: 0.6rem 0 1.2rem;
+}
+.vt-support__lead {
+  font-size: 0.93rem;
+  color: var(--color-muted);
+  line-height: 2;
+  margin-bottom: 2.6rem;
+}
+.vt-support__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  text-align: left;
+}
+.support-case {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.6rem;
+  padding: 1.8rem 0;
+  border-top: 1px solid var(--color-line);
+}
+.support-case:last-child { border-bottom: 1px solid var(--color-line); }
+.support-case__photo {
+  flex: none;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #efece8;
+}
+.support-case__name {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+.support-case__text {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  line-height: 1.9;
+}
+.support-case__media {
+  display: block;
+  margin-top: 1rem;
+  max-width: 460px;
+}
+.support-case__media img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #efece8;
+  transition: opacity 0.25s;
+}
+.support-case__media:hover img { opacity: 0.9; }
+.support-case__caption {
+  display: inline-block;
+  margin-top: 0.6rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  color: var(--color-ink);
+  border-bottom: 1px solid var(--color-line);
+  transition: opacity 0.25s, border-color 0.25s;
+}
+.support-case__media:hover .support-case__caption { opacity: 0.6; border-color: var(--color-ink); }
+.vt-support__note {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  line-height: 2;
+  margin-top: 2.4rem;
 }
 
 /* =========================================================
@@ -341,6 +522,13 @@ a { color: inherit; text-decoration: none; }
   object-fit: cover;
   background: #efece8;
   margin-bottom: 1.1rem;
+}
+/* ロゴ素材（透過・16:9でない）は切らず全体表示。ダーク背景で見せる。
+   build-works 再生成でも効くよう、ファイル名（slug）で対象を指定 */
+.work-card__thumb[src*="alec"] {
+  object-fit: contain;
+  background: #14110f;
+  padding: 8% 10%;
 }
 .work-card__meta {
   display: flex;
@@ -531,6 +719,11 @@ a { color: inherit; text-decoration: none; }
   font-size: 0.98rem;
   margin-bottom: 2.6rem;
 }
+.contact__lead--sub {
+  margin-top: 3.2rem;
+  font-size: 0.92rem;
+  color: var(--color-muted);
+}
 .contact__actions {
   display: flex;
   justify-content: center;
@@ -584,6 +777,8 @@ a { color: inherit; text-decoration: none; }
   body { letter-spacing: 0.04em; }
   .card { flex-direction: column; gap: 0.6rem; }
   .card__num { font-size: 1.2rem; }
+  .acc__summary { gap: 1rem; }
+  .acc__content { margin-left: 0; }   /* スマホは字下げせず全幅で表示 */
   .news__item { flex-direction: column; gap: 0.2rem; }
   .nav { gap: 1rem 1.4rem; font-size: 0.8rem; }
 }
