@@ -43,11 +43,8 @@
 
   <main>
 
-    <!-- ===== ページタイトル ===== -->
-    <section class="page-head reveal">
-      <p class="eyebrow">vtuber</p>
-      <h1 class="page-head__title">VTuber</h1>
-    </section>
+    <!-- ===== ページタイトル（SEO用にh1のみ・視覚的には非表示） ===== -->
+    <h1 class="sr-only">VTuber</h1>
 
     <!-- =========================================================
          VTuber プロフィール一覧
@@ -56,10 +53,24 @@
          2. 下の <article class="vt-card"> を1つコピーして追加
          3. 画像パス・名前・ひとこと・SNSリンクを書き換える
          ========================================================= -->
-    <section class="vtuber-page">
+    <section class="vtuber-page vtuber-page--flush">
+
+      <!-- ===== パートナー特典ページへの導線（一覧トップ） ===== -->
+      <div class="vt-recruit vt-recruit--lead reveal">
+        <p class="eyebrow">partner</p>
+        <h2 class="vt-recruit__title">パートナーVTuberになると</h2>
+        <p class="vt-recruit__body">
+          コミュニティ大会のミラー配信や地方企業案件の紹介に加えて、<br>
+          一人ひとりの“やりたいこと”に合わせた支援を行っています。<br>
+          実際の支援例や募集要項は、こちらのページでご紹介しています。
+        </p>
+        <div class="vt-recruit__actions">
+          <a class="btn btn--primary" href="partner.html">パートナーVTuber特典を見る</a>
+        </div>
+      </div>
 
       <h2 class="vt-group-title reveal">パートナーVTuber</h2>
-      <p class="vt-group-lead reveal">e活と一緒に活動してくれている公式パートナーVTuberです。</p>
+      <p class="vt-group-lead reveal">e活と一緒に活動してくれている公式パートナーVTuberです。e活の協賛大会をミラー配信で応援し、共同協賛くださる企業様は配信の中でもしっかり宣伝いたします。</p>
       <div class="vt-grid reveal">
 
         <article class="vt-card">
@@ -112,7 +123,7 @@
         </article>
 
         <article class="vt-card">
-          <img class="vt-card__photo" src="assets/img/vtuber/placeholder.svg" alt="茅花まりえ" width="200" height="200" />
+          <img class="vt-card__photo" src="assets/img/vtuber/marie.webp" alt="茅花まりえ" width="200" height="200" loading="lazy" />
           <h3 class="vt-card__name">茅花まりえ</h3>
           <p class="vt-card__bio">ふんわりした声と叫び声のギャップが魅力。VALORANT / Dead by Daylight。</p>
           <div class="vt-card__links">
@@ -133,61 +144,7 @@
 
       </div>
 
-      <!-- =========================================================
-           パートナーへの支援例
-           ＜支援例を追加する手順＞
-           下の <article class="support-case"> を1つコピーして、
-           顔アイコン・名前・支援内容を書き換える。
-           ========================================================= -->
-      <section class="vt-support reveal" id="support">
-        <p class="eyebrow">support</p>
-        <h2 class="vt-support__title">パートナーVTuberへの支援例</h2>
-        <p class="vt-support__lead">
-          e活は「コミュニティ大会のミラー配信」「地方企業案件の紹介」だけでなく、<br>
-          パートナー一人ひとりの“やりたいこと”に合わせた支援も行っています。その一例をご紹介します。
-        </p>
-
-        <div class="vt-support__list">
-
-          <article class="support-case">
-            <img class="support-case__photo" src="assets/img/vtuber/magmag.webp" alt="まぐまぐです" width="120" height="120" />
-            <div class="support-case__body">
-              <h3 class="support-case__name">まぐまぐです</h3>
-              <p class="support-case__text">
-                「歌ってみた」のイラスト制作費を、e活が負担。
-                配信外での新しい表現への挑戦を後押ししています。
-              </p>
-              <a class="support-case__media" href="https://x.com/magmag_live/status/2066706138075431216" target="_blank" rel="noopener">
-                <img src="assets/img/support/magmag-utattemita.jpg" alt="まぐまぐです「丸の内サディスティック」歌ってみた サムネイル" width="1280" height="720" loading="lazy" />
-                <span class="support-case__caption">「丸の内サディスティック」歌ってみたを見る ↗</span>
-              </a>
-            </div>
-          </article>
-
-          <article class="support-case">
-            <img class="support-case__photo" src="assets/img/vtuber/shiramine.webp" alt="白峰 凱志" width="120" height="120" />
-            <div class="support-case__body">
-              <h3 class="support-case__name">白峰 凱志</h3>
-              <p class="support-case__text">
-                白峰さんが主催するVTuber向けVALORANT大会「V-Axis ONE」に、e活が実況解説をアテンド。
-                出演ギャラもe活がお支払いし、自主大会の運営を支えています。
-              </p>
-              <a class="support-case__media" href="https://x.com/VAxisONE/status/2066765438818918831" target="_blank" rel="noopener">
-                <img src="assets/img/support/vaxis-one.jpg" alt="白峰 凱志 主催 VALORANT大会「V-Axis ONE」告知画像" width="1200" height="675" loading="lazy" />
-                <span class="support-case__caption">「V-Axis ONE」大会情報を見る ↗</span>
-              </a>
-            </div>
-          </article>
-
-        </div>
-
-        <p class="vt-support__note">
-          支援の内容は、活動スタイルややりたいことに合わせて一緒に考えていきます。<br>
-          「こんなことをやってみたい」というご相談も大歓迎です。
-        </p>
-      </section>
-
-      <!-- ===== 募集 ===== -->
+      <!-- ===== パートナーVTuber募集 ===== -->
       <div class="vt-recruit reveal">
         <p class="eyebrow">join us</p>
         <h2 class="vt-recruit__title">パートナーVTuber募集中</h2>
@@ -199,7 +156,7 @@
         </p>
         <div class="vt-recruit__actions">
           <a class="btn btn--primary" href="https://forms.gle/VKx1aVXBe6A8mctS7" target="_blank" rel="noopener">パートナー申請はこちら</a>
-          <a class="btn" href="https://x.com/e_ekatsu" target="_blank" rel="noopener">公式X（@e_ekatsu）</a>
+          <a class="btn" href="partner.html">特典・支援例を見る</a>
         </div>
       </div>
 
