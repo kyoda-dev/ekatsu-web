@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>FCS26 Asia Summer Final ｜ 協賛レポート ｜ e活</title>
+  <meta name="description" content="東京ドームシティのJFA公式施設「blue-ing!」で開催された、アジア4カ国・地域の国際eスポーツ大会「FCS26 Asia Summer Final」。e活がプラチナプランで協賛した大会の実施レポートです。" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="FCS26 Asia Summer Final ｜ 協賛レポート ｜ e活" />
+  <meta property="og:description" content="東京ドームシティのJFA公式施設で開催された、アジア4カ国・地域の国際eスポーツ大会。e活がプラチナプランで協賛しました。" />
+  <meta property="og:image" content="../assets/img/works/2026-06-13-fc-26-asia-summer-final.jpg" />
+
+  <link rel="icon" type="image/webp" href="../assets/img/logo.webp" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+
+  <style>
+    /* ---- 協賛レポート 詳細（このページ専用） ---- */
+    .rd-head { max-width: var(--maxw); margin: 0 auto 2.5rem; padding: 0 1.5rem; }
+    .rd-head__meta {
+      display: flex; gap: 1rem; align-items: center;
+      font-size: 0.72rem; letter-spacing: 0.14em;
+      color: var(--color-muted); margin-bottom: 0.9rem;
+    }
+    .rd-head__plan {
+      border: 1px solid var(--color-line); border-radius: 999px; padding: 0.15rem 0.75rem;
+    }
+    .rd-head__title {
+      font-size: clamp(1.4rem, 3.2vw, 2rem); font-weight: 500;
+      letter-spacing: 0.06em; line-height: 1.7; margin-bottom: 1.25rem;
+    }
+    .rd-head__lead { font-size: 0.95rem; }
+
+    .rd-kv { max-width: var(--maxw); margin: 0 auto 4rem; padding: 0 1.5rem; }
+    .rd-kv img { width: 100%; border-radius: 6px; }
+    .rd-kv__cap {
+      font-size: 0.72rem; color: var(--color-muted);
+      margin-top: 0.75rem; line-height: 1.9;
+    }
+
+    .rd-sec { max-width: var(--maxw); margin: 0 auto 4.5rem; padding: 0 1.5rem; }
+    .rd-sec__title {
+      font-size: 1.1rem; font-weight: 500; letter-spacing: 0.1em; margin-bottom: 1.5rem;
+    }
+    .rd-sec p { font-size: 0.9rem; }
+
+    /* 開催概要テーブル */
+    .rd-facts { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .rd-facts th, .rd-facts td {
+      text-align: left; vertical-align: top;
+      padding: 0.9rem 0; border-bottom: 1px solid var(--color-line); line-height: 1.9;
+    }
+    .rd-facts th {
+      width: 8em; font-weight: 400; color: var(--color-muted);
+      letter-spacing: 0.08em; white-space: nowrap;
+    }
+
+    /* 数字の見せ場 */
+    .rd-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem; margin-bottom: 2rem;
+    }
+    .rd-stat { border-top: 2px solid var(--color-ink); padding-top: 1rem; }
+    .rd-stat__num {
+      font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700;
+      letter-spacing: 0.02em; line-height: 1.3;
+    }
+    .rd-stat__num small { font-size: 0.9rem; font-weight: 400; margin-left: 0.15em; }
+    .rd-stat__label {
+      font-size: 0.72rem; color: var(--color-muted);
+      letter-spacing: 0.1em; line-height: 1.8; margin-top: 0.3rem;
+    }
+    @media (max-width: 600px) {
+      .rd-stats { grid-template-columns: 1fr; gap: 1.25rem; }
+    }
+
+    /* 大会公式の発信 */
+    .rd-x__lead { margin-bottom: 1.5rem; }
+    .rd-x__links { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+    /* 写真 */
+    .rd-fig { margin: 2.5rem 0; }
+    .rd-fig img { width: 100%; border-radius: 6px; }
+    .rd-fig figcaption {
+      font-size: 0.75rem; color: var(--color-muted);
+      margin-top: 0.75rem; line-height: 1.9;
+    }
+    /* 本文幅より少し広く見せる写真 */
+    .rd-fig--wide {
+      max-width: 1040px; margin-left: auto; margin-right: auto;
+      padding: 0 1.5rem;
+    }
+    /* 2枚並び */
+    .rd-duo {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    .rd-duo img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+    @media (max-width: 600px) { .rd-duo { grid-template-columns: 1fr; } }
+
+    /* ギャラリー */
+    .rd-gallery {
+      max-width: 1040px; margin: 0 auto; padding: 0 1.5rem;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;
+    }
+    .rd-gallery figure { margin: 0; }
+    .rd-gallery img {
+      width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 6px;
+    }
+    .rd-gallery figcaption {
+      font-size: 0.72rem; color: var(--color-muted); margin-top: 0.5rem; line-height: 1.8;
+    }
+    @media (max-width: 600px) { .rd-gallery { grid-template-columns: 1fr; } }
+
+    /* 動画 */
+    .rd-video { max-width: 1040px; margin: 0 auto 1rem; padding: 0 1.5rem; }
+    .rd-video video {
+      width: 100%; border-radius: 6px; background: #000; display: block;
+    }
+
+    /* 会場ハイライト */
+    .rd-venue {
+      background: #14110f; color: #fff; padding: 3.5rem 2rem; margin-bottom: 4.5rem;
+    }
+    .rd-venue__inner { max-width: var(--maxw); margin: 0 auto; }
+    .rd-venue__eyebrow {
+      font-size: 0.7rem; letter-spacing: 0.2em; color: #8c8682; margin-bottom: 0.75rem;
+    }
+    .rd-venue__title {
+      font-size: clamp(1.2rem, 3vw, 1.6rem); font-weight: 500;
+      letter-spacing: 0.06em; line-height: 1.7; margin-bottom: 1.5rem;
+    }
+    .rd-venue__body { font-size: 0.85rem; line-height: 2.2; color: #cfc9c4; }
+
+    .rd-src {
+      max-width: var(--maxw); margin: 0 auto 4rem; padding: 2rem 1.5rem 0;
+      border-top: 1px solid var(--color-line);
+      font-size: 0.72rem; line-height: 2; color: var(--color-muted);
+    }
+    .rd-src ul { list-style: none; margin-top: 0.5rem; }
+    .rd-src li { margin-bottom: 0.2rem; }
+
+    .rd-back { max-width: var(--maxw); margin: 0 auto 5rem; padding: 0 1.5rem; }
+  </style>
+</head>
+<body>
+
+  <span class="side-rail side-rail--left">A&amp;L project 株式会社</span>
+  <span class="side-rail side-rail--right">eスポーツに社会的意義を</span>
+
+  <header class="site-header" id="top">
+    <nav class="nav">
+      <a href="../index.html#message">ご挨拶</a>
+      <a href="../works.html">協賛大会</a>
+      <a href="../vtuber.html">VTuber</a>
+      <a href="../news.html">お知らせ</a>
+      <a href="../index.html#company">会社情報</a>
+      <a href="../index.html#contact">お問い合わせ</a>
+    </nav>
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/logo.webp" alt="e活 ロゴ" width="120" />
+    </a>
+  </header>
+
+  <main>
+
+    <section class="page-head reveal">
+      <p class="eyebrow">report</p>
+    </section>
+
+    <section class="rd-head reveal">
+      <div class="rd-head__meta">
+        <span>2026.06.13 – 06.14</span>
+        <span class="rd-head__plan">プラチナプラン</span>
+      </div>
+      <h1 class="rd-head__title">FCS26 Asia Summer Final<br>in JFAサッカー文化創造拠点 blue-ing!</h1>
+      <p class="rd-head__lead">
+        東京ドームシティにある日本サッカー協会（JFA）の公式施設で、
+        アジア4カ国・地域のトップが集まる国際eスポーツ大会が開かれました。<br>
+        e活は、この大会にプラチナプランで協賛しています。
+      </p>
+    </section>
+
+    <section class="rd-kv reveal">
+      <img src="../assets/img/reports/fcs26/group.jpg"
+           alt="FCS26 Asia Summer Final 会場（JFAサッカー文化創造拠点 blue-ing!）に集まった選手たち" />
+      <p class="rd-kv__cap">
+        アジア4カ国・地域から集まった選手たち。<br>
+        写真提供：大会運営様　｜　大会公式X：<a href="https://x.com/FCS_JP" target="_blank" rel="noopener">@FCS_JP</a>
+      </p>
+    </section>
+
+    <!-- ===== 会場ハイライト ＝ この大会の“みそ” ===== -->
+    <section class="rd-venue reveal">
+      <div class="rd-venue__inner">
+        <p class="rd-venue__eyebrow">venue</p>
+        <h2 class="rd-venue__title">会場は、東京ドームシティ。<br>日本サッカー協会の公式施設です。</h2>
+        <p class="rd-venue__body">
+          「JFAサッカー文化創造拠点 blue-ing!（ブルーイング）」は、日本サッカー協会が2023年12月に
+          東京ドームシティ内へオープンした体験型施設です。<br>
+          日本サッカーの歩みをたどる展示や、プロジェクションマッピングを使った体験コンテンツ、
+          人工芝が敷かれた「PARK」、カフェ＆バーとショップで構成されています。<br><br>
+          ゲーム内のイベントでも、貸し会議室でもありません。
+          <strong>日本サッカーの“顔”となる場所で、大会は行われました。</strong>
+        </p>
+      </div>
+    </section>
+
+    <figure class="rd-fig rd-fig--wide reveal">
+      <img src="../assets/img/reports/fcs26/venue-wide.jpg"
+           alt="人工芝が敷かれたblue-ing!のPARKエリア。大型ビジョンの前にテーブルが並び、来場者が観戦している" />
+      <figcaption>
+        人工芝が敷かれた「PARK」エリア。左手の大型ビジョンに試合が映り、その前で来場者が食事をしながら観戦しています。
+      </figcaption>
+    </figure>
+
+    <!-- ===== 客層＝親子連れ ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">来ているのは、コアなファンだけではありません</h2>
+      <p>
+        blue-ing! が想定している来場者は、サッカーファンだけではありません。
+        公式サイトでは、<strong>遊園地に遊びに来たついでに立ち寄るご家族</strong>や、
+        普段サッカーと関わりのない方も対象として挙げられています。<br><br>
+        施設には大型ビジョンを備えた人工芝の「PARK」エリアがあり、カフェ＆バーとショップも入っています。
+        遊園地のある東京ドームシティの中で、ふらりと立ち寄れる場所として開かれています。<br><br>
+        大会は、その中で行われました。観戦は予約不要・無料。
+        つまり、eスポーツを目当てに来た人だけでなく、
+        <strong>週末をご家族で過ごしにきた方の目にも触れる場所</strong>で開かれています。
+      </p>
+    </section>
+
+    <figure class="rd-fig rd-fig--wide reveal">
+      <img src="../assets/img/reports/fcs26/family.jpg"
+           alt="お父さん・お母さん・お子さん2人の4人家族が、コントローラーを持って一緒にゲームを楽しんでいる" />
+      <figcaption>
+        大会の会場で、ご家族4人がコントローラーを握って盛り上がっていました。<br>
+        これが、この大会の客層です。
+      </figcaption>
+    </figure>
+
+    <div class="rd-fig rd-fig--wide reveal">
+      <div class="rd-duo">
+        <img src="../assets/img/reports/fcs26/kid.jpg"
+             alt="木製のおもちゃで遊ぶ子ども" />
+        <img src="../assets/img/reports/fcs26/spectators.jpg"
+             alt="マフラーを首にかけた来場者が、PS5のコントローラーを握って笑っている" />
+      </div>
+      <p class="rd-fig__cap" style="font-size:0.75rem;color:var(--color-muted);margin-top:0.75rem;line-height:1.9;">
+        小さなお子さんも、大人も。競技を「見に来た人」だけの場ではありませんでした。
+      </p>
+    </div>
+
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">開催概要</h2>
+      <table class="rd-facts">
+        <tr>
+          <th>大会名</th>
+          <td>FCS26 Asia Summer Final in JFAサッカー文化創造拠点 blue-ing!</td>
+        </tr>
+        <tr>
+          <th>開催日</th>
+          <td>2026年6月13日（土）〜14日（日）</td>
+        </tr>
+        <tr>
+          <th>会場</th>
+          <td>JFAサッカー文化創造拠点 blue-ing!<br>（東京都文京区 東京ドームシティ セントラルパーク内）</td>
+        </tr>
+        <tr>
+          <th>主催・運営</th>
+          <td>株式会社スポーツITソリューション</td>
+        </tr>
+        <tr>
+          <th>使用タイトル</th>
+          <td>EA SPORTS FC™ 26（PlayStation®5）</td>
+        </tr>
+        <tr>
+          <th>参加国・地域</th>
+          <td>日本／マレーシア／インドネシア／香港　の4カ国・地域</td>
+        </tr>
+        <tr>
+          <th>位置づけ</th>
+          <td>アジアNo.1のFC26プレイヤーを決める、日本発の国際eスポーツ大会</td>
+        </tr>
+        <tr>
+          <th>賞金</th>
+          <td>優勝 300,000円／準優勝 70,000円／3〜8位 30,000円／9〜16位 25,000円</td>
+        </tr>
+        <tr>
+          <th>観戦</th>
+          <td>予約不要・無料。どなたでも来場して観戦できる形で開催</td>
+        </tr>
+        <tr>
+          <th>配信</th>
+          <td>大会公式YouTube <a href="https://www.youtube.com/@fc_comm" target="_blank" rel="noopener">@fc_comm</a> にてライブ配信</td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">大会の規模</h2>
+      <div class="rd-stats">
+        <div class="rd-stat">
+          <p class="rd-stat__num">4<small>カ国・地域</small></p>
+          <p class="rd-stat__label">日本・マレーシア・インドネシア・香港から代表が集結</p>
+        </div>
+        <div class="rd-stat">
+          <p class="rd-stat__num">10,000<small>人超</small></p>
+          <p class="rd-stat__label">前シーズン（FCS25）にのべ参加した選手数</p>
+        </div>
+        <div class="rd-stat">
+          <p class="rd-stat__num">2<small>日間</small></p>
+          <p class="rd-stat__label">リアル会場での開催。観戦は無料・予約不要</p>
+        </div>
+      </div>
+      <p>
+        FCコミュニティシリーズは、「世界大会で優勝する日本人選手を輩出する」ことを掲げて続いてきたシリーズです。
+        各国の予選を勝ち上がった選手だけが、この Asia Summer Final に招待されます。<br>
+        プロeスポーツチーム ZETA DIVISION のナスリ選手も出場し、アジア王者を争いました。
+      </p>
+    </section>
+
+    <figure class="rd-fig rd-fig--wide reveal">
+      <img src="../assets/img/reports/fcs26/stations.jpg"
+           alt="PS5が並んだ競技エリア。日本サッカーの歴史を展示した壁の前で選手たちが対戦している" />
+      <figcaption>
+        競技エリア。日本サッカーの歩みを刻んだ展示壁の前に、PS5がずらりと並びます。
+      </figcaption>
+    </figure>
+
+    <!-- ===== 当日の様子（写真＋ハイライト動画） ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">当日の様子</h2>
+      <p>会場の熱気は、写真と映像でご覧ください。</p>
+    </section>
+
+    <div class="rd-video reveal">
+      <video controls preload="none" playsinline
+             poster="../assets/img/reports/fcs26/cheer.jpg">
+        <source src="../assets/video/fcs26-highlight.mp4" type="video/mp4" />
+        お使いのブラウザは動画の再生に対応していません。
+      </video>
+      <p style="font-size:0.75rem;color:var(--color-muted);margin-top:0.75rem;line-height:1.9;">
+        大会運営様よりご提供いただいた、当日いちばん盛り上がった場面です。
+      </p>
+    </div>
+
+    <div class="rd-gallery reveal" style="margin-top:2.5rem;">
+      <figure>
+        <img src="../assets/img/reports/fcs26/venue-screen.jpg"
+             alt="大型ビジョンに試合が映し出され、その前のテーブルで来場者が観戦している" />
+        <figcaption>大型ビジョンに試合を映して観戦。PlayStation Tournaments と FCS のバナーが並びます。</figcaption>
+      </figure>
+      <figure>
+        <img src="../assets/img/reports/fcs26/cheer.jpg"
+             alt="試合を見ながら身を乗り出して盛り上がる来場者たち" />
+        <figcaption>好プレーが出るたび、会場から声が上がりました。</figcaption>
+      </figure>
+      <figure>
+        <img src="../assets/img/reports/fcs26/champion.jpg"
+             alt="トロフィーを手にした選手が笑顔でポーズをとっている" />
+        <figcaption>トロフィーを手にした選手。アジアの頂点をかけた2日間でした。</figcaption>
+      </figure>
+      <figure>
+        <img src="../assets/img/reports/fcs26/group.jpg"
+             alt="大会に集まった選手たちの集合写真" />
+        <figcaption>4カ国・地域から集まった選手たちで記念撮影。</figcaption>
+      </figure>
+    </div>
+
+    <p style="max-width:1040px;margin:1.5rem auto 4.5rem;padding:0 1.5rem;font-size:0.75rem;color:var(--color-muted);line-height:1.9;">
+      写真・映像はすべて大会運営様よりご提供いただいたものです。
+    </p>
+
+    <!-- =========================================================
+         大会公式の発信
+         ★ Xのタイムライン埋め込み（twitter-timeline）は X 側で廃止済みのため使用不可。
+           特定ポストを載せたい場合のみ、ここに <blockquote class="twitter-tweet"> を
+           貼り、</body>直前で widgets.js を読み込むこと。
+         ========================================================= -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">大会公式の発信</h2>
+      <p class="rd-x__lead">
+        当日の様子や試合結果は、大会運営様が公式チャンネルで発信されています。
+      </p>
+      <div class="rd-x__links">
+        <a class="btn" href="https://x.com/FCS_JP" target="_blank" rel="noopener">大会公式X ＠FCS_JP</a>
+        <a class="btn" href="https://www.youtube.com/@fc_comm" target="_blank" rel="noopener">大会公式YouTube ＠fc_comm</a>
+        <a class="btn" href="https://note.com/fc_comm" target="_blank" rel="noopener">大会公式note</a>
+      </div>
+    </section>
+
+    <section class="rd-src reveal">
+      <p>出典</p>
+      <ul>
+        <li>・<a href="https://note.com/fc_comm/n/nee40bbcbe90f" target="_blank" rel="noopener">FCコミュニティシリーズ公式note「FCS26 Asia Summer Final」大会概要</a></li>
+        <li>・<a href="https://prtimes.jp/main/html/rd/p/000000022.000036265.html" target="_blank" rel="noopener">株式会社スポーツITソリューション プレスリリース（PR TIMES）</a></li>
+        <li>・<a href="https://blueing.jfa.jp/" target="_blank" rel="noopener">JFAサッカー文化創造拠点 blue-ing! 公式サイト</a></li>
+        <li>・<a href="https://blueing.jfa.jp/about" target="_blank" rel="noopener">同 ABOUT（施設コンセプト・エリア構成・想定来場者）</a></li>
+        <li>・<a href="https://zetadivision.com/news/2026/06/13/45102" target="_blank" rel="noopener">ZETA DIVISION 公式ニュース</a></li>
+      </ul>
+    </section>
+
+    <section class="rd-back reveal">
+      <div class="vt-recruit">
+        <p class="eyebrow">next</p>
+        <h2 class="vt-recruit__title">こうした場所で、商品をご紹介します</h2>
+        <p class="vt-recruit__body">
+          e活は、こうした大会に協賛し、共同スポンサーの商品をご紹介しています。<br>
+          「どこで紹介されるのか」を、協賛した大会ごとにお見せしています。
+        </p>
+        <div class="vt-recruit__actions">
+          <a class="btn btn--primary" href="../sponsors.html">共同スポンサーを見る</a>
+          <a class="btn" href="../reports.html">ほかの協賛レポート</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <img src="../assets/img/logo.webp" alt="e活 ロゴ" width="90" class="site-footer__logo" />
+    <p class="site-footer__copy">&copy; <a href="https://alonzo.jp" target="_blank" rel="noopener">A&amp;L project 株式会社</a> / e活</p>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>
