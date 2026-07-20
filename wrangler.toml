@@ -1,0 +1,14 @@
+# =========================================================
+# Cloudflare Pages 設定（閲覧数カウンター用の D1 バインディング）
+#   - この静的サイトは build 不要なのでルート(".")をそのまま公開物にする
+#   - functions/ の Pages Functions から env.DB で D1 を参照する
+#   - database_id は「npx wrangler d1 create ekatsu-views」で払い出された値を貼る
+# =========================================================
+name = "ekatsu-web"
+compatibility_date = "2024-11-01"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ekatsu-views"
+database_id = "cba3240b-c93a-44e1-b8f8-eeb83f43afd0"

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <title>閲覧数レポート ｜ e活</title>
+
+  <link rel="icon" type="image/webp" href="assets/img/logo.webp" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .report { max-width: var(--maxw); margin: 0 auto; padding: clamp(3rem, 8vw, 6rem) 1.4rem 6rem; }
+    .report__eyebrow { font-size: .72rem; letter-spacing: .35em; color: var(--color-muted); text-transform: uppercase; }
+    .report__title { font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 500; margin: .5rem 0 .3rem; }
+    .report__note  { color: var(--color-muted); font-size: .82rem; line-height: 1.9; }
+
+    .ritem { padding: 1.6rem 0; border-top: 1px solid var(--color-line); }
+    .ritem:last-child { border-bottom: 1px solid var(--color-line); }
+    .ritem__label { font-weight: 500; font-size: 1rem; margin-bottom: .8rem; }
+    .ritem__row { display: flex; align-items: flex-end; gap: 2.4rem; flex-wrap: wrap; }
+    .stat__num { font-size: 2rem; font-weight: 700; line-height: 1; letter-spacing: .02em; }
+    .stat__lbl { font-size: .72rem; color: var(--color-muted); letter-spacing: .1em; margin-top: .35rem; }
+
+    .spark { display: flex; align-items: flex-end; gap: 3px; height: 44px; margin-left: auto; }
+    .spark__bar { width: 8px; background: var(--color-ink); opacity: .85; border-radius: 1px; min-height: 2px; }
+    .spark__wrap { text-align: right; }
+    .spark__cap { font-size: .68rem; color: var(--color-muted); margin-top: .35rem; letter-spacing: .08em; }
+
+    .report__foot { color: var(--color-muted); font-size: .74rem; margin-top: 2.4rem; line-height: 1.9; }
+    .report__msg { color: var(--color-muted); padding: 3rem 0; }
+    @media (max-width: 720px) {
+      .spark { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="top">
+    <a href="index.html" class="brand">
+      <img src="assets/img/logo.webp" alt="e活 ロゴ" width="110" />
+    </a>
+  </header>
+
+  <main class="report">
+    <p class="report__eyebrow">viewing report</p>
+    <h1 class="report__title" id="rTitle">閲覧数レポート</h1>
+    <p class="report__note">e活公式サイト上での、実際の閲覧数レポートです。</p>
+
+    <div id="rBody">
+      <p class="report__msg">読み込み中…</p>
+    </div>
+
+    <p class="report__foot" id="rFoot"></p>
+  </main>
+
+  <footer class="site-footer">
+    <img src="assets/img/logo.webp" alt="e活 ロゴ" width="90" class="site-footer__logo" />
+    <p class="site-footer__copy">&copy; <a href="https://alonzo.jp" target="_blank" rel="noopener">A&amp;L project 株式会社</a> / e活</p>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+      var token = new URLSearchParams(location.search).get("c") || "";
+      var titleEl = document.getElementById("rTitle");
+      var bodyEl = document.getElementById("rBody");
+      var footEl = document.getElementById("rFoot");
+
+      function msg(t) { bodyEl.innerHTML = '<p class="report__msg">' + t + "</p>"; }
+      function esc(s) {
+        return String(s).replace(/[&<>"]/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+        });
+      }
+      function fmt(n) { return Number(n || 0).toLocaleString("ja-JP"); }
+
+      if (!token) { msg("リンクが正しくありません。担当者へお問い合わせください。"); return; }
+
+      fetch("/api/stats?c=" + encodeURIComponent(token), { cache: "no-store" })
+        .then(function (r) {
+          if (r.status === 404) throw new Error("invalid");
+          if (!r.ok) throw new Error("server");
+          return r.json();
+        })
+        .then(function (data) {
+          titleEl.textContent = (data.name || "") + " ｜ 閲覧数レポート";
+          document.title = (data.name || "閲覧数レポート") + " ｜ e活";
+
+          if (!data.items || !data.items.length) {
+            msg("まだ集計データがありません。公開直後の場合は、しばらくしてから再度ご確認ください。");
+            return;
+          }
+
+          var html = "";
+          data.items.forEach(function (it) {
+            var max = Math.max.apply(null, it.trend.concat([1]));
+            var bars = it.trend
+              .map(function (v) {
+                var h = Math.max(2, Math.round((v / max) * 44));
+                return '<div class="spark__bar" style="height:' + h + 'px" title="' + v + '"></div>';
+              })
+              .join("");
+            html +=
+              '<div class="ritem">' +
+              '<div class="ritem__label">' + esc(it.label) + "</div>" +
+              '<div class="ritem__row">' +
+              '<div><div class="stat__num">' + fmt(it.total) + '</div><div class="stat__lbl">総閲覧数</div></div>' +
+              '<div><div class="stat__num">' + fmt(it.recent) + '</div><div class="stat__lbl">直近14日</div></div>' +
+              '<div class="spark__wrap"><div class="spark">' + bars + '</div><div class="spark__cap">直近14日の推移</div></div>' +
+              "</div>" +
+              "</div>";
+          });
+          bodyEl.innerHTML = html;
+
+          var last = data.days && data.days.length ? data.days[data.days.length - 1] : "";
+          footEl.textContent =
+            "※ 数値はe活サイト上の実閲覧数です（同一ブラウザの同一ページは1回として集計）。集計基準日：" + last;
+        })
+        .catch(function (e) {
+          if (e.message === "invalid") msg("このリンクは無効です。担当者へお問い合わせください。");
+          else msg("読み込みに失敗しました。時間をおいて再度お試しください。");
+        });
+    })();
+  </script>
+</body>
+</html>

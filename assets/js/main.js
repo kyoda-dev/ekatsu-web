@@ -54,3 +54,38 @@
     }
   });
 })();
+
+/* =========================================================
+   閲覧数カウント：現在ページを /api/hit に1回だけ通知する。
+   - 計測キーは URL から算出（index.html / .html / 末尾スラッシュを除去）。
+     例: /news/ekatsu-cup.html → /news/ekatsu-cup 、 / → /
+   - 1ブラウザセッションにつき同一ページ1回だけ（リロード連打で増えない）。
+   - 失敗しても本文表示には一切影響させない（握りつぶす）。
+   ========================================================= */
+(function () {
+  "use strict";
+  try {
+    let key = location.pathname.replace(/index\.html$/, "").replace(/\.html$/, "");
+    if (key.length > 1) key = key.replace(/\/$/, "");
+    if (key === "") key = "/";
+    if (!/^\/[a-z0-9\-/]*$/.test(key)) return; // 想定外パスは送らない
+
+    const seen = "hv:" + key;
+    if (sessionStorage.getItem(seen)) return; // このセッションでは計測済み
+    sessionStorage.setItem(seen, "1");
+
+    const body = JSON.stringify({ path: key });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon("/api/hit", new Blob([body], { type: "application/json" }));
+    } else {
+      fetch("/api/hit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+        keepalive: true,
+      }).catch(function () {});
+    }
+  } catch (e) {
+    /* 計測は失敗しても無視 */
+  }
+})();

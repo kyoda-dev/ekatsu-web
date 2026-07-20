@@ -9,3 +9,6 @@ npm-debug.log*
 
 # 内部ドキュメント（公開リポジトリに含めない）
 CLAUDE.md
+
+# wrangler のローカル作業用キャッシュ
+.wrangler/
