@@ -146,7 +146,53 @@
     .rd-src li { margin-bottom: 0.2rem; }
 
     .rd-back { max-width: var(--maxw); margin: 0 auto 5rem; padding: 0 1.5rem; }
+
+    .rd-faq { margin-top: 1.5rem; }
+    .rd-faq dt {
+      font-weight: 700; font-size: 0.95rem; margin-top: 1.5rem;
+      padding-left: 1.4rem; position: relative;
+    }
+    .rd-faq dt::before {
+      content: "Q"; position: absolute; left: 0; color: var(--color-muted); font-weight: 700;
+    }
+    .rd-faq dd {
+      margin: 0.5rem 0 0; padding-left: 1.4rem; position: relative;
+      font-size: 0.9rem; line-height: 2; color: #48423d;
+    }
+    .rd-faq dd::before {
+      content: "A"; position: absolute; left: 0; color: var(--color-muted); font-weight: 700;
+    }
   </style>
+
+  <!-- 構造化データ：このページのFAQ（AI・検索が質問と答えのペアを正しく抽出できるようにする） -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "この大会の観戦は有料ですか？",
+        "acceptedAnswer": { "@type": "Answer", "text": "いいえ。観戦は予約不要・無料です。会場（東京ドームシティのJFA公式施設 blue-ing!）で、どなたでもご覧いただけました。" }
+      },
+      {
+        "@type": "Question",
+        "name": "どのような方が来場していますか？",
+        "acceptedAnswer": { "@type": "Answer", "text": "eスポーツのコアなファンだけではありません。会場は遊園地のある東京ドームシティの中にあり、公式サイトでも遊園地に遊びに来たついでに立ち寄るご家族が想定来場者として挙げられています。競技目当ての方に加え、週末を家族で過ごしに来た方の目にも触れる場所です。" }
+      },
+      {
+        "@type": "Question",
+        "name": "e活はこの大会にどう関わっていますか？",
+        "acceptedAnswer": { "@type": "Answer", "text": "e活は、この大会にプラチナプランで協賛しています。大会そのものの運営はスポーツITソリューションが行っており、e活は協賛という形で参加しています。" }
+      },
+      {
+        "@type": "Question",
+        "name": "自社の商品も、こうした大会で紹介できますか？",
+        "acceptedAnswer": { "@type": "Answer", "text": "はい。e活の共同スポンサーになると、協賛する大会やVTuberの配信の中で商品を紹介できます。どこで紹介されるのかを、協賛した大会ごとにレポートでお見せしています。" }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -375,6 +421,23 @@
         <a class="btn" href="https://www.youtube.com/@fc_comm" target="_blank" rel="noopener">大会公式YouTube ＠fc_comm</a>
         <a class="btn" href="https://note.com/fc_comm" target="_blank" rel="noopener">大会公式note</a>
       </div>
+    </section>
+
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">よくあるご質問</h2>
+      <dl class="rd-faq">
+        <dt>この大会の観戦は有料ですか？</dt>
+        <dd>いいえ。観戦は予約不要・無料です。会場（東京ドームシティのJFA公式施設 blue-ing!）で、どなたでもご覧いただけました。</dd>
+
+        <dt>どのような方が来場していますか？</dt>
+        <dd>eスポーツのコアなファンだけではありません。会場は遊園地のある東京ドームシティの中にあり、公式サイトでも「遊園地に遊びに来たついでに立ち寄るご家族」が想定来場者として挙げられています。競技目当ての方に加え、週末を家族で過ごしに来た方の目にも触れる場所です。</dd>
+
+        <dt>e活はこの大会にどう関わっていますか？</dt>
+        <dd>e活は、この大会にプラチナプランで協賛しています。大会そのものの運営はスポーツITソリューション様が行っており、e活は協賛という形で参加しています。</dd>
+
+        <dt>自社の商品も、こうした大会で紹介できますか？</dt>
+        <dd>はい。e活の共同スポンサーになっていただくと、協賛する大会やVTuberの配信の中で、商品をご紹介できます。「どこで紹介されるのか」を、協賛した大会ごとにこうしたレポートでお見せしています。詳しくは共同スポンサーのご案内をご覧ください。</dd>
+      </dl>
     </section>
 
     <section class="rd-src reveal">
