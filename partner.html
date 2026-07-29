@@ -19,6 +19,86 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="assets/css/styles.css" />
+
+  <style>
+    /* ---- ミラー配信のメリット／届くサポート（このページ専用） ---- */
+    .merit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.6rem;
+      text-align: left;
+      margin-bottom: 2.4rem;
+    }
+    .merit {
+      border: 1px solid var(--color-line);
+      border-radius: 10px;
+      padding: 1.4rem 1.5rem;
+      background: var(--color-bg);
+    }
+    .merit__num {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+    .merit__title {
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.6rem;
+    }
+    .merit__text {
+      font-size: 0.86rem;
+      color: var(--color-muted);
+      line-height: 1.9;
+    }
+    /* 大会ごとに届く連絡の流れ（タイムライン） */
+    .flow {
+      max-width: 620px;
+      margin: 0 auto;
+      text-align: left;
+      display: grid;
+      gap: 0;
+    }
+    .flow__item {
+      position: relative;
+      padding: 0 0 1.9rem 1.9rem;
+      border-left: 1px solid var(--color-line);
+    }
+    .flow__item:last-child { border-left-color: transparent; padding-bottom: 0; }
+    .flow__item::before {
+      content: "";
+      position: absolute;
+      left: -5px;
+      top: 0.55rem;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--color-ink);
+    }
+    .flow__when {
+      display: inline-block;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      color: var(--color-muted);
+      border: 1px solid var(--color-line);
+      border-radius: 999px;
+      padding: 0.1rem 0.7rem;
+      margin-bottom: 0.45rem;
+    }
+    .flow__title {
+      font-size: 0.98rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+    .flow__text {
+      font-size: 0.86rem;
+      color: var(--color-muted);
+      line-height: 1.9;
+    }
+  </style>
 </head>
 <body>
 
@@ -55,8 +135,112 @@
 
       <p class="vt-group-lead reveal">
         e活のパートナーVTuberになると、コミュニティeスポーツ大会のミラー配信や地方企業案件の紹介に加えて、<br>
-        活動スタイルややりたいことに合わせた支援を受けられます。実際に行った支援の一例をご紹介します。
+        活動スタイルややりたいことに合わせた支援を受けられます。
       </p>
+
+      <!-- =========================================================
+           ミラー配信のメリット
+           ＜項目を増やす手順＞
+           <article class="merit"> を1つコピーして、番号・見出し・本文を書き換える。
+           ========================================================= -->
+      <div class="vt-support reveal">
+        <p class="eyebrow">merit</p>
+        <h2 class="vt-support__title">協賛大会をミラー配信するメリット</h2>
+        <p class="vt-support__lead">
+          e活の協賛大会のミラー配信は「お願いごと」ではなく、あなたの配信活動を伸ばすための仕組みです。
+        </p>
+
+        <div class="merit-grid">
+          <article class="merit">
+            <span class="merit__num">merit 01</span>
+            <h3 class="merit__title">公式ミラー配信権で、安心して配信できる</h3>
+            <p class="merit__text">
+              大会主催者へのミラー配信の許諾は、e活があらかじめ取得しています。
+              権利面の心配をせずに、大会という「生きたコンテンツ」を自分のチャンネルで配信できます。
+            </p>
+          </article>
+
+          <article class="merit">
+            <span class="merit__num">merit 02</span>
+            <h3 class="merit__title">毎月の配信ネタが手に入る</h3>
+            <p class="merit__text">
+              e活は継続的にコミュニティ大会へ協賛しています。ミラー配信はそのまま企画になるので、
+              「今日なにを配信しよう」を減らし、通常配信の合間の柱として使えます。
+            </p>
+          </article>
+
+          <article class="merit">
+            <span class="merit__num">merit 03</span>
+            <h3 class="merit__title">準備はほぼゼロ。素材はe活が用意</h3>
+            <p class="merit__text">
+              ミラー配信用のサムネイルと告知ポストの下書きは、大会ごとにe活が制作して専用の連絡部屋にお届けします。
+              参加可否もボタンを押すだけ。あなたは配信に集中できます。
+            </p>
+          </article>
+
+          <article class="merit">
+            <span class="merit__num">merit 04</span>
+            <h3 class="merit__title">新しいリスナーとの接点が増える</h3>
+            <p class="merit__text">
+              大会の出場者・観戦者や、同じ大会を応援する他のVTuberのリスナーが、あなたの配信を見つけるきっかけになります。
+              普段の配信では届かない層へのリーチが狙えます。
+            </p>
+          </article>
+
+          <article class="merit">
+            <span class="merit__num">merit 05</span>
+            <h3 class="merit__title">公式X・公式サイトで紹介される</h3>
+            <p class="merit__text">
+              e活公式Xでの大会告知に加えて、公式サイトのVTuber一覧や協賛レポートにも活動が掲載されます。
+              企業やほかの大会主催者の目に留まる露出が増えます。
+            </p>
+          </article>
+
+          <article class="merit">
+            <span class="merit__num">merit 06</span>
+            <h3 class="merit__title">実績が企業案件・ステップアップにつながる</h3>
+            <p class="merit__text">
+              ミラー配信の実績は、地方企業のPR案件を紹介する際の判断材料になります。
+              ネクストVTuberからパートナーVTuberへのステップアップにも直結します。
+            </p>
+          </article>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           大会ごとに届く情報・サポートの流れ（Discord連絡網）
+           ========================================================= -->
+      <div class="vt-support reveal">
+        <p class="eyebrow">support flow</p>
+        <h2 class="vt-support__title">大会ごとに、必要な情報が自動で届く</h2>
+        <p class="vt-support__lead">
+          パートナー・ネクストVTuberには、Discordの専用連絡部屋を用意しています。<br>
+          協賛大会が決まるたびに、配信に必要な情報と素材がこの流れで届きます。
+        </p>
+
+        <div class="flow">
+          <div class="flow__item">
+            <span class="flow__when">約1ヶ月前</span>
+            <h3 class="flow__title">事前のお知らせが届く</h3>
+            <p class="flow__text">大会名・開催日・ゲームタイトルをお知らせします。この時点では仮回答でOK。ボタンひとつで回答でき、あとからいつでも変更できます。</p>
+          </div>
+          <div class="flow__item">
+            <span class="flow__when">10日前</span>
+            <h3 class="flow__title">確定情報が届く</h3>
+            <p class="flow__text">開催日時・ゲーム・大会の公式X・配信チャンネル・回答締切をまとめた確定カードが届きます。あなたの参加予定は部屋にピン留めされ、自動で更新されます。</p>
+          </div>
+          <div class="flow__item">
+            <span class="flow__when">2日前</span>
+            <h3 class="flow__title">サムネと告知文が届く</h3>
+            <p class="flow__text">あなた専用のミラー配信用サムネイル（完成版）と、そのままXに投稿できる告知ポストの下書きをお届けします。</p>
+          </div>
+          <div class="flow__item">
+            <span class="flow__when">当日</span>
+            <h3 class="flow__title">あとは配信するだけ</h3>
+            <p class="flow__text">告知を投稿して、ミラー配信をお楽しみください。わからないことがあれば、質問部屋でいつでもサポートします。</p>
+          </div>
+        </div>
+      </div>
 
       <!-- =========================================================
            パートナーへの支援例
@@ -64,6 +248,12 @@
            下の <article class="case"> を1つコピーして、
            サムネ・顔アイコン・名前・タグ・支援内容を書き換える。
            ========================================================= -->
+      <div class="vt-support reveal">
+        <p class="eyebrow">case</p>
+        <h2 class="vt-support__title">支援例</h2>
+        <p class="vt-support__lead">実際に行った支援の一例をご紹介します。</p>
+      </div>
+
       <div class="vt-support__list reveal">
 
         <article class="case">
