@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ★★★ 非公開ドラフト（2026-07-31作成）★★★
+       ・公開前に主催者（yuka298さん）の確認が必須。確認が済むまで git push しない・どこからもリンクしない。
+       ・スコアは配信の自動字幕から読み取ったもの。主催者確認時に必ず照合：
+         ROOKIE決勝13-9／Aブロック決勝13-11（8-11からの5連取）／Dブロック決勝13-7／前半6-6折り返し
+       ・MC写真（mc.jpg）の2名の氏名は未確認（谷藤博美さん・yueさんと推測）。キャプションに名前を入れていない。
+       ・ELITE参加チーム数は配信内アナウンスの「68チーム」を採用（eSports World掲載は71・要確認）。
+       ・Bブロック決勝は相手チーム名・スコアが未特定のため勝者（FiveAce）のみ記載。判明したら追記。
+       ・公開時は noindex を外すこと。 -->
+  <meta name="robots" content="noindex, nofollow" />
+
+  <title>YOKOSUKA e-Sports CUP 予選レポート ｜ e活</title>
+  <meta name="description" content="全国の高校生がVALORANTで競う「第7回 YOKOSUKA e-Sports CUP」。7月20日に行われたROOKIE部門決勝とELITE部門予選の模様と、8月18日によこすかポートマーケットで開かれる決勝の見どころをお伝えします。" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="YOKOSUKA e-Sports CUP 予選レポート ｜ e活" />
+  <meta property="og:description" content="全国の高校生がVALORANTで競う第7回大会。決勝に進む4チームが決定しました。8月18日、決勝はよこすかポートマーケットで。" />
+  <meta property="og:image" content="../assets/img/reports/yokosuka/kv.jpg" />
+
+  <link rel="icon" type="image/webp" href="../assets/img/logo.webp" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+
+  <style>
+    /* ---- 協賛レポート 詳細（このページ専用／fcs26と同型） ---- */
+    .rd-head { max-width: var(--maxw); margin: 0 auto 2.5rem; padding: 0 1.5rem; }
+    .rd-head__meta {
+      display: flex; gap: 1rem; align-items: center;
+      font-size: 0.72rem; letter-spacing: 0.14em;
+      color: var(--color-muted); margin-bottom: 0.9rem;
+    }
+    .rd-head__plan {
+      border: 1px solid var(--color-line); border-radius: 999px; padding: 0.15rem 0.75rem;
+    }
+    .rd-head__title {
+      font-size: clamp(1.4rem, 3.2vw, 2rem); font-weight: 500;
+      letter-spacing: 0.06em; line-height: 1.7; margin-bottom: 1.25rem;
+    }
+    .rd-head__lead { font-size: 0.95rem; }
+
+    .rd-kv { max-width: var(--maxw); margin: 0 auto 4rem; padding: 0 1.5rem; }
+    .rd-kv img { width: 100%; border-radius: 6px; }
+    .rd-kv__cap {
+      font-size: 0.72rem; color: var(--color-muted);
+      margin-top: 0.75rem; line-height: 1.9;
+    }
+
+    .rd-sec { max-width: var(--maxw); margin: 0 auto 4.5rem; padding: 0 1.5rem; }
+    .rd-sec__title {
+      font-size: 1.1rem; font-weight: 500; letter-spacing: 0.1em; margin-bottom: 1.5rem;
+    }
+    .rd-sec p { font-size: 0.9rem; }
+
+    .rd-facts { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .rd-facts th, .rd-facts td {
+      text-align: left; vertical-align: top;
+      padding: 0.9rem 0; border-bottom: 1px solid var(--color-line); line-height: 1.9;
+    }
+    .rd-facts th {
+      width: 8em; font-weight: 400; color: var(--color-muted);
+      letter-spacing: 0.08em; white-space: nowrap;
+    }
+
+    .rd-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem; margin-bottom: 2rem;
+    }
+    .rd-stat { border-top: 2px solid var(--color-ink); padding-top: 1rem; }
+    .rd-stat__num {
+      font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700;
+      letter-spacing: 0.02em; line-height: 1.3;
+    }
+    .rd-stat__num small { font-size: 0.9rem; font-weight: 400; margin-left: 0.15em; }
+    .rd-stat__label {
+      font-size: 0.72rem; color: var(--color-muted);
+      letter-spacing: 0.1em; line-height: 1.8; margin-top: 0.3rem;
+    }
+    @media (max-width: 600px) {
+      .rd-stats { grid-template-columns: 1fr; gap: 1.25rem; }
+    }
+
+    .rd-fig { margin: 2.5rem 0; }
+    .rd-fig img { width: 100%; border-radius: 6px; }
+    .rd-fig figcaption {
+      font-size: 0.75rem; color: var(--color-muted);
+      margin-top: 0.75rem; line-height: 1.9;
+    }
+    .rd-fig--wide {
+      max-width: 1040px; margin-left: auto; margin-right: auto;
+      padding: 0 1.5rem;
+    }
+
+    /* 決勝ハイライト（黒帯） */
+    .rd-venue {
+      background: #14110f; color: #fff; padding: 3.5rem 2rem; margin-bottom: 4.5rem;
+    }
+    .rd-venue__inner { max-width: var(--maxw); margin: 0 auto; }
+    .rd-venue__eyebrow {
+      font-size: 0.7rem; letter-spacing: 0.2em; color: #8c8682; margin-bottom: 0.75rem;
+    }
+    .rd-venue__title {
+      font-size: clamp(1.2rem, 3vw, 1.6rem); font-weight: 500;
+      letter-spacing: 0.06em; line-height: 1.7; margin-bottom: 1.5rem;
+    }
+    .rd-venue__body { font-size: 0.85rem; line-height: 2.2; color: #cfc9c4; }
+
+    /* トーナメントの進み方 */
+    .rd-flow { list-style: none; counter-reset: flow; margin: 1.5rem 0 0; }
+    .rd-flow li {
+      counter-increment: flow; position: relative;
+      padding: 0 0 1.5rem 2.6rem; font-size: 0.88rem; line-height: 2;
+    }
+    .rd-flow li::before {
+      content: counter(flow); position: absolute; left: 0; top: 0.15rem;
+      width: 1.7rem; height: 1.7rem; border: 1px solid var(--color-ink); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700;
+    }
+    .rd-flow li:not(:last-child)::after {
+      content: ""; position: absolute; left: 0.85rem; top: 2.1rem; bottom: 0.2rem;
+      width: 1px; background: var(--color-line);
+    }
+    .rd-flow li strong { display: block; letter-spacing: 0.06em; }
+
+    /* 試合ごとの小見出し */
+    .rd-sec h3 {
+      font-size: 0.95rem; font-weight: 700; letter-spacing: 0.08em;
+      margin: 2.4rem 0 0.75rem; padding-left: 0.9rem; position: relative;
+    }
+    .rd-sec h3::before {
+      content: ""; position: absolute; left: 0; top: 0.25em; bottom: 0.25em;
+      width: 3px; background: var(--color-ink);
+    }
+    .rd-sec h3 .rd-h3__map {
+      font-size: 0.72rem; font-weight: 400; color: var(--color-muted); margin-left: 0.75rem;
+    }
+
+    /* ブロック別結果 */
+    .rd-blocks { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 1.5rem; }
+    .rd-blocks th, .rd-blocks td {
+      text-align: left; vertical-align: top;
+      padding: 0.9rem 0.5rem 0.9rem 0; border-bottom: 1px solid var(--color-line); line-height: 1.9;
+    }
+    .rd-blocks th { font-weight: 400; color: var(--color-muted); letter-spacing: 0.08em; white-space: nowrap; }
+    .rd-blocks .rd-blocks__team { font-weight: 700; }
+
+    .rd-x__lead { margin-bottom: 1.5rem; }
+    .rd-x__links { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+    .rd-src {
+      max-width: var(--maxw); margin: 0 auto 4rem; padding: 2rem 1.5rem 0;
+      border-top: 1px solid var(--color-line);
+      font-size: 0.72rem; line-height: 2; color: var(--color-muted);
+    }
+    .rd-src ul { list-style: none; margin-top: 0.5rem; }
+    .rd-src li { margin-bottom: 0.2rem; }
+
+    .rd-back { max-width: var(--maxw); margin: 0 auto 5rem; padding: 0 1.5rem; }
+  </style>
+</head>
+<body>
+
+  <span class="side-rail side-rail--left">A&amp;L project 株式会社</span>
+  <span class="side-rail side-rail--right">eスポーツに社会的意義を</span>
+
+  <header class="site-header" id="top">
+    <nav class="nav">
+      <a href="../index.html#message">ご挨拶</a>
+      <a href="../works.html">協賛大会</a>
+      <a href="../reports.html">協賛レポート</a>
+      <a href="../sponsors.html">共同スポンサー</a>
+      <a href="../vtuber.html">VTuber</a>
+      <a href="../news.html">お知らせ</a>
+      <a href="../index.html#company">会社情報</a>
+      <a href="../index.html#contact">お問い合わせ</a>
+    </nav>
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/logo.webp" alt="e活 ロゴ" width="120" />
+    </a>
+  </header>
+
+  <main>
+
+    <section class="page-head reveal">
+      <p class="eyebrow">report</p>
+    </section>
+
+    <section class="rd-head reveal">
+      <div class="rd-head__meta">
+        <span>2026.07.20</span>
+        <span class="rd-head__plan">協賛大会</span>
+      </div>
+      <h1 class="rd-head__title">高校生68チームの頂点へ、残るは4チーム<br>——第7回 YOKOSUKA e-Sports CUP 予選レポート</h1>
+      <p class="rd-head__lead">
+        7月20日、全国の高校生がVALORANTで競う「第7回 YOKOSUKA e-Sports CUP」の
+        ROOKIE部門決勝とELITE部門予選がオンラインで開催されました。<br>
+        ELITE部門では68チームの中から、決勝に進む4チームが決定。
+        8月18日（火）、舞台は横須賀市「いちご よこすかポートマーケット」でのオフライン決勝へと移ります。
+      </p>
+    </section>
+
+    <section class="rd-kv reveal">
+      <img src="../assets/img/reports/yokosuka/kv.jpg"
+           alt="第7回 YOKOSUKA e-Sports CUP 2026 大会キービジュアル（VALORANT・高校生対象・2部門制）" />
+      <p class="rd-kv__cap">
+        大会キービジュアル。<br>
+        画像提供：大会運営様　｜　大会公式X：<a href="https://x.com/yokosukaesports" target="_blank" rel="noopener">@yokosukaesports</a>
+      </p>
+    </section>
+
+    <!-- ===== 背景 ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">横須賀市が主催する、高校生のための大会</h2>
+      <p>
+        YOKOSUKA e-Sports CUPは、横須賀市（横須賀集客促進・魅力発信実行委員会）が主催するeスポーツ大会です。
+        今年で7回目を迎え、運営は株式会社JCGが担当。出場できるのは国内在住の高校生で、1チーム5名。
+        昨年は過去最多の127チームが参加しました。<br><br>
+        横須賀市は2019年から「Yokosuka e-Sports Project」として、市内の高校へのゲーミングPC無償貸与や
+        eスポーツ部の設立支援など、高校生とeスポーツをつなぐ取り組みを続けてきました。
+        本大会も後援に経済産業省、神奈川県教育委員会、横須賀市教育委員会が名を連ね、
+        40社を超える企業・団体が協賛。<strong>高校生の大会としては全国でも類を見ない規模です。</strong><br><br>
+        今年は新たに2部門制を導入しました。ランク制限を設け、始めたばかりの選手も出場しやすい「ROOKIE部門」と、
+        ランク制限なしで最強の高校生チームを決める「ELITE部門」です。
+        配信では上地克明市長による開会宣言も行われ、大会全体を市が後押しする姿勢が伝わってきました。
+      </p>
+    </section>
+
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">大会の規模</h2>
+      <div class="rd-stats">
+        <div class="rd-stat">
+          <p class="rd-stat__num">7<small>回目</small></p>
+          <p class="rd-stat__label">2019年開始の「Yokosuka e-Sports Project」から続く恒例大会</p>
+        </div>
+        <div class="rd-stat">
+          <p class="rd-stat__num">68<small>チーム</small></p>
+          <p class="rd-stat__label">ELITE部門予選に参加した高校生チームの数</p>
+        </div>
+        <div class="rd-stat">
+          <p class="rd-stat__num">40<small>社超</small></p>
+          <p class="rd-stat__label">大会を支える協賛企業・団体。後援には経済産業省も</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ROOKIE部門 ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">ROOKIE部門決勝：エコ補完計画が初代王者に</h2>
+      <p>
+        当日の配信は昼過ぎにスタート。実況は谷藤博美さん、解説はyueさんが務め、
+        大会オリジナルのスカジャンに身を包んで横須賀らしい雰囲気で進行しました。<br><br>
+        まず行われたのは、今年新設されたROOKIE部門の決勝戦。
+        7月12日の予選（52チーム）を勝ち上がった、宮城県の「エコ補完計画」と兵庫県の「ふわこにゃいにゃい」が対戦しました。
+        マップはアセント。前半を6-6で折り返す接戦となりましたが、終盤に抜け出したエコ補完計画が13-9で勝利し、
+        <strong>初代ROOKIE部門王者</strong>となりました。<br><br>
+        同じ高校の部活のメンバーで出場したというエコ補完計画。
+        リーダーのマルプー選手は「チームメイトを信頼してたくさん練習した。来年もこのチームで参加したい」と語りました。
+      </p>
+      <figure class="rd-fig">
+        <img src="../assets/img/reports/yokosuka/mc.jpg"
+             alt="大会オリジナルのスカジャンを着た配信出演者2名。横須賀市のマスコットのぬいぐるみを手にしている" />
+        <figcaption>
+          大会オリジナルのスカジャンを着た配信出演者のお二人。<br>
+          写真提供：大会運営様
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ===== ELITE部門：しくみ ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">ELITE部門のしくみ：負けたら終わりの一発勝負</h2>
+      <p>
+        ELITE部門の予選には68チームが参加し、A〜Dの4つのブロックに分かれて戦いました。
+        すべての試合がBO1（1試合勝負）のシングルエリミネーション。負けたらその場で敗退です。
+      </p>
+      <ol class="rd-flow">
+        <li>
+          <strong>ブロック内トーナメント（7月20日・オンライン）</strong>
+          68チームがA〜Dの4ブロックに分かれ、1回戦から1試合勝負で勝ち上がりを決める
+        </li>
+        <li>
+          <strong>ブロック決勝（同日）</strong>
+          各ブロックで勝ち残った2チームが対戦。勝者だけが決勝大会へ。ここで4チームに絞られる
+        </li>
+        <li>
+          <strong>決勝大会（8月18日・オフライン）</strong>
+          ブロック優勝の4チームが、よこすかポートマーケットでのトーナメントで対戦。2試合勝てば高校生の頂点
+        </li>
+      </ol>
+      <p style="margin-top:1rem;">
+        マップは通常のコンペティティブモードと同じプールから、両チームが2つずつBAN（使用禁止）して決める方式。
+        撃ち合いの強さだけでなく、どのマップで戦うかの駆け引きも勝敗を左右します。<br><br>
+        当日の配信では、Cブロックの1回戦1試合と、各ブロックの決勝4試合、あわせて5試合が中継されました。
+        ここからは配信の流れに沿って、予選の一日を追いかけます。
+      </p>
+    </section>
+
+    <!-- ===== ELITE部門：試合レポート ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">配信で追う、予選の一日</h2>
+
+      <h3>1回戦ピックアップ：エリート 13-9 オールフィジカルズ</h3>
+      <p>
+        配信最初の試合は、Cブロック1回戦から。地元・横須賀市のチーム「エリート」が「オールフィジカルズ」と対戦しました。
+        序盤の撃ち合いで主導権を握ったエリートが13-9で勝利し、地元代表として2回戦へ駒を進めています。
+      </p>
+
+      <h3>Aブロック決勝：AM8:21おまかせ 13-11 Gra Academy<span class="rd-h3__map">MAP: ロータス</span></h3>
+      <p>
+        この日最大の波乱が起きた一戦です。Gra Academyは、昨年大会を制したチームの流れを汲み、
+        メンバー全員が最高ランク「レディアント」という優勝候補。対するAM8:21おまかせは、ランク差では格下とされる挑戦者でした。<br><br>
+        試合はGra Academyが11-8とリードし、勝利まであと2ラウンドと迫ります。
+        しかしここからAM8:21おまかせが踏みとどまり、5ラウンドを連取。
+        <strong>13-11の大逆転</strong>で決勝行きの切符をつかみました。
+        ランクの差を連携で覆した、一発勝負らしい結末でした。
+      </p>
+
+      <h3>Bブロック決勝：FiveAceが勝利</h3>
+      <p>
+        Bブロックを制したのは、2年前の第5回大会を制覇し、昨年も決勝に進んだ実績を持つFiveAce。
+        注目選手のJAM選手を筆頭にフィジカルの強さを見せつけ、実況席からも「優勝候補」の声が上がる完成度で勝ち上がりました。
+      </p>
+
+      <h3>Cブロック決勝：HateofFocus対チキンノワール<span class="rd-h3__map">MAP: アセント</span></h3>
+      <p>
+        Cブロック決勝は、茨城県つくば市のHateofFocusと横浜市のチキンノワールの対戦。
+        HateofFocusが序盤から盤面を支配し、パーフェクトラウンド（味方を1人も失わないラウンド取得）も交えて押し切りました。
+        なお、事前に注目チームへ挙げられていた強豪・なめくじブラザーズの姿はブロック決勝にはなく、
+        一発勝負の厳しさをうかがわせます。
+      </p>
+
+      <h3>Dブロック決勝：Across 13-7 バンタン列車ESノーズ<span class="rd-h3__map">MAP: スプリット</span></h3>
+      <p>
+        最後のDブロック決勝は、全国高校生大会「STAGE:0」VALORANT部門準優勝の実績を持つ
+        ルネサンス高等学校のAcrossが登場。前半から着実にリードを重ね、
+        危なげない試合運びで13-7と勝ち切りました。解説のyueさんも守りの完成度を高く評価する内容でした。
+      </p>
+    </section>
+
+    <!-- ===== 決勝進出4チーム ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">決勝に進む4チーム</h2>
+      <table class="rd-blocks">
+        <tr><th>Aブロック</th><td><span class="rd-blocks__team">AM8:21おまかせ</span>　優勝候補Gra Academyを13-11で逆転</td></tr>
+        <tr><th>Bブロック</th><td><span class="rd-blocks__team">FiveAce</span>　第5回大会王者。2年ぶりの頂点を狙う</td></tr>
+        <tr><th>Cブロック</th><td><span class="rd-blocks__team">HateofFocus</span>　チキンノワールとの決勝を制す</td></tr>
+        <tr><th>Dブロック</th><td><span class="rd-blocks__team">Across</span>　「STAGE:0」準優勝校。バンタン列車ESノーズに13-7</td></tr>
+      </table>
+      <figure class="rd-fig" style="margin-bottom:0;">
+        <img src="../assets/img/reports/yokosuka/finalists.jpg"
+             alt="ELITE部門決勝進出4チームのブラケット。AM8:21おまかせ、FiveAce、HateofFocus、Across" />
+        <figcaption>
+          決勝に進む4チーム。<br>
+          画像提供：大会運営様
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ===== e活の関わり ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">VTuberのミラー配信でも高校生の熱戦を発信</h2>
+      <p>
+        e活は本大会に協賛しており、予選当日はe活所属VTuberのまぐまぐ、白峰凱志、葉月こよりの3名が
+        ミラー配信（同時視聴配信）を実施しました。<br><br>
+        昼の開始から夕方まで、高校生たちの試合をVTuberの視点とともにお届けしました。
+        8月18日の決勝でもミラー配信を予定しています。
+      </p>
+    </section>
+
+    <!-- ===== 決勝ハイライト ===== -->
+    <section class="rd-venue reveal">
+      <div class="rd-venue__inner">
+        <p class="rd-venue__eyebrow">final</p>
+        <h2 class="rd-venue__title">8月18日、決勝はよこすかポートマーケットで。<br>観覧は無料です。</h2>
+        <p class="rd-venue__body">
+          決勝大会は8月18日（火）、横須賀市の商業施設「いちご よこすかポートマーケット」でオフライン開催されます。
+          観覧は無料・事前申込不要。実況は大会アンバサダーでゲームキャスターの岸大河さん、
+          解説はyukishiroさんとyueさんが務める予定です。<br><br>
+          注目は、FiveAceとHateofFocusがともに、立川市のeスポーツチームAMORISに所属する選手
+          （JAM選手、K1ruA選手）を擁していること。勝ち上がれば「同門対決」が実現します。
+          優勝候補を破ったAM8:21おまかせの勢い、予選で圧巻の完成度を見せたAcrossの試合運びにも注目です。<br><br>
+          三浦半島のグルメが集まる会場で、高校生の頂点を決める一日。
+          <strong>夏の思い出づくりに、ご家族で足を運んでみてはいかがでしょうか。</strong>
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== 開催概要 ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">開催概要</h2>
+      <table class="rd-facts">
+        <tr>
+          <th>大会名</th>
+          <td>第7回 YOKOSUKA e-Sports CUP</td>
+        </tr>
+        <tr>
+          <th>主催</th>
+          <td>横須賀集客促進・魅力発信実行委員会（事務局：横須賀市観光課）</td>
+        </tr>
+        <tr>
+          <th>運営</th>
+          <td>株式会社JCG</td>
+        </tr>
+        <tr>
+          <th>後援</th>
+          <td>経済産業省／神奈川県教育委員会／横須賀市教育委員会</td>
+        </tr>
+        <tr>
+          <th>使用タイトル</th>
+          <td>VALORANT</td>
+        </tr>
+        <tr>
+          <th>出場資格</th>
+          <td>国内在住の高校生（1チーム5名）。ROOKIE部門・ELITE部門の2部門制</td>
+        </tr>
+        <tr>
+          <th>ELITE予選</th>
+          <td>2026年7月20日（月・祝）オンライン開催。68チーム・4ブロックのシングルエリミネーション</td>
+        </tr>
+        <tr>
+          <th>ELITE決勝</th>
+          <td>2026年8月18日（火）「いちご よこすかポートマーケット」（横須賀市新港町）にてオフライン開催。観覧無料・事前申込不要</td>
+        </tr>
+        <tr>
+          <th>配信</th>
+          <td>YouTube・Twitchにてライブ配信。<a href="https://www.youtube.com/live/b0IEgy4mHO8" target="_blank" rel="noopener">予選のアーカイブはこちら</a></td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- ===== 視聴導線 ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">大会公式の発信</h2>
+      <p class="rd-x__lead">
+        大会の最新情報・試合結果は、大会公式チャンネルで発信されています。
+        決勝当日は、e活所属VTuberのミラー配信でもお楽しみいただけます。
+      </p>
+      <div class="rd-x__links">
+        <a class="btn" href="https://www.cocoyoko.net/e-sports/" target="_blank" rel="noopener">大会公式サイト</a>
+        <a class="btn" href="https://x.com/yokosukaesports" target="_blank" rel="noopener">大会公式X ＠yokosukaesports</a>
+        <a class="btn" href="https://www.youtube.com/live/b0IEgy4mHO8" target="_blank" rel="noopener">予選アーカイブ（YouTube）</a>
+        <a class="btn" href="../vtuber.html">e活のVTuberを見る</a>
+      </div>
+    </section>
+
+    <section class="rd-src reveal">
+      <p>出典・画像について</p>
+      <ul>
+        <li>・写真・キービジュアル・ブラケット画像は大会運営様よりご提供いただいたものです。</li>
+        <li>・試合内容は<a href="https://www.youtube.com/live/b0IEgy4mHO8" target="_blank" rel="noopener">大会公式配信のアーカイブ</a>に基づいています。配信画面を使用する場合は「配信より引用」と明記します。</li>
+        <li>・<a href="https://www.cocoyoko.net/e-sports/" target="_blank" rel="noopener">横須賀市観光情報サイト「ここはヨコスカ」 e-Sports特設ページ</a></li>
+        <li>・<a href="https://www.city.yokosuka.kanagawa.jp/sports/erectronic/001.html" target="_blank" rel="noopener">横須賀市「Yokosuka e-Sports Project」</a></li>
+      </ul>
+    </section>
+
+    <section class="rd-back reveal">
+      <div class="vt-recruit">
+        <p class="eyebrow">next</p>
+        <h2 class="vt-recruit__title">8月18日、決勝をお楽しみに</h2>
+        <p class="vt-recruit__body">
+          e活は、高校生の挑戦の場を協賛という形で応援しています。<br>
+          決勝の模様も、レポートでお伝えする予定です。
+        </p>
+        <div class="vt-recruit__actions">
+          <a class="btn btn--primary" href="../reports.html">ほかの協賛レポート</a>
+          <a class="btn" href="../works.html">協賛大会一覧</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <img src="../assets/img/logo.webp" alt="e活 ロゴ" width="90" class="site-footer__logo" />
+    <p class="site-footer__copy">&copy; <a href="https://alonzo.jp" target="_blank" rel="noopener">A&amp;L project 株式会社</a> / e活</p>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>
