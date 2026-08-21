@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 2026-08-15 作成。★主催者への確認がまだ。確認が取れてから公開すること。 -->
+
+  <title>オーバーウォッチ 本気を出す日杯 協賛レポート ｜ e活</title>
+  <meta name="description" content="チームの平均レートをそろえることで、始めたばかりの人もプロ選手も同じ土俵で戦えるオーバーウォッチのコミュニティ大会。7月26日と8月9日の2日間にわたって開催された「本気を出す日杯」に、e活はゴールドプランで協賛しました。" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="オーバーウォッチ 本気を出す日杯 協賛レポート ｜ e活" />
+  <meta property="og:description" content="チームの平均レートをそろえて、初心者もプロも同じ土俵に。賞金総額15万円のオーバーウォッチ コミュニティ大会に、e活は協賛しました。" />
+  <!-- og:image は絶対URLにする（相対パスだとXやDiscordでカード画像が出ない） -->
+  <meta property="og:image" content="https://ekatsu-web.pages.dev/assets/img/reports/honki/kv.jpg" />
+  <meta property="og:url" content="https://ekatsu-web.pages.dev/reports/honki-cup-2026" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" type="image/webp" href="../assets/img/logo.webp" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+
+  <style>
+    /* ---- 協賛レポート 詳細（このページ専用／yokosuka・fcs26と同型） ---- */
+    .rd-head { max-width: var(--maxw); margin: 0 auto 2.5rem; padding: 0 1.5rem; }
+    .rd-head__meta {
+      display: flex; gap: 1rem; align-items: center;
+      font-size: 0.72rem; letter-spacing: 0.14em;
+      color: var(--color-muted); margin-bottom: 0.9rem;
+    }
+    .rd-head__plan {
+      border: 1px solid var(--color-line); border-radius: 999px; padding: 0.15rem 0.75rem;
+    }
+    .rd-head__title {
+      font-size: clamp(1.4rem, 3.2vw, 2rem); font-weight: 500;
+      letter-spacing: 0.06em; line-height: 1.7; margin-bottom: 1.25rem;
+    }
+    .rd-head__lead { font-size: 0.95rem; }
+
+    .rd-kv { max-width: var(--maxw); margin: 0 auto 4rem; padding: 0 1.5rem; }
+    .rd-kv img { width: 100%; border-radius: 6px; }
+    .rd-kv__cap {
+      font-size: 0.72rem; color: var(--color-muted);
+      margin-top: 0.75rem; line-height: 1.9;
+    }
+
+    .rd-sec { max-width: var(--maxw); margin: 0 auto 4.5rem; padding: 0 1.5rem; }
+    .rd-sec__title {
+      font-size: 1.1rem; font-weight: 500; letter-spacing: 0.1em; margin-bottom: 1.5rem;
+    }
+    .rd-sec p { font-size: 0.9rem; }
+
+    .rd-facts { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .rd-facts th, .rd-facts td {
+      text-align: left; vertical-align: top;
+      padding: 0.9rem 0; border-bottom: 1px solid var(--color-line); line-height: 1.9;
+    }
+    .rd-facts th {
+      width: 8em; font-weight: 400; color: var(--color-muted);
+      letter-spacing: 0.08em; white-space: nowrap;
+    }
+
+    .rd-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem; margin-bottom: 2rem;
+    }
+    .rd-stat { border-top: 2px solid var(--color-ink); padding-top: 1rem; }
+    .rd-stat__num {
+      font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700;
+      letter-spacing: 0.02em; line-height: 1.3;
+    }
+    .rd-stat__num small { font-size: 0.9rem; font-weight: 400; margin-left: 0.15em; }
+    .rd-stat__label {
+      font-size: 0.72rem; color: var(--color-muted);
+      letter-spacing: 0.1em; line-height: 1.8; margin-top: 0.3rem;
+    }
+    @media (max-width: 600px) {
+      .rd-stats { grid-template-columns: 1fr; gap: 1.25rem; }
+    }
+
+    .rd-fig { margin: 2.5rem 0; }
+    .rd-fig img { width: 100%; border-radius: 6px; }
+    .rd-fig figcaption {
+      font-size: 0.75rem; color: var(--color-muted);
+      margin-top: 0.75rem; line-height: 1.9;
+    }
+    .rd-fig--wide {
+      max-width: 1040px; margin-left: auto; margin-right: auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ハイライト（黒帯） */
+    .rd-venue {
+      background: #14110f; color: #fff; padding: 3.5rem 2rem; margin-bottom: 4.5rem;
+    }
+    .rd-venue__inner { max-width: var(--maxw); margin: 0 auto; }
+    .rd-venue__eyebrow {
+      font-size: 0.7rem; letter-spacing: 0.2em; color: #8c8682; margin-bottom: 0.75rem;
+    }
+    .rd-venue__title {
+      font-size: clamp(1.2rem, 3vw, 1.6rem); font-weight: 500;
+      letter-spacing: 0.06em; line-height: 1.7; margin-bottom: 1.5rem;
+    }
+    .rd-venue__body { font-size: 0.85rem; line-height: 2.2; color: #cfc9c4; }
+
+    /* 手順・仕組み */
+    .rd-flow { list-style: none; counter-reset: flow; margin: 1.5rem 0 0; }
+    .rd-flow li {
+      counter-increment: flow; position: relative;
+      padding: 0 0 1.5rem 2.6rem; font-size: 0.88rem; line-height: 2;
+    }
+    .rd-flow li::before {
+      content: counter(flow); position: absolute; left: 0; top: 0.15rem;
+      width: 1.7rem; height: 1.7rem; border: 1px solid var(--color-ink); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700;
+    }
+    .rd-flow li:not(:last-child)::after {
+      content: ""; position: absolute; left: 0.85rem; top: 2.1rem; bottom: 0.2rem;
+      width: 1px; background: var(--color-line);
+    }
+    .rd-flow li strong { display: block; letter-spacing: 0.06em; }
+
+    .rd-sec h3 {
+      font-size: 0.95rem; font-weight: 700; letter-spacing: 0.08em;
+      margin: 2.4rem 0 0.75rem; padding-left: 0.9rem; position: relative;
+    }
+    .rd-sec h3::before {
+      content: ""; position: absolute; left: 0; top: 0.25em; bottom: 0.25em;
+      width: 3px; background: var(--color-ink);
+    }
+
+    .rd-x__lead { margin-bottom: 1.5rem; }
+    .rd-x__links { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+    .rd-src {
+      max-width: var(--maxw); margin: 0 auto 4rem; padding: 2rem 1.5rem 0;
+      border-top: 1px solid var(--color-line);
+      font-size: 0.72rem; line-height: 2; color: var(--color-muted);
+    }
+    .rd-src ul { list-style: none; margin-top: 0.5rem; }
+    .rd-src li { margin-bottom: 0.2rem; }
+
+    .rd-back { max-width: var(--maxw); margin: 0 auto 5rem; padding: 0 1.5rem; }
+  </style>
+</head>
+<body>
+
+  <span class="side-rail side-rail--left">A&amp;L project 株式会社</span>
+  <span class="side-rail side-rail--right">eスポーツに社会的意義を</span>
+
+  <header class="site-header" id="top">
+    <nav class="nav">
+      <a href="../index.html#message">ご挨拶</a>
+      <a href="../works.html">協賛大会</a>
+      <a href="../reports.html">協賛レポート</a>
+      <a href="../sponsors.html">共同スポンサー</a>
+      <a href="../vtuber.html">VTuber</a>
+      <a href="../news.html">お知らせ</a>
+      <a href="../index.html#company">会社情報</a>
+      <a href="../index.html#contact">お問い合わせ</a>
+    </nav>
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/logo.webp" alt="e活 ロゴ" width="120" />
+    </a>
+  </header>
+
+  <main>
+
+    <section class="page-head reveal">
+      <p class="eyebrow">report</p>
+    </section>
+
+    <section class="rd-head reveal">
+      <div class="rd-head__meta">
+        <span>2026.07.26 – 08.09</span>
+        <span class="rd-head__plan">ゴールドプラン</span>
+      </div>
+      <h1 class="rd-head__title">始めたばかりの人も、プロも、同じ土俵で。<br>——オーバーウォッチ 本気を出す日杯 協賛レポート</h1>
+      <p class="rd-head__lead">
+        腕前の差があると、大会は成り立ちにくくなります。強い人だけが勝ち続け、始めたばかりの人は出る気になれない。
+        「本気を出す日杯」は、そこに手を入れた大会です。<br>
+        7月26日と8月9日の2日間にわたって開催され、e活はゴールドプランで協賛しました。
+      </p>
+    </section>
+
+    <section class="rd-kv reveal">
+      <img src="../assets/img/reports/honki/kv.jpg"
+           alt="オーバーウォッチ 本気を出す日杯 大会キービジュアル" />
+      <p class="rd-kv__cap">
+        大会キービジュアル。<br>
+        画像提供：大会運営
+      </p>
+    </section>
+
+    <!-- ===== 大会のしくみ ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">チームの平均をそろえる、という考え方</h2>
+      <p>
+        オーバーウォッチには「レート」という腕前の目安があります。数字が大きいほど強い、という単純なものです。
+        ふつうの大会では、強い人が集まったチームがそのまま勝ち上がります。だから始めたばかりの人は、
+        出ても勝てないと分かっていて、最初から参加をあきらめてしまう。<br><br>
+        この大会は、そこを組み替えました。<strong>始めたばかりの人から上級者までを混ぜてチームを作り、
+        すべてのチームの平均レートが同じになるように調整する</strong>という方式です。<br><br>
+        強い人が1人いれば、その分どこかに始めたばかりの人が入る。だから、どのチームにも勝ち目があります。
+        そして公式のプロ大会に出ている選手も、この大会には出場します。
+        <strong>プロと同じチームで戦う、あるいはプロを相手に戦う一日が、誰にでも起こりうる</strong>ということです。
+      </p>
+      <ol class="rd-flow">
+        <li>
+          <strong>腕前を問わず、誰でもエントリーできる</strong>
+          始めたばかりの人も、公式のプロ大会に出ている選手も、同じ入口から参加する
+        </li>
+        <li>
+          <strong>運営がチームを組む</strong>
+          レートの高い人・低い人を混ぜ、すべてのチームの平均が同じ数字になるように振り分ける
+        </li>
+        <li>
+          <strong>どのチームにも勝ち目がある状態で対戦する</strong>
+          賞金総額15万円は、コミュニティが開く大会としては最大級の規模
+        </li>
+      </ol>
+    </section>
+
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">大会の規模</h2>
+      <div class="rd-stats">
+        <div class="rd-stat">
+          <p class="rd-stat__num">15<small>万円</small></p>
+          <p class="rd-stat__label">賞金総額。コミュニティが開く大会としては最大級</p>
+        </div>
+        <div class="rd-stat">
+          <p class="rd-stat__num">2<small>日間</small></p>
+          <p class="rd-stat__label">7月26日・8月9日の2日にわたって開催</p>
+        </div>
+        <div class="rd-stat">
+          <p class="rd-stat__num">3<small>名</small></p>
+          <p class="rd-stat__label">ミラー配信を行ったe活所属VTuberの人数（2日間の延べ）</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== e活の関わり ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">e活がやったこと</h2>
+      <p>
+        e活は本大会にゴールドプランで協賛し、あわせて<strong>所属VTuberによるミラー配信</strong>を行いました。
+        ミラー配信とは、大会の公式配信を自分のチャンネルで同時に中継し、
+        自分の言葉で実況しながら一緒に見る、という配信の形です。<br><br>
+        大会そのものの視聴者だけでなく、<strong>ふだんそのVTuberを見ている人にも大会が届く</strong>のがミラー配信の役割です。
+        オーバーウォッチを知らない視聴者が、配信者の解説つきで初めて大会を見る、ということが起こります。
+      </p>
+
+      <h3>2日目は、配信するVTuberが増えました</h3>
+      <p>
+        1日目（7月26日）は2名、2日目（8月9日）は3名がミラー配信を実施しました。
+        いちばん長く配信した回では、午後2時すぎから夜7時半すぎまで、5時間半にわたって中継が続いています。<br><br>
+        e活の協賛は、大会1つに対して<strong>複数のVTuberが同時に中継する</strong>形をとっています。
+        1つの大会が、それぞれのVTuberのチャンネルを通じて、いくつもの視聴者層に同時に届く。
+        これがe活の協賛のいちばんの特徴です。
+      </p>
+    </section>
+
+    <!-- ===== ハイライト ===== -->
+    <section class="rd-venue reveal">
+      <div class="rd-venue__inner">
+        <p class="rd-venue__eyebrow">why</p>
+        <h2 class="rd-venue__title">「勝てないから出ない」を、なくす。</h2>
+        <p class="rd-venue__body">
+          コミュニティ大会は、運営する人の手弁当で成り立っています。
+          そこに「腕前がそろっていなくても楽しめる形」を作ろうとすると、
+          チーム分けの手間も、集める人数も、いっきに増えます。<br><br>
+          それでもこの大会は、始めたばかりの人が出られる場所を守るほうを選びました。
+          <strong>eスポーツの土台は、こういう大会が支えています。</strong><br><br>
+          e活は、その土台を支える側の活動です。
+          大会に協賛し、VTuberが中継し、企業の応援を大会へ届ける。
+          目立つ大型イベントではなく、埋もれがちな草の根の大会にこそ、協賛を届けたいと考えています。
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== 開催概要 ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">開催概要</h2>
+      <table class="rd-facts">
+        <tr>
+          <th>大会名</th>
+          <td>オーバーウォッチ 本気を出す日杯</td>
+        </tr>
+        <tr>
+          <th>使用タイトル</th>
+          <td>オーバーウォッチ2</td>
+        </tr>
+        <tr>
+          <th>形式</th>
+          <td>始めたばかりの人から上級者までの混合チーム。全チームの平均レートが同じになるよう調整</td>
+        </tr>
+        <tr>
+          <th>賞金総額</th>
+          <td>15万円</td>
+        </tr>
+        <tr>
+          <th>開催日</th>
+          <td>Day1：2026年7月26日（土）14:00〜／Day2：2026年8月9日（土）14:00〜</td>
+        </tr>
+        <tr>
+          <th>公式配信</th>
+          <td><a href="https://www.twitch.tv/vcy_ow" target="_blank" rel="noopener">Twitch／vcy_ow</a></td>
+        </tr>
+        <tr>
+          <th>e活の協賛</th>
+          <td>ゴールドプラン。所属VTuberによるミラー配信（延べ3名）を実施</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- ===== 導線 ===== -->
+    <section class="rd-sec reveal">
+      <h2 class="rd-sec__title">大会公式の発信</h2>
+      <p class="rd-x__lead">
+        大会の最新情報は、大会公式のチャンネルで発信されています。
+      </p>
+      <div class="rd-x__links">
+        <a class="btn" href="https://www.twitch.tv/vcy_ow" target="_blank" rel="noopener">大会公式配信（Twitch）</a>
+        <a class="btn" href="../vtuber.html">e活のVTuberを見る</a>
+        <a class="btn" href="../works.html">協賛大会一覧</a>
+      </div>
+    </section>
+
+    <section class="rd-src reveal">
+      <p>出典・画像について</p>
+      <ul>
+        <li>・キービジュアルは大会運営よりご提供いただいたものです。</li>
+        <li>・大会形式・賞金額は、大会運営からe活へ共有された情報に基づいています。</li>
+        <li>・ミラー配信の実施状況は、e活が自動で記録している配信ログに基づいています。</li>
+      </ul>
+    </section>
+
+    <section class="rd-back reveal">
+      <div class="vt-recruit">
+        <p class="eyebrow">next</p>
+        <h2 class="vt-recruit__title">草の根の大会を、一緒に応援しませんか</h2>
+        <p class="vt-recruit__body">
+          e活は、コミュニティ大会への協賛と、VTuberによるミラー配信をつなぐ活動です。<br>
+          協賛に関心のある企業さま、ミラー配信に参加したいVTuberさんを募集しています。
+        </p>
+        <div class="vt-recruit__actions">
+          <a class="btn btn--primary" href="../reports.html">ほかの協賛レポート</a>
+          <a class="btn" href="../index.html#contact">お問い合わせ</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <img src="../assets/img/logo.webp" alt="e活 ロゴ" width="90" class="site-footer__logo" />
+    <p class="site-footer__copy">&copy; <a href="https://alonzo.jp" target="_blank" rel="noopener">A&amp;L project 株式会社</a> / e活</p>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>
