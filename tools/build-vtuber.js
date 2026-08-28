@@ -311,4 +311,11 @@ function replaceBlock(html, marker, body, file) {
   fs.writeFileSync(PUBLISHED_PATH, JSON.stringify(published, null, 2) + "\n");
 
   console.log(`\n書き込み完了。vtuber.html / index.html を更新、初掲載の記録を ${added} 件追加した。`);
+
+  // ★2026-08-29 依田の指示：カードを足すだけでなく、掲載した週ごとに「お知らせ記事」も出す。
+  //   その記事をXでもポストする（Botが supporter_news.json を読む）。
+  if (newcomers.length) {
+    const { publishSupporterNews } = require("./supporter-news");
+    await publishSupporterNews(newcomers, today, { dry: DRY });
+  }
 })().catch(e => { console.error("ERROR:", e.message); process.exit(1); });

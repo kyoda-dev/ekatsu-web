@@ -25,6 +25,10 @@ jobs:
         with:
           node-version: '20'
 
+      # 見出し画像に日本語を描くのに要る。入れないと名前が豆腐（□）になる。
+      - name: 日本語フォントを入れる
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-cjk
+
       - name: 依存パッケージをインストール
         run: cd tools && npm install
 
@@ -41,6 +45,6 @@ jobs:
         run: |
           git config user.name "e-katsu-bot"
           git config user.email "k_yoda@alonzo.jp"
-          git add vtuber.html index.html assets/img/vtuber/ tools/vtuber_published.json
+          git add vtuber.html index.html news.html assets/img/vtuber/ assets/img/news/ news/ tools/vtuber_published.json tools/supporter_news.json
           git diff --cached --quiet || git commit -m "auto: サポーターの掲載を更新"
           git push
