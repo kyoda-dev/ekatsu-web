@@ -69,11 +69,19 @@
   },
 
   "NOA♪": {
+    "_hide理由": "2026-08-29 依田の指示でいったん非公開。出す時は hide を false にして build-vtuber.js を回す",
+    "hide": true,
     "slug": "noa", "order": 14,
     "bio": "PUBGメインのゲーム配信。「PUBGのVと言えばNOA」を目指して活動中。"
   },
   "セレーネ": {
+    "_hide理由": "2026-08-29 依田の指示でいったん非公開。出す時は hide を false にして build-vtuber.js を回す",
+    "hide": true,
     "slug": "selene", "order": 15,
+    "links": [
+      { "label": "X", "url": "https://x.com/selene_witch9" },
+      { "label": "Twitch", "url": "https://www.twitch.tv/selene_jp" }
+    ],
     "bio": "月と魔女がモチーフ。やわらかい声で、初めての人も会話に入りやすい配信。APEX / OW2 / Marvel Rivals。"
   }
 }
