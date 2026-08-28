@@ -54,12 +54,18 @@ async function buildBanner(people, dateLabel, outPath) {
   const svg = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f4f2f9"/>
-      <stop offset="55%" stop-color="#eef0f7"/>
-      <stop offset="100%" stop-color="#eaf3ee"/>
+      <stop offset="0%" stop-color="#fbf2ff"/>
+      <stop offset="45%" stop-color="#eef1ff"/>
+      <stop offset="100%" stop-color="#e2f8ec"/>
     </linearGradient>
+    <!-- 顔まわりをふわっと明るくする。のっぺりしないように（2026-08-29 依田「もう少し明るめ」） -->
+    <radialGradient id="glow" cx="50%" cy="60%" r="62%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
   </defs>
   <rect width="${W}" height="${H}" fill="url(#bg)"/>
+  <rect width="${W}" height="${H}" fill="url(#glow)"/>
   <text x="${W / 2}" y="145" font-family="${FONT}" font-size="${titleSize}" font-weight="700"
         fill="#14110f" text-anchor="middle" letter-spacing="2">${esc(title)}</text>
   <text x="${W / 2}" y="205" font-family="${FONT}" font-size="27" font-weight="500"
