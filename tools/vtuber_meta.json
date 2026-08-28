@@ -1,0 +1,79 @@
+{
+  "_readme": [
+    "build-vtuber.js が使う手直し用のファイル。公開用プロフィール一覧（スプレッドシート）を元データにしつつ、",
+    "カードの文面だけはここで上書きできる。フォームの自由記述は長すぎてカードに載らないため。",
+    "",
+    "キー = スプレッドシートの「活動名」（全角スペース等もそのまま）。",
+    "  slug        … 画像ファイル名と並び順の識別子（assets/img/vtuber/<slug>.webp）",
+    "  displayName … カードに出す名前（省略時は活動名そのまま）",
+    "  lineupName  … トップページの顔ぶれに出す短い名前（省略時は displayName）",
+    "  bio         … カードのひとこと。省略すると配信スタイルから自動生成する（粗いので後で直す前提）",
+    "  order       … 並び順。小さいほど先。省略は 999（＝新しい人は後ろに付く）",
+    "  hide        … true にするとサイトに出さない",
+    "  links       … 省略時はシートのX・チャンネルURLから自動で作る"
+  ],
+
+  "葉月こより": {
+    "slug": "koyori", "order": 1,
+    "bio": "ゆったりした配信で、リスナーの治安の良さが魅力。VALORANT / LoL。",
+    "links": [
+      { "label": "X", "url": "https://x.com/HadukiKoyori" },
+      { "label": "YouTube", "url": "https://www.youtube.com/@HadukiKoyori" },
+      { "label": "Twitch", "url": "https://www.twitch.tv/hadukikoyori" }
+    ]
+  },
+  "白峰　凱志": {
+    "slug": "shiramine", "order": 2,
+    "displayName": "白峰 凱志",
+    "bio": "FPS・RPG・雑談など幅広く。元気な配信とゲーム解説が持ち味。",
+    "links": [
+      { "label": "X", "url": "https://x.com/shiraminekaito" },
+      { "label": "YouTube", "url": "https://youtube.com/@shiraminekaito" },
+      { "label": "Twitch", "url": "https://www.twitch.tv/shiraminekaito" }
+    ]
+  },
+  "まぐまぐです": {
+    "slug": "magmag", "order": 3,
+    "bio": "雑談多めのゆるい配信を心がけています。VALORANT。",
+    "links": [
+      { "label": "X", "url": "https://x.com/magmag_live" },
+      { "label": "Twitch", "url": "https://www.twitch.tv/magmag_game" },
+      { "label": "YouTube", "url": "https://www.youtube.com/@magmag_game" }
+    ]
+  },
+
+  "M4gari（まがり）": {
+    "slug": "m4gari", "order": 11,
+    "lineupName": "M4gari",
+    "bio": "ゲーム配信中心。声がデカい（121dB）。GTA / R6 / FPS・TPS。",
+    "links": [
+      { "label": "X", "url": "https://x.com/M4gari_619" },
+      { "label": "Twitch", "url": "https://www.twitch.tv/m4gari_619" }
+    ]
+  },
+  "茅花まりえ": {
+    "slug": "marie", "order": 12,
+    "bio": "ふんわりした声と叫び声のギャップが魅力。VALORANT / Dead by Daylight。",
+    "links": [
+      { "label": "X", "url": "https://x.com/kayahanamarie" },
+      { "label": "Twitch", "url": "https://www.twitch.tv/Kayahanamarie" }
+    ]
+  },
+  "ぱわぁぱふこだま": {
+    "slug": "kodama", "order": 13,
+    "bio": "雑談しながらランク配信。上手くないのがアピールポイント。OW2 / VALORANT / APEX / スト6。",
+    "links": [
+      { "label": "X", "url": "https://x.com/pwpkdm29" },
+      { "label": "YouTube", "url": "https://www.youtube.com/@%E3%81%92%E3%82%93%E3%82%84%E3%81%A8%E3%81%A0%E3%83%BC%E3%81%93" }
+    ]
+  },
+
+  "NOA♪": {
+    "slug": "noa", "order": 14,
+    "bio": "PUBGメインのゲーム配信。「PUBGのVと言えばNOA」を目指して活動中。"
+  },
+  "セレーネ": {
+    "slug": "selene", "order": 15,
+    "bio": "月と魔女がモチーフ。やわらかい声で、初めての人も会話に入りやすい配信。APEX / OW2 / Marvel Rivals。"
+  }
+}

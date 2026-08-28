@@ -1,0 +1,43 @@
+name: VTuber・サポーター掲載の自動更新
+
+# 掲載は毎週月曜（依田の運用ルール）。
+# 素材（2Dデータ・写真）が揃った人だけをサイトに載せる。素材が無い人はそのまま待ち。
+# 掲載された人は tools/vtuber_published.json に記録され、
+# e活Botがそれを読んで月曜19時のX紹介ポストを #x投稿 に予約する。
+on:
+  schedule:
+    - cron: '0 23 * * 0'   # 日曜23:00 UTC ＝ 月曜08:00 JST
+  workflow_dispatch:        # 手動実行ボタン
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 依存パッケージをインストール
+        run: cd tools && npm install
+
+      - name: vtuber.html / index.html を生成
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          PUBLIC_PROFILE_SHEET_ID: ${{ secrets.PUBLIC_PROFILE_SHEET_ID }}
+          VTUBER_DELIVERY_PARENT_ID: ${{ secrets.VTUBER_DELIVERY_PARENT_ID }}
+        run: cd tools && node build-vtuber.js
+
+      - name: 変更があればコミット＆プッシュ
+        run: |
+          git config user.name "e-katsu-bot"
+          git config user.email "k_yoda@alonzo.jp"
+          git add vtuber.html index.html assets/img/vtuber/ tools/vtuber_published.json
+          git diff --cached --quiet || git commit -m "auto: サポーターの掲載を更新"
+          git push

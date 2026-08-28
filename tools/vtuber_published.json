@@ -1,0 +1,51 @@
+{
+  "_readme": "初めてサイトに載せた日の記録。X紹介ポストが「今週の新顔」を決めるのに使う。手で消すとその人がもう一度「新顔」になるので注意。",
+  "葉月こより": {
+    "firstPublished": "2026-06-17",
+    "slug": "koyori",
+    "x": "@HadukiKoyori",
+    "tier": "partner"
+  },
+  "白峰　凱志": {
+    "firstPublished": "2026-06-17",
+    "slug": "shiramine",
+    "x": "@shiraminekaito",
+    "tier": "partner"
+  },
+  "まぐまぐです": {
+    "firstPublished": "2026-06-17",
+    "slug": "magmag",
+    "x": "@magmag_live",
+    "tier": "partner"
+  },
+  "M4gari（まがり）": {
+    "firstPublished": "2026-06-26",
+    "slug": "m4gari",
+    "x": "@M4gari_619",
+    "tier": "casual"
+  },
+  "茅花まりえ": {
+    "firstPublished": "2026-06-26",
+    "slug": "marie",
+    "x": "@kayahanamarie",
+    "tier": "casual"
+  },
+  "ぱわぁぱふこだま": {
+    "firstPublished": "2026-07-24",
+    "slug": "kodama",
+    "x": "@pwpkdm29",
+    "tier": "casual"
+  },
+  "NOA♪": {
+    "firstPublished": "2026-08-28",
+    "slug": "noa",
+    "x": "@NOAxxxPUBG",
+    "tier": "casual"
+  },
+  "セレーネ": {
+    "firstPublished": "2026-08-28",
+    "slug": "selene",
+    "x": "@selene_witch9",
+    "tier": "casual"
+  }
+}
