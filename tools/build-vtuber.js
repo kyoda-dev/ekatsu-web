@@ -157,9 +157,14 @@ async function ensureIcon(drive, name, slug, crop) {
 
   // 立ち絵は縦長で顔が上のほうにある。そのまま正方形に切ると全身が入って顔が豆粒になるので、
   // 縦長さに応じて「顔＋肩」くらいの範囲に寄せる。他のアイコンと大きさの見え方を揃えるため。
-  //   crop で明示指定もできる（vtuber_meta.json の crop: {side, top, left} ＝ 縦の長さに対する割合）。
+  //   crop で明示指定もできる（vtuber_meta.json の crop: {side, top, left, pad} ＝ 縦の長さに対する割合）。
+  //
+  // ★アイコンはサイトでは「丸」で出る（style.css の .vt-card__photo が border-radius:50%）。
+  //   四角の四隅は必ず円に食われるので、四角で見て収まっていても角の絵は切れる。
+  //   角に大事なもの（帽子・耳・ロゴ）が来る絵は crop.pad で白い余白を足して、円の中へ押し込む。
+  //   pad ＝ 切り出した一辺に対する割合を四辺に足す（0.19 なら 843px → 1163px）。
   const meta = await sharp(buf).metadata();
-  const img = sharp(buf).flatten({ background: "#ffffff" });
+  let img = sharp(buf).flatten({ background: "#ffffff" });
   const { width: W, height: H } = meta;
   const ratio = H / W;
   if (crop || ratio > 1.15) {
@@ -181,6 +186,22 @@ async function ensureIcon(drive, name, slug, crop) {
     left = Math.max(0, Math.min(left, W - side));
     top = Math.max(0, Math.min(top, H - side));
     img.extract({ left, top, width: side, height: side });
+
+    // 丸に収めるための白い余白。
+    // ★sharpは書いた順ではなく「切り出し → 縮小 → 余白」の決まった順で処理する。
+    //   同じパイプラインに .extend() を足すと、いくら先に書いても縮小の"後"に付く。
+    //   （実際 400px のはずが 626px / 720px になった・2026-08-31）
+    //   だから余白を付け終わったところで一度バッファに落とし、そこから新しいパイプラインを始める。
+    const pad = Math.round(side * (crop && crop.pad ? crop.pad : 0));
+    if (pad > 0) {
+      // 余白の色。既定は白。元の絵に背景色が焼き付いている人（neru＝黒地のステッカー）は
+      // 白で足すと「白い丸の中に黒い四角」になるので、crop.padColor でその色に合わせる。
+      const padColor = (crop && crop.padColor) || "#ffffff";
+      const padded = await sharp(await img.png().toBuffer())
+        .extend({ top: pad, bottom: pad, left: pad, right: pad, background: padColor })
+        .png().toBuffer();
+      img = sharp(padded);
+    }
   }
   if (DRY) return { ok: true, picked: pick.name, dry: true };
   fs.mkdirSync(IMG_DIR, { recursive: true });
