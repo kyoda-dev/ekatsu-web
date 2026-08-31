@@ -197,8 +197,17 @@ async function ensureIcon(drive, name, slug, crop) {
       // 余白の色。既定は白。元の絵に背景色が焼き付いている人（neru＝黒地のステッカー）は
       // 白で足すと「白い丸の中に黒い四角」になるので、crop.padColor でその色に合わせる。
       const padColor = (crop && crop.padColor) || "#ffffff";
+      // 絵の位置をずらしたい時は、切り出す窓を動かすのではなく左右の余白の量を変える。
+      // 窓を動かすと絵の端（neruなら肉球）が欠けるが、余白なら欠けない。
+      //   nudgeX プラス＝絵が左へ／nudgeY プラス＝絵が上へ（どちらも一辺に対する割合）
+      const nx = Math.round(side * ((crop && crop.nudgeX) || 0));
+      const ny = Math.round(side * ((crop && crop.nudgeY) || 0));
       const padded = await sharp(await img.png().toBuffer())
-        .extend({ top: pad, bottom: pad, left: pad, right: pad, background: padColor })
+        .extend({
+          top: Math.max(0, pad - ny), bottom: Math.max(0, pad + ny),
+          left: Math.max(0, pad - nx), right: Math.max(0, pad + nx),
+          background: padColor,
+        })
         .png().toBuffer();
       img = sharp(padded);
     }
