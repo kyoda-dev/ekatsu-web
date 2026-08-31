@@ -4,13 +4,12 @@ name: VTuber・サポーター掲載の自動更新
 # 素材（2Dデータ・写真）が揃った人だけをサイトに載せる。素材が無い人はそのまま待ち。
 # 掲載された人は tools/vtuber_published.json に記録され、
 # e活Botがそれを読んで月曜19時のX紹介ポストを #x投稿 に予約する。
-# ★2026-08-29：依田の指示でいったん自動実行を止めている。
-#   出す準備ができたら下の schedule の3行のコメントを外す。
-#   （合わせて tools/vtuber_meta.json の hide も false にすること）
+# ★2026-08-31：自動実行を再開した（依田の指示）。
+#   止める時はまた schedule の2行をコメントに戻す。
 on:
-  # schedule:
-  #   - cron: '0 23 * * 0'   # 日曜23:00 UTC ＝ 月曜08:00 JST
-  workflow_dispatch:        # 手動実行ボタンだけ
+  schedule:
+    - cron: '0 23 * * 0'   # 日曜23:00 UTC ＝ 月曜08:00 JST
+  workflow_dispatch:        # 手動実行ボタン
 
 permissions:
   contents: write

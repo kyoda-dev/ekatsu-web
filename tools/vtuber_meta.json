@@ -69,19 +69,25 @@
   },
 
   "NOA♪": {
-    "_hide理由": "2026-08-29 依田の指示でいったん非公開。出す時は hide を false にして build-vtuber.js を回す",
-    "hide": true,
     "slug": "noa", "order": 14,
     "bio": "PUBGメインのゲーム配信。「PUBGのVと言えばNOA」を目指して活動中。"
   },
   "セレーネ": {
-    "_hide理由": "2026-08-29 依田の指示でいったん非公開。出す時は hide を false にして build-vtuber.js を回す",
-    "hide": true,
     "slug": "selene", "order": 15,
     "links": [
       { "label": "X", "url": "https://x.com/selene_witch9" },
       { "label": "Twitch", "url": "https://www.twitch.tv/selene_jp" }
     ],
     "bio": "月と魔女がモチーフ。やわらかい声で、初めての人も会話に入りやすい配信。APEX / OW2 / Marvel Rivals。"
+  },
+  "JELOM": {
+    "_hide理由": "2026-08-31 プロフィール画像の差し替えを本人に依頼中。新しい画像が 02_2Dデータ素材 に入ったら hide を消して回す",
+    "hide": true,
+    "slug": "jelom", "order": 16,
+    "bio": "APEXの元競技勢。選手とコーチの経験を活かした解説と雑談。VALORANT / APEX / スト6。"
+  },
+  "neru": {
+    "slug": "neru", "order": 17,
+    "bio": "タルコフアリーナの大会に選手として出場。一歩踏み込んだ解説が持ち味。"
   }
 }

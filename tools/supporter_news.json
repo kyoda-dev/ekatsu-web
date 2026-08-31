@@ -1,0 +1,27 @@
+{
+  "articles": [
+    {
+      "slug": "supporter-2026-08-31",
+      "date": "2026-08-31",
+      "title": "新しいe活カジュアルサポーターのご紹介（2026.08.31）",
+      "url": "https://ekatsu-web.pages.dev/news/supporter-2026-08-31",
+      "people": [
+        {
+          "name": "NOA♪",
+          "display": "NOA♪",
+          "x": "@NOAxxxPUBG"
+        },
+        {
+          "name": "セレーネ",
+          "display": "セレーネ",
+          "x": "@selene_witch9"
+        },
+        {
+          "name": "neru",
+          "display": "neru",
+          "x": "@nerulifx"
+        }
+      ]
+    }
+  ]
+}
