@@ -90,6 +90,27 @@ async function fetchImage(drive, cell, slug) {
   }
 }
 
+// works-hidden.json = 「マスターには残すが、サイトには出さない」大会のリスト。
+// マスターの行を消すと下の行の行番号がズレて、Discordに残った参加カードのボタンが
+// 別の大会を指してしまうため、行は消さずにサイト側だけで隠す。
+// 書式: [{ "name": "大会名", "date": "2026/07/20", "why": "理由" }]  ※date 省略時は同名を全部隠す
+function loadHidden() {
+  const p = path.join(__dirname, "works-hidden.json");
+  if (!fs.existsSync(p)) return [];
+  try {
+    return JSON.parse(fs.readFileSync(p, "utf8")).filter((h) => String(h.name || "").trim());
+  } catch (e) {
+    console.warn(`  works-hidden.json が読めない: ${e.message} → 非表示指定なしで続行`);
+    return [];
+  }
+}
+
+function isHidden(hidden, name, date) {
+  const n = String(name || "").trim();
+  const iso = parseDate(date).iso;
+  return hidden.some((h) => String(h.name).trim() === n && (!h.date || parseDate(h.date).iso === iso));
+}
+
 function cardHtml(t) {
   const link = t.link || "#";
   const target = link !== "#" ? ' target="_blank" rel="noopener"' : "";
@@ -114,8 +135,14 @@ async function main() {
 
   // 大会名がある行はすべて掲載（情報公開フラグでの絞り込みは廃止）。
   // ※「情報公開」列(D)は残してあるが現在は不問。将来は主催者側の掲載可否選択などに転用予定。
-  const pub = rows.filter((r) => (r[0] || "").trim());
+  // ただし works-hidden.json に載っている大会だけはサイトに出さない。
+  const hidden = loadHidden();
+  const named = rows.filter((r) => (r[0] || "").trim());
+  const pub = named.filter((r) => !isHidden(hidden, r[0], r[4]));
   console.log(`掲載対象: ${pub.length} 件（全件・情報公開フラグは不問）`);
+  for (const r of named.filter((r) => isHidden(hidden, r[0], r[4]))) {
+    console.log(`  非表示: ${String(r[0]).trim()}（works-hidden.json の指定）`);
+  }
 
   const items = [];
   for (const r of pub) {
