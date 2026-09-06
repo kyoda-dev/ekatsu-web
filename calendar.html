@@ -189,11 +189,12 @@
     <section class="page-head">
       <p class="eyebrow">calendar</p>
       <h1 class="page-head__title">ミラー配信カレンダー</h1>
-      <p class="page-head__lead">e活が協賛する大会の開催日と、ご自身の参加状況です。</p>
+      <p class="page-head__lead">e活が協賛する大会の開催日と、ご自身の参加状況です。<br />日付を押すと、大会の詳細と、参加のご回答ページへ進みます。</p>
     </section>
 
     <section class="cal">
-      <p class="cal__notice" id="calNotice">読み込んでいます…</p>
+      <!-- 案内は見出しの下に1セットでまとめた（2026-09-06 依田の指示）。この枠は読み込めなかった時だけ出す。 -->
+      <p class="cal__notice" id="calNotice" hidden></p>
 
       <div class="cal__bar">
         <p class="cal__me" id="calMe" hidden></p>
@@ -272,8 +273,6 @@
           if (!byDate.has(e.date)) byDate.set(e.date, []);
           byDate.get(e.date).push(e);
         }
-        document.getElementById('calNotice').textContent =
-          '日付を押すと、大会の詳細と、参加のご回答ページへ進みます。';
         document.getElementById('calGen').textContent =
           '最終更新 ' + new Date(j.generatedAt).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
         render();
@@ -294,8 +293,9 @@
         }
       })
       .catch(function (err) {
-        document.getElementById('calNotice').textContent =
-          '予定を読み込めませんでした。時間をおいて開き直してください。（' + err.message + '）';
+        var n = document.getElementById('calNotice');
+        n.textContent = '予定を読み込めませんでした。時間をおいて開き直してください。（' + err.message + '）';
+        n.hidden = false;
       });
 
     document.getElementById('calPrev').addEventListener('click', function () { view.setMonth(view.getMonth() - 1); render(); });
