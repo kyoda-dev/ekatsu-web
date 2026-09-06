@@ -50,30 +50,37 @@ async function driveList(token, q, pageSize = 100) {
 }
 
 const isFolder = f => String(f.mimeType || '') === 'application/vnd.google-apps.folder';
+const MAX_DEPTH = 3;
 
-// 共有ドライブ「<活動名>/02_2Dデータ素材」に素材が1つでもあるか。
-//   1つ下のフォルダ（「表情差分」「live2D」など）に入れている人もいるので、そこまで見る（2026-09-06 白峰凱志・バジルで確認）
+async function folderHasAsset(token, folderId, depth = 0) {
+  const files = await driveList(token, `'${folderId}' in parents and trashed=false`, 200);
+  if (files.some(f => !isFolder(f) && ASSET_EXT.test(f.name || ''))) return true;
+  if (depth >= MAX_DEPTH) return false;
+  for (const d of files.filter(isFolder).slice(0, 20)) {
+    if (await folderHasAsset(token, d.id, depth + 1)) return true;
+  }
+  return false;
+}
+
+// 共有ドライブ「<活動名>/02_2Dデータ素材」の中（下のフォルダも3段まで）に素材が1つでもあるか。
+//   ★2026-09-06 依田「今後“無い”と判断しないように」：直下だけ見て「表情差分」「live2D」に入れていた人を「無い」と誤判定した。
 export async function hasMaterials(token, name) {
   const folders = await driveList(token, `'${PARENT_ID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`, 200);
   const hit = folders.find(f => norm(f.name) === norm(name));
   if (!hit) return false;
   const subs = await driveList(token, `'${hit.id}' in parents and name='${ASSETS_SUBFOLDER}' and trashed=false`);
   if (!subs.length) return false;
-  const files = await driveList(token, `'${subs[0].id}' in parents and trashed=false`, 100);
-  if (files.some(f => !isFolder(f) && ASSET_EXT.test(f.name || ''))) return true;
-  for (const d of files.filter(isFolder).slice(0, 10)) {
-    const inner = await driveList(token, `'${d.id}' in parents and trashed=false`, 100);
-    if (inner.some(f => !isFolder(f) && ASSET_EXT.test(f.name || ''))) return true;
-  }
-  return false;
+  return folderHasAsset(token, subs[0].id);
 }
 
 // 名簿から k の持ち主を引く。無ければ null
+//   F列＝Botの門番（materialsGate.js）が書く「素材が届いているか」（○／空）。
+//   Botは部屋に貼られた画像まで見て判定するので、ここでは F列が○ならDriveを見ずに通す（Botとサイトで答えを食い違わせない）。
 export async function whoIs(token, key) {
-  const j = await gget(token, `https://sheets.googleapis.com/v4/spreadsheets/${PART_SHEET_ID}/values/${encodeURIComponent('名簿!A2:E')}`);
+  const j = await gget(token, `https://sheets.googleapis.com/v4/spreadsheets/${PART_SHEET_ID}/values/${encodeURIComponent('名簿!A2:F')}`);
   for (const row of (j.values || [])) {
     if (String(row[4] || '').trim() && String(row[4]).trim() === key) {
-      return { who: String(row[0] || '').trim(), tier: String(row[1] || '').trim() };
+      return { who: String(row[0] || '').trim(), tier: String(row[1] || '').trim(), flag: String(row[5] || '').trim() };
     }
   }
   return null;
@@ -97,7 +104,7 @@ export async function checkAccess(env, request, key) {
   else {
     // 運営の動作確認用の枠（e活運営…）は素材が無くても通す
     let ready = true;
-    if (!/^e活運営/.test(p.who)) {
+    if (!/^e活運営/.test(p.who) && p.flag !== '○') {
       try { ready = await hasMaterials(token, p.who); }
       catch (e) { ready = true; out = { driveError: e.message }; }
     }
