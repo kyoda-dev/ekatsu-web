@@ -322,8 +322,9 @@
         cell.appendChild(el('div', 'cal__num', String(d)));
         for (var i = 0; i < Math.min(list.length, 2); i++) {
           var e = list[i];
-          var bar = el('div', 'cal__ev' + (e.yes.length ? ' is-filled' : ''),
-            (e.time ? e.time + ' ' : '') + e.name);
+          // 升目には大会名だけ（時刻は右の枠と詳細ページで見える）。時刻を付けると101px幅に入りきらない
+          var bar = el('div', 'cal__ev' + (e.yes.length ? ' is-filled' : ''), e.name);
+          if (e.time) bar.title = e.time + ' ' + e.name;
           cell.appendChild(bar);
         }
         if (list.length > 2) cell.appendChild(el('div', 'cal__more', 'ほか' + (list.length - 2) + '件'));
