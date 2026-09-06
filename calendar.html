@@ -137,6 +137,25 @@
     border-radius:4px;padding:12px 15px;font-size:12.5px;color:var(--cal-ink-2);
     line-height:1.8;margin-bottom:22px}
   .cal__notice b{font-weight:700}
+
+  /* ===== スマホ =====
+     1マスが44pxしかなく、大会名を入れても全部切れて読めなかった（2026-09-06 実測）。
+     升目では「その日に大会があるか」だけを色の帯で示し、中身は日を選んで下で読む形にする。
+     Googleカレンダーのスマホ表示と同じ考え方。 */
+  @media(max-width:560px){
+    .cal{padding:0 12px 60px}
+    .cal__cell{min-height:54px;padding:5px 3px;gap:2px;align-items:stretch}
+    .cal__num{font-size:12px;text-align:center}
+    .cal__ev{height:4px;padding:0;border-left:0;border-radius:2px;
+      background:var(--cal-open);font-size:0;line-height:0}
+    .cal__ev.is-filled{background:var(--cal-go)}
+    .cal__more{display:none}
+    .cal__cell.is-sel{padding:4px 2px}
+    .cal__panel{padding:16px 15px}
+    .cal__bar{gap:12px}
+    .cal__who{width:100%}
+    .cal select{flex:1;min-width:0}
+  }
   </style>
 </head>
 <body>
@@ -327,7 +346,18 @@
           cell.appendChild(bar);
         }
         if (list.length > 2) cell.appendChild(el('div', 'cal__more', 'ほか' + (list.length - 2) + '件'));
-        (function (k) { cell.addEventListener('click', function () { selected = k; render(); }); })(key);
+        (function (k) {
+          cell.addEventListener('click', function () {
+            selected = k;
+            render();
+            // スマホは詳細がカレンダーの下にあるので、選んだらそこまで運ぶ
+            if (window.matchMedia('(max-width:900px)').matches) {
+              var smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+              document.querySelector('.cal__panel')
+                .scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+            }
+          });
+        })(key);
         grid.appendChild(cell);
       }
       renderDetail();
