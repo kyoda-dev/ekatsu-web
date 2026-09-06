@@ -91,8 +91,10 @@
   .cal__cell.is-sel{border-color:var(--cal-ink);border-width:2px;padding:5px}
   .cal__cell.is-past{opacity:.42}
 
-  .cal__ev{font-size:11px;line-height:1.4;padding:2px 5px;border-radius:3px;overflow:hidden;
-    white-space:nowrap;text-overflow:ellipsis;min-width:0;border-left:3px solid var(--cal-open);
+  /* 升目の大会名は2行まで折り返す。1行で「…」に切ると101px幅では「20:00 KCARZ C…」までしか読めない */
+  .cal__ev{font-size:11px;line-height:1.35;padding:2px 5px;border-radius:3px;overflow:hidden;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word;
+    min-width:0;border-left:3px solid var(--cal-open);
     background:var(--cal-open-soft);color:var(--cal-ink-2)}
   .cal__ev.is-filled{border-left-color:var(--cal-go);background:var(--cal-go-soft)}
   .cal__more{font-size:10px;color:var(--cal-muted);padding-left:2px}
@@ -148,7 +150,7 @@
     .cal{padding:0 12px 60px}
     .cal__cell{min-height:54px;padding:5px 3px;gap:2px;align-items:stretch}
     .cal__num{font-size:12px;text-align:center}
-    .cal__ev{height:4px;padding:0;border-left:0;border-radius:2px;
+    .cal__ev{display:block;height:4px;padding:0;border-left:0;border-radius:2px;
       background:var(--cal-open);font-size:0;line-height:0}
     .cal__ev.is-filled{background:var(--cal-go)}
     .cal__more{display:none}
