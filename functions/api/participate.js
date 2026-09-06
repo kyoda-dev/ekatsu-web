@@ -71,12 +71,14 @@ export async function onRequestPost({ request, env }) {
     // ---- 大会が本当にあるか／締め切りを過ぎていないか（2026-09-06 不備チェックで追加）----
     //   ★2026-09-06 依田：サポーターは当日でも急遽参加できるようにする。締切は「開催日が過ぎたら」だけ。
     //     （厳しくするのは主催者側＝3日前までに情報を出してもらう）
-    //   大会の一覧はこのサイトの calendar-data.json（毎時更新）を読む。無い名前は受け付けない。
+    //   大会の一覧は /api/calendar-data（シート直読み・2分キャッシュ）を読む。無い名前は受け付けない。
+    //   （2026-09-06 変更：静的な calendar-data.json は GitHub の毎時更新が鳴らず古くなるため）
     const DEADLINE_DAYS = 0;
     let ev = null;
     try {
       const origin = new URL(request.url).origin;
-      const data = await fetch(origin + '/calendar-data.json', { cf: { cacheTtl: 300 } }).then(r => r.json());
+      const data = await fetch(origin + '/api/calendar-data').then(r => r.json()).catch(() => ({}));
+      if (!Array.isArray(data.events)) Object.assign(data, await fetch(origin + '/calendar-data.json', { cf: { cacheTtl: 300 } }).then(r => r.json()));
       ev = (data.events || []).find(e => String(e.name || '').trim() === tournament) || null;
     } catch (e) { /* 一覧が読めない時は下で「見つからない」扱い */ }
     if (!ev) return json({ ok: false, error: 'この大会が見つかりませんでした' }, 404);

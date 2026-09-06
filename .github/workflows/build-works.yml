@@ -29,10 +29,22 @@ jobs:
           MASTER_SCHEDULE_ID: ${{ secrets.MASTER_SCHEDULE_ID }}
         run: cd tools && node build-works.js
 
+      # 2026-09-06：カレンダー用の静的データも一緒に作り直す（KV画像の場所を引き写すための土台。
+      #   カレンダー本体は /api/calendar-data がシートを直接読むので、ここが遅れても表示は古くならない）
+      - name: calendar-data.json を作る
+        env:
+          ENV_PATH: /dev/null
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          MASTER_SCHEDULE_ID: ${{ secrets.MASTER_SCHEDULE_ID }}
+          PARTICIPATION_SHEET_ID: ${{ secrets.PARTICIPATION_SHEET_ID }}
+        run: cd tools && node build-calendar.js
+
       - name: 変更があればコミット＆プッシュ
         run: |
           git config user.name "e-katsu-bot"
           git config user.email "k_yoda@alonzo.jp"
-          git add works.html assets/img/works/
+          git add works.html assets/img/works/ calendar-data.json
           git diff --cached --quiet || git commit -m "auto: works.html を更新"
           git push

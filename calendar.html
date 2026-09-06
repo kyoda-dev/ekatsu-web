@@ -265,7 +265,7 @@
       return n;
     }
 
-    fetch('calendar-data.json?v=' + Date.now())
+    fetch('/api/calendar-data?v=' + Date.now()).then(function (r) { if (!r.ok) throw new Error('api'); return r; }).catch(function () { return fetch('calendar-data.json?v=' + Date.now()); })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (j) {
         DATA = j;
