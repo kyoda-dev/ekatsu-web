@@ -46,15 +46,6 @@
   }
   .cal *{box-sizing:border-box}
 
-  .cal__bar{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;
-    padding-bottom:16px;border-bottom:1px solid var(--cal-line);margin-bottom:22px}
-  .cal__who{display:flex;align-items:center;gap:9px}
-  .cal__who label{font-size:11px;letter-spacing:.14em;color:var(--cal-muted);text-transform:uppercase}
-  .cal select{font-family:inherit;font-size:14px;color:var(--cal-ink);background:#fff;
-    border:1px solid var(--cal-line-strong);border-radius:4px;padding:7px 11px;min-width:200px}
-  .cal select:focus-visible{outline:2px solid var(--cal-ink);outline-offset:1px}
-  /* 名前のタグが無いとき（専用リンク以外で開いたとき）は、この帯ごと出さない */
-  .cal__bar:has(#calMe[hidden]){display:none}
 
   /* ★スマホでも minmax(0,1fr)。ただの 1fr は minmax(auto,1fr) なので、
      中身（大会名など）の最小幅で列が押し広げられて、パネルごと画面の外へ出る。
@@ -132,7 +123,8 @@
     white-space:nowrap;line-height:1.5}
   .cal__up-who.is-open{color:var(--cal-open)}
   .cal__up-note{margin:10px 0 0;font-size:11.5px;color:var(--cal-muted);line-height:1.7}
-  .cal__me{margin:0;font-size:12.5px;color:var(--cal-ink-2);background:var(--cal-go-soft);
+  /* 「◯◯さんとして開いています」。カレンダーの右上に寄せる（月の切替ボタンと右端をそろえる） */
+  .cal__me{display:table;margin:0 0 10px auto;font-size:12.5px;background:var(--cal-go-soft);
     color:var(--cal-go);border-radius:99px;padding:4px 13px;white-space:nowrap}
 
   .cal__empty{color:var(--cal-muted);font-size:13px;padding:28px 0;text-align:center}
@@ -159,9 +151,6 @@
     .cal__more{display:none}
     .cal__cell.is-sel{padding:4px 2px}
     .cal__panel{padding:16px 15px}
-    .cal__bar{gap:12px}
-    .cal__who{width:100%}
-    .cal select{flex:1;min-width:0}
   }
   </style>
 </head>
@@ -196,12 +185,10 @@
       <!-- 案内は見出しの下に1セットでまとめた（2026-09-06 依田の指示）。この枠は読み込めなかった時だけ出す。 -->
       <p class="cal__notice" id="calNotice" hidden></p>
 
-      <div class="cal__bar">
-        <p class="cal__me" id="calMe" hidden></p>
-      </div>
-
       <div class="cal__cols">
         <div class="cal__main">
+          <!-- 「◯◯さんとして開いています」はカレンダーの右上に。見出しの下だと浮いて見えた（2026-09-06 依田） -->
+          <p class="cal__me" id="calMe" hidden></p>
           <div class="cal__mon">
             <div class="cal__mlabel" id="calMlabel">　</div>
             <div class="cal__nav">
