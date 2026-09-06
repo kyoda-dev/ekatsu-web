@@ -55,8 +55,11 @@
   .cal select:focus-visible{outline:2px solid var(--cal-ink);outline-offset:1px}
   .cal__hint{font-size:12.5px;color:var(--cal-muted);line-height:1.7;margin:0}
 
+  /* ★スマホでも minmax(0,1fr)。ただの 1fr は minmax(auto,1fr) なので、
+     中身（大会名など）の最小幅で列が押し広げられて、パネルごと画面の外へ出る。
+     2026-09-06にカレンダーの升目で踏んだのと同じ罠を、ここでもう一度踏んだ。 */
   .cal__cols{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:30px;align-items:start}
-  @media(max-width:900px){.cal__cols{grid-template-columns:1fr;gap:24px}}
+  @media(max-width:900px){.cal__cols{grid-template-columns:minmax(0,1fr);gap:24px}}
 
   .cal__mon{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
   .cal__mlabel{font-family:var(--cal-mono);font-size:18px;font-weight:600;letter-spacing:.02em}
@@ -114,17 +117,22 @@
   .cal__up-day{font-family:var(--cal-mono);font-size:12.5px;font-weight:600;color:var(--cal-ink-2);
     margin-bottom:5px;font-variant-numeric:tabular-nums}
   .cal__up.is-today .cal__up-day{color:var(--cal-today)}
-  .cal__up-ev{display:flex;gap:8px;align-items:center;font-size:12.5px;line-height:1.6;min-width:0;
-    padding:2px 0}
+  /* 1大会1行。KV → （時間＋大会名 ／ 配信者）の2段。狭くても押し出さないよう min-width:0 を通す。 */
+  .cal__up-ev{display:flex;gap:9px;align-items:center;min-width:0;padding:4px 0}
   /* KVは切り抜かない（contain）。主催者からお預かりしたものなので、縮小と配置だけにする。 */
-  .cal__up-kv{width:44px;height:28px;flex:none;object-fit:contain;background:#e9e5e0;border-radius:3px}
+  .cal__up-kv{width:46px;height:29px;flex:none;object-fit:contain;background:#e9e5e0;border-radius:3px}
+  .cal__up-body{flex:1 1 auto;min-width:0}
+  .cal__up-top{display:flex;gap:7px;align-items:baseline;min-width:0;font-size:12.5px;line-height:1.5}
   .cal__up-time{font-family:var(--cal-mono);color:var(--cal-muted);flex:none;
     font-variant-numeric:tabular-nums}
   .cal__up-name{font-weight:500;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
     white-space:nowrap}
-  .cal__up-who{flex:none;font-size:11px;color:var(--cal-go);max-width:40%;overflow:hidden;
-    text-overflow:ellipsis;white-space:nowrap}
+  .cal__up-who{font-size:11px;color:var(--cal-go);overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap;line-height:1.5}
   .cal__up-who.is-open{color:var(--cal-open)}
+  .cal__up-note{margin:10px 0 0;font-size:11.5px;color:var(--cal-muted);line-height:1.7}
+  .cal__me{margin:0;font-size:12.5px;color:var(--cal-ink-2);background:var(--cal-go-soft);
+    color:var(--cal-go);border-radius:99px;padding:4px 13px;white-space:nowrap}
 
   .cal__empty{color:var(--cal-muted);font-size:13px;padding:28px 0;text-align:center}
   .cal__foot{margin-top:26px;padding-top:14px;border-top:1px solid var(--cal-line);
@@ -189,10 +197,7 @@
 
       <div class="cal__bar">
         <p class="cal__hint">緑は配信する方が決まっている大会、オレンジは募集中の大会です。</p>
-        <div class="cal__who">
-          <label for="calMe">配信者</label>
-          <select id="calMe"><option value="">（選ばない）</option></select>
-        </div>
+        <p class="cal__me" id="calMe" hidden></p>
       </div>
 
       <div class="cal__cols">
@@ -218,7 +223,7 @@
         </div>
 
         <div class="cal__panel">
-          <h2 id="calDlabel">近いうちの大会</h2>
+          <h2 id="calDlabel">本日の大会</h2>
           <p class="cal__dsub">日付を押すと、その日の詳細と参加のご回答ページへ進みます。</p>
           <div id="calUpcoming"></div>
         </div>
@@ -268,35 +273,32 @@
           if (!byDate.has(e.date)) byDate.set(e.date, []);
           byDate.get(e.date).push(e);
         }
-        var sel = document.getElementById('calMe');
-        for (var k = 0; k < j.members.length; k++) {
-          var o = document.createElement('option');
-          o.value = j.members[k].name;
-          o.textContent = j.members[k].name;
-          sel.appendChild(o);
-        }
-        var saved = null;
-        try { saved = localStorage.getItem('ekatsu-cal-me'); } catch (err) {}
-        if (saved && j.members.some(function (m) { return m.name === saved; })) { me = saved; sel.value = saved; }
-        document.getElementById('calNotice').innerHTML = secret
-          ? '<b>日付を押すと、その日の詳細と参加のご回答ページへ進みます。</b>'
-            + '上の「配信者」でお名前を選ぶと、ご自身の予定に印が付きます。'
-          : '<b>日付を押すと、その日の大会の詳細が見られます。</b>'
-            + '参加のご回答には、ご自身のお部屋にお配りした専用のリンクからお入りください。';
+        document.getElementById('calNotice').textContent =
+          '日付を押すと、その日の大会の詳細と、参加のご回答ページへ進みます。';
         document.getElementById('calGen').textContent =
           '最終更新 ' + new Date(j.generatedAt).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
         render();
+        // ★お名前は「選ばせない」（2026-09-06 依田の指摘「この機能わかりずらい」）。
+        //   専用リンクで入った人は、そのリンクから誰かが分かる。選ぶ手間も迷いも要らない。
+        if (secret) {
+          fetch('/api/me?k=' + encodeURIComponent(secret))
+            .then(function (r) { return r.json(); })
+            .then(function (res) {
+              if (!res.ok || !res.who) return;
+              me = res.who;
+              var tag = document.getElementById('calMe');
+              tag.textContent = res.who + ' さんとして開いています';
+              tag.hidden = false;
+              render();
+            })
+            .catch(function () { /* 名前が引けなくても、見るぶんには困らない */ });
+        }
       })
       .catch(function (err) {
         document.getElementById('calNotice').textContent =
           '予定を読み込めませんでした。時間をおいて開き直してください。（' + err.message + '）';
       });
 
-    document.getElementById('calMe').addEventListener('change', function (ev) {
-      me = ev.target.value;
-      try { localStorage.setItem('ekatsu-cal-me', me); } catch (err) {}
-      render();
-    });
     document.getElementById('calPrev').addEventListener('click', function () { view.setMonth(view.getMonth() - 1); render(); });
     document.getElementById('calNext').addEventListener('click', function () { view.setMonth(view.getMonth() + 1); render(); });
     document.getElementById('calToday').addEventListener('click', function () {
@@ -339,45 +341,56 @@
       renderUpcoming();
     }
 
-    // 右側は「近いうちの大会」の一覧にした。日付ごとに1行、押すとその日の詳細へ。
+    // 右側は「本日の大会」だけ（2026-09-06 依田の指示。先の分まで並べると長くて読まれない）。
+    // 今日が空の日は、次に大会がある日を1日だけ出す。
     function renderUpcoming() {
       var box = document.getElementById('calUpcoming');
+      var head = document.getElementById('calDlabel');
       box.textContent = '';
-      var days = [];
-      byDate.forEach(function (list, key) { if (key >= todayKey) days.push({ key: key, list: list }); });
-      days.sort(function (a, b) { return a.key.localeCompare(b.key); });
-      days = days.slice(0, 8);
-      if (!days.length) {
-        box.appendChild(el('p', 'cal__empty', 'これから先の予定はまだありません。'));
-        return;
-      }
-      for (var i = 0; i < days.length; i++) {
-        var p = days[i].key.split('-');
-        var dd = new Date(+p[0], +p[1] - 1, +p[2]);
-        var a = document.createElement('a');
-        a.className = 'cal__up' + (days[i].key === todayKey ? ' is-today' : '');
-        a.href = withKey('day.html?d=' + days[i].key);
-        var head = el('div', 'cal__up-day',
-          (dd.getMonth() + 1) + '/' + dd.getDate() + '（' + DOW[dd.getDay()] + '）'
-          + (days[i].key === todayKey ? '　本日' : ''));
-        a.appendChild(head);
-        for (var k = 0; k < days[i].list.length; k++) {
-          var ev = days[i].list[k];
-          var line = el('div', 'cal__up-ev');
-          if (ev.kv) {
-            var kv = document.createElement('img');
-            kv.className = 'cal__up-kv';
-            kv.src = ev.kv; kv.alt = ''; kv.loading = 'lazy';
-            line.appendChild(kv);
-          }
-          line.appendChild(el('span', 'cal__up-time', ev.time || '未定'));
-          line.appendChild(el('span', 'cal__up-name', ev.name));
-          var who = ev.yes.length ? ev.yes.join('・') : '募集中';
-          line.appendChild(el('span', 'cal__up-who' + (ev.yes.length ? '' : ' is-open'), who));
-          a.appendChild(line);
+
+      var key = todayKey, list = byDate.get(todayKey) || [];
+      if (!list.length) {
+        var nexts = [];
+        byDate.forEach(function (l, k) { if (k > todayKey) nexts.push(k); });
+        nexts.sort();
+        if (!nexts.length) {
+          head.textContent = '本日の大会';
+          box.appendChild(el('p', 'cal__empty', 'これから先の予定はまだありません。'));
+          return;
         }
-        box.appendChild(a);
+        key = nexts[0]; list = byDate.get(key);
       }
+      var isToday = key === todayKey;
+      head.textContent = isToday ? '本日の大会' : '次の大会';
+
+      var p = key.split('-');
+      var dd = new Date(+p[0], +p[1] - 1, +p[2]);
+      var a = document.createElement('a');
+      a.className = 'cal__up' + (isToday ? ' is-today' : '');
+      a.href = withKey('day.html?d=' + key);
+      a.appendChild(el('div', 'cal__up-day',
+        (dd.getMonth() + 1) + '/' + dd.getDate() + '（' + DOW[dd.getDay()] + '）' + (isToday ? '　本日' : '')));
+      for (var k = 0; k < list.length; k++) {
+        var ev = list[k];
+        var line = el('div', 'cal__up-ev');
+        if (ev.kv) {
+          var kv = document.createElement('img');
+          kv.className = 'cal__up-kv';
+          kv.src = ev.kv; kv.alt = ''; kv.loading = 'lazy';
+          line.appendChild(kv);
+        }
+        var body = el('div', 'cal__up-body');
+        var top = el('div', 'cal__up-top');
+        top.appendChild(el('span', 'cal__up-time', ev.time || '未定'));
+        top.appendChild(el('span', 'cal__up-name', ev.name));
+        body.appendChild(top);
+        body.appendChild(el('div', 'cal__up-who' + (ev.yes.length ? '' : ' is-open'),
+          ev.yes.length ? ev.yes.join('・') : '募集中'));
+        line.appendChild(body);
+        a.appendChild(line);
+      }
+      box.appendChild(a);
+      box.appendChild(el('p', 'cal__up-note', 'ほかの日は左のカレンダーから選んでください。'));
     }
   })();
   </script>

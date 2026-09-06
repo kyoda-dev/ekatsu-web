@@ -48,11 +48,8 @@
     display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between}
   .day__date{font-family:var(--cal-mono);font-size:26px;font-weight:600;margin:0;letter-spacing:.01em}
   .day__count{color:var(--cal-muted);font-size:12.5px;margin:3px 0 0}
-  .day__who{display:flex;align-items:center;gap:9px}
-  .day__who label{font-size:11px;letter-spacing:.14em;color:var(--cal-muted);text-transform:uppercase}
-  .day select{font-family:inherit;font-size:14px;color:var(--cal-ink);background:#fff;
-    border:1px solid var(--cal-line-strong);border-radius:4px;padding:8px 11px;min-width:190px}
-  .day select:focus-visible{outline:2px solid var(--cal-ink);outline-offset:1px}
+  .day__me{margin:0;font-size:12.5px;background:var(--cal-go-soft);color:var(--cal-go);
+    border-radius:99px;padding:5px 14px;white-space:nowrap}
 
   .day__card{border:1px solid var(--cal-line);border-radius:6px;background:var(--cal-surface);
     padding:22px;margin-bottom:18px}
@@ -154,10 +151,7 @@
           <h1 class="day__date" id="dayDate">　</h1>
           <p class="day__count" id="dayCount">読み込んでいます…</p>
         </div>
-        <div class="day__who">
-          <label for="dayMe">あなた</label>
-          <select id="dayMe"><option value="">（選んでください）</option></select>
-        </div>
+        <p class="day__me" id="dayMe" hidden></p>
       </div>
 
       <p class="day__notice" id="dayNotice"></p>
@@ -232,24 +226,32 @@
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (j) {
         DATA = j;
-        var sel = document.getElementById('dayMe');
-        for (var k = 0; k < j.members.length; k++) {
-          var o = document.createElement('option');
-          o.value = j.members[k].name; o.textContent = j.members[k].name;
-          sel.appendChild(o);
-        }
-        var saved = null;
-        try { saved = localStorage.getItem('ekatsu-cal-me'); } catch (e) {}
-        if (saved && j.members.some(function (m) { return m.name === saved; })) { me = saved; sel.value = saved; }
-        sel.addEventListener('change', function (ev) {
-          me = ev.target.value;
-          try { localStorage.setItem('ekatsu-cal-me', me); } catch (e) {}
-          render();
-        });
-        document.getElementById('dayNotice').textContent = secret
-          ? 'このページからご回答いただけます。あとから押し直せます。'
+        var notice = document.getElementById('dayNotice');
+        notice.textContent = secret
+          ? 'お名前を確かめています…'
           : 'ご回答には、ご自身のお部屋にお配りした専用のリンクからお入りください。このページでは内容の確認のみできます。';
         render();
+        // ★お名前は選ばせない。専用リンクから誰かを引く（2026-09-06 依田の指摘）。
+        if (secret) {
+          fetch('/api/me?k=' + encodeURIComponent(secret))
+            .then(function (r) { return r.json(); })
+            .then(function (res) {
+              if (res.ok && res.who) {
+                me = res.who;
+                var tag = document.getElementById('dayMe');
+                tag.textContent = res.who + ' さんとして開いています';
+                tag.hidden = false;
+                notice.textContent = 'そのままご回答いただけます。あとから押し直せます。';
+              } else {
+                notice.textContent = 'リンクが確かめられませんでした。お手数ですが運営までお知らせください。';
+              }
+              render();
+            })
+            .catch(function () {
+              notice.textContent = 'リンクが確かめられませんでした。お手数ですが運営までお知らせください。';
+              render();
+            });
+        }
       })
       .catch(function (err) {
         document.getElementById('dayCount').textContent =
@@ -304,11 +306,10 @@
           // ---- 参加のご回答 ----
           var ask = el('div', 'day__ask');
           ask.appendChild(el('h3', null, 'この大会のミラー配信に参加されますか？'));
-          var lead = el('p', null,
-            !secret ? 'ご回答は、ご自身のお部屋にお配りした専用のリンクからお願いします。'
-              : (!me ? '上の「あなた」でお名前を選んでからお答えください。'
-                : '押すだけで回答できます。あとから変更できます。'));
-          ask.appendChild(lead);
+          // 上の案内と同じことを二度書かない（2026-09-06 スマホで見たら重複していた）。
+          if (!secret || !me) {
+            ask.appendChild(el('p', null, 'ご回答には専用のリンクからお入りください。'));
+          }
 
           var cur = ev.yes.indexOf(me) >= 0 ? 'yes'
             : ev.maybe.indexOf(me) >= 0 ? 'maybe'
