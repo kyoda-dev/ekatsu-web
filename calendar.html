@@ -50,10 +50,13 @@
   /* ★スマホでも minmax(0,1fr)。ただの 1fr は minmax(auto,1fr) なので、
      中身（大会名など）の最小幅で列が押し広げられて、パネルごと画面の外へ出る。
      2026-09-06にカレンダーの升目で踏んだのと同じ罠を、ここでもう一度踏んだ。 */
-  .cal__cols{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:30px;align-items:start}
+  .cal__cols{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:30px;align-items:start}
   @media(max-width:900px){.cal__cols{grid-template-columns:minmax(0,1fr);gap:24px}}
 
-  .cal__mon{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  /* 月の行＝「2026年 9月 …… [◯◯さんとして開いています] [← 前の月][今月][次の月 →]」の1列。
+     名前のタグはここに置く（見出しの下だと宙に浮いて見えた・2026-09-06 依田） */
+  .cal__mon{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:14px}
+  .cal__mon .cal__me{margin-left:auto}
   .cal__mlabel{font-family:var(--cal-mono);font-size:18px;font-weight:600;letter-spacing:.02em}
   .cal__nav{display:flex;gap:6px}
   .cal__nav button{font-family:inherit;font-size:13px;color:var(--cal-ink-2);background:#fff;
@@ -69,7 +72,7 @@
   .cal__dow span:first-child{color:var(--cal-today)}
 
   .cal__grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
-  .cal__cell{position:relative;min-width:0;min-height:84px;background:var(--cal-surface);
+  .cal__cell{position:relative;min-width:0;min-height:92px;background:var(--cal-surface);
     border:1px solid var(--cal-line);text-decoration:none;
     border-radius:4px;padding:6px;text-align:left;cursor:pointer;font-family:inherit;color:inherit;
     display:flex;flex-direction:column;gap:3px}
@@ -88,7 +91,7 @@
   .cal__cell.is-sel{border-color:var(--cal-ink);border-width:2px;padding:5px}
   .cal__cell.is-past{opacity:.42}
 
-  .cal__ev{font-size:10.5px;line-height:1.35;padding:2px 5px;border-radius:3px;overflow:hidden;
+  .cal__ev{font-size:11px;line-height:1.4;padding:2px 5px;border-radius:3px;overflow:hidden;
     white-space:nowrap;text-overflow:ellipsis;min-width:0;border-left:3px solid var(--cal-open);
     background:var(--cal-open-soft);color:var(--cal-ink-2)}
   .cal__ev.is-filled{border-left-color:var(--cal-go);background:var(--cal-go-soft)}
@@ -97,7 +100,7 @@
   .cal__panel{background:var(--cal-surface);border:1px solid var(--cal-line);border-radius:6px;
     padding:20px;position:sticky;top:16px}
   @media(max-width:900px){.cal__panel{position:static}}
-  .cal__panel h2{margin:0 0 2px;font-family:var(--cal-mono);font-size:17px;font-weight:600;letter-spacing:.01em}
+  .cal__panel h2{margin:0 0 14px;font-family:var(--cal-mono);font-size:17px;font-weight:600;letter-spacing:.01em}
   .cal__dsub{color:var(--cal-muted);font-size:12px;margin:0 0 18px}
 
   /* 右側＝近いうちの大会。1日1ブロック、押すとその日の詳細ページへ。 */
@@ -124,7 +127,7 @@
   .cal__up-who.is-open{color:var(--cal-open)}
   .cal__up-note{margin:10px 0 0;font-size:11.5px;color:var(--cal-muted);line-height:1.7}
   /* 「◯◯さんとして開いています」。カレンダーの右上に寄せる（月の切替ボタンと右端をそろえる） */
-  .cal__me{display:table;margin:0 0 10px auto;font-size:12.5px;background:var(--cal-go-soft);
+  .cal__me{margin:0;font-size:12.5px;background:var(--cal-go-soft);
     color:var(--cal-go);border-radius:99px;padding:4px 13px;white-space:nowrap}
 
   .cal__empty{color:var(--cal-muted);font-size:13px;padding:28px 0;text-align:center}
@@ -151,6 +154,7 @@
     .cal__more{display:none}
     .cal__cell.is-sel{padding:4px 2px}
     .cal__panel{padding:16px 15px}
+    .cal__mon .cal__me{margin-left:0;width:100%;text-align:center}
   }
   </style>
 </head>
@@ -188,9 +192,9 @@
       <div class="cal__cols">
         <div class="cal__main">
           <!-- 「◯◯さんとして開いています」はカレンダーの右上に。見出しの下だと浮いて見えた（2026-09-06 依田） -->
-          <p class="cal__me" id="calMe" hidden></p>
           <div class="cal__mon">
             <div class="cal__mlabel" id="calMlabel">　</div>
+            <p class="cal__me" id="calMe" hidden></p>
             <div class="cal__nav">
               <button id="calPrev" type="button">← 前の月</button>
               <button id="calToday" type="button">今月</button>
@@ -211,7 +215,6 @@
 
         <div class="cal__panel">
           <h2 id="calDlabel">本日の大会</h2>
-          <p class="cal__dsub">日付を押すと、その日の詳細と参加のご回答ページへ進みます。</p>
           <div id="calUpcoming"></div>
         </div>
       </div>
