@@ -63,6 +63,24 @@ function parseDate(str) {
 const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const oneLine = (s, n) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, n);
 
+// ---- 大会のKV画像 ----
+// build-works.js が assets/img/works/<slug>.<ext> に落としているものを**そのまま使い回す**。
+// slug の作り方も build-works.js と同じ（ここを変えると別名になって見つからなくなる）。
+// 毎時のこの処理で画像を落とし直すと、リポジトリに画像のコミットが積み上がるので取りに行かない。
+// マスターのM列に入ったばかりでまだ落ちていない大会は、次の build-works.js の実行で入る。
+const IMG_DIR = path.join(__dirname, '..', 'assets', 'img', 'works');
+function asciiSlug(name, fallback) {
+  const s = String(name || '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
+  return s || fallback;
+}
+function findKv(dateIso, name) {
+  const slug = `${dateIso || 'x'}-${asciiSlug(name, 'tour')}`.slice(0, 60);
+  for (const ext of ['webp', 'jpg', 'jpeg', 'png']) {
+    if (fs.existsSync(path.join(IMG_DIR, `${slug}.${ext}`))) return `assets/img/works/${slug}.${ext}`;
+  }
+  return '';
+}
+
 (async () => {
   if (!PART_ID) throw new Error('PARTICIPATION_SHEET_ID が未設定');
   const sheets = google.sheets({ version: 'v4', auth: getAuth() });
@@ -104,6 +122,7 @@ const oneLine = (s, n) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, n
     events.push({
       date: ymd(d),
       name: name.replace(/\s+/g, ' '),
+      kv: findKv(ymd(d), name),
       game: (r[6] || '').trim(),                 // G列
       time: (r[9] || '').trim().replace(/\s+/g, '').slice(0, 5) || '',   // J列＝開始時間
       streamUrl: (r[7] || '').trim(),            // H列

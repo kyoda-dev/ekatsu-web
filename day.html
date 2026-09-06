@@ -56,6 +56,12 @@
 
   .day__card{border:1px solid var(--cal-line);border-radius:6px;background:var(--cal-surface);
     padding:22px;margin-bottom:18px}
+
+  /* 大会のKV画像。★主催者からお預かりしたものなので、切り抜かない・組み替えない。
+     object-fit は必ず contain（cover は端が切れる＝切り抜きと同じことになる）。
+     余白が出るぶんは落ち着いた地色で受ける。 */
+  .day__kv{display:block;width:100%;max-height:280px;object-fit:contain;
+    background:#e9e5e0;border-radius:4px;margin-bottom:16px}
   .day__t{display:flex;gap:11px;align-items:baseline;flex-wrap:wrap}
   .day__time{font-family:var(--cal-mono);font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
   .day__name{font-size:19px;font-weight:700;line-height:1.45;margin:0;text-wrap:balance}
@@ -266,6 +272,15 @@
       for (var i = 0; i < list.length; i++) {
         (function (ev) {
           var card = el('div', 'day__card');
+
+          if (ev.kv) {
+            var kv = document.createElement('img');
+            kv.className = 'day__kv';
+            kv.src = ev.kv;
+            kv.alt = ev.name + ' のメイン画像';
+            kv.loading = 'lazy';
+            card.appendChild(kv);
+          }
 
           var t = el('div', 'day__t');
           t.appendChild(el('span', 'day__time', ev.time || '時間未定'));
