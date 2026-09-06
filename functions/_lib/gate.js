@@ -44,20 +44,28 @@ const norm = s => String(s || '').toLowerCase().replace(/[\s　]/g, '');
 
 async function driveList(token, q, pageSize = 100) {
   const u = 'https://www.googleapis.com/drive/v3/files?' + new URLSearchParams({
-    q, fields: 'files(id,name)', supportsAllDrives: 'true', includeItemsFromAllDrives: 'true', pageSize: String(pageSize),
+    q, fields: 'files(id,name,mimeType)', supportsAllDrives: 'true', includeItemsFromAllDrives: 'true', pageSize: String(pageSize),
   });
   return (await gget(token, u)).files || [];
 }
 
-// 共有ドライブ「<活動名>/02_2Dデータ素材」に素材が1つでもあるか
+const isFolder = f => String(f.mimeType || '') === 'application/vnd.google-apps.folder';
+
+// 共有ドライブ「<活動名>/02_2Dデータ素材」に素材が1つでもあるか。
+//   1つ下のフォルダ（「表情差分」「live2D」など）に入れている人もいるので、そこまで見る（2026-09-06 白峰凱志・バジルで確認）
 export async function hasMaterials(token, name) {
   const folders = await driveList(token, `'${PARENT_ID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`, 200);
   const hit = folders.find(f => norm(f.name) === norm(name));
   if (!hit) return false;
   const subs = await driveList(token, `'${hit.id}' in parents and name='${ASSETS_SUBFOLDER}' and trashed=false`);
   if (!subs.length) return false;
-  const files = await driveList(token, `'${subs[0].id}' in parents and trashed=false and mimeType!='application/vnd.google-apps.folder'`, 100);
-  return files.some(f => ASSET_EXT.test(f.name || ''));
+  const files = await driveList(token, `'${subs[0].id}' in parents and trashed=false`, 100);
+  if (files.some(f => !isFolder(f) && ASSET_EXT.test(f.name || ''))) return true;
+  for (const d of files.filter(isFolder).slice(0, 10)) {
+    const inner = await driveList(token, `'${d.id}' in parents and trashed=false`, 100);
+    if (inner.some(f => !isFolder(f) && ASSET_EXT.test(f.name || ''))) return true;
+  }
+  return false;
 }
 
 // 名簿から k の持ち主を引く。無ければ null
