@@ -92,8 +92,8 @@
   .cal__cell.is-past{opacity:.42}
 
   /* 升目の大会名は2行まで折り返す。1行で「…」に切ると101px幅では「20:00 KCARZ C…」までしか読めない */
-  .cal__ev{font-size:11px;line-height:1.35;padding:2px 5px;border-radius:3px;overflow:hidden;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word;
+  .cal__ev{font-size:11px;line-height:1.35;padding:2px 4px;border-radius:3px;overflow:hidden;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-word;
     min-width:0;border-left:3px solid var(--cal-open);
     background:var(--cal-open-soft);color:var(--cal-ink-2)}
   .cal__ev.is-filled{border-left-color:var(--cal-go);background:var(--cal-go-soft)}
@@ -322,9 +322,12 @@
         cell.appendChild(el('div', 'cal__num', String(d)));
         for (var i = 0; i < Math.min(list.length, 2); i++) {
           var e = list[i];
-          // 升目には大会名だけ（時刻は右の枠と詳細ページで見える）。時刻を付けると101px幅に入りきらない
-          var bar = el('div', 'cal__ev' + (e.yes.length ? ' is-filled' : ''), e.name);
-          if (e.time) bar.title = e.time + ' ' + e.name;
+          // 升目には大会名だけ（時刻は右の枠と詳細ページで見える）。時刻を付けると101px幅に入りきらない。
+          // 末尾の「Day2」も外す＝升目そのものが日付なので要らない。単語で折り返すため
+          // 「NOBORI Season1 Day5」が3行になっていた。正式名はマウスを乗せると出る（title）。
+          var shortName = e.name.replace(/[　\s]*(?:Day\s*\d+|D\d+|第?\s*\d+\s*日目?)\s*$/i, '') || e.name;
+          var bar = el('div', 'cal__ev' + (e.yes.length ? ' is-filled' : ''), shortName);
+          bar.title = (e.time ? e.time + ' ' : '') + e.name;
           cell.appendChild(bar);
         }
         if (list.length > 2) cell.appendChild(el('div', 'cal__more', 'ほか' + (list.length - 2) + '件'));
