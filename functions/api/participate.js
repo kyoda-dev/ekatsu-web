@@ -105,6 +105,24 @@ export async function onRequestPost({ request, env }) {
       if (!r.ok) throw new Error('シートに書けませんでした');
     }
 
+    // ★Botへ知らせる（2026-09-06）。
+    //   これが無いと、シートは新しいのにDiscordの参加可否カードが古いままになり、
+    //   2つの場所で違うことを言う状態になる。Botが #カレンダー同期 を見張っていて、
+    //   この1行を拾ってその人の部屋のカードとピン留めを描き直す。
+    //   失敗しても回答そのものは成立させる（相手にエラーを見せない）。
+    if (env.DISCORD_SYNC_WEBHOOK) {
+      try {
+        await fetch(env.DISCORD_SYNC_WEBHOOK, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            content: 'CALSYNC ' + JSON.stringify({ who, tournament, mark }),
+            flags: 4096,   // 通知音を鳴らさない
+          }),
+        });
+      } catch (e) { /* 握りつぶす。カードは次の描き直しで揃う */ }
+    }
+
     return json({ ok: true, who, status });
   } catch (e) {
     return json({ ok: false, error: e.message || '受け付けられませんでした' }, 500);
