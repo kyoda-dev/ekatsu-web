@@ -323,8 +323,8 @@
             : ev.maybe.indexOf(me) >= 0 ? 'maybe'
               : ev.no.indexOf(me) >= 0 ? 'no' : null;
 
-          // 回答の締め切り＝開催3日前（Discordのカードと同じ）。過ぎていたらボタンを押せなくする。
-          var locked = daysUntil(ev.date) < 3;
+          // 当日でも急遽参加できるようにする（2026-09-06 依田）。押せなくなるのは開催日が過ぎた大会だけ。
+          var locked = daysUntil(ev.date) < 0;
 
           var row = el('div', 'day__join');
           var said = el('p', 'day__said', '');
@@ -341,9 +341,7 @@
           }
           ask.appendChild(row);
           if (locked) {
-            said.textContent = daysUntil(ev.date) < 0
-              ? 'この大会は終了しています。'
-              : '回答の締め切り（開催3日前）を過ぎています。変更が必要な場合は運営（e活）までご連絡ください。';
+            said.textContent = 'この大会は終了しています。';
           }
           ask.appendChild(said);
           card.appendChild(ask);

@@ -69,10 +69,10 @@ export async function onRequestPost({ request, env }) {
     if (!STATUS_MARK[status]) return json({ ok: false, error: '回答の中身が正しくありません' }, 400);
 
     // ---- 大会が本当にあるか／締め切りを過ぎていないか（2026-09-06 不備チェックで追加）----
-    //   Discordのカードは「開催3日前」で回答を締め切る（index.js の answerLocked）。Webも同じにしないと、
-    //   Webからだけ締切後や過去の大会に答えられてしまい、2か所で言うことが変わる。
+    //   ★2026-09-06 依田：サポーターは当日でも急遽参加できるようにする。締切は「開催日が過ぎたら」だけ。
+    //     （厳しくするのは主催者側＝3日前までに情報を出してもらう）
     //   大会の一覧はこのサイトの calendar-data.json（毎時更新）を読む。無い名前は受け付けない。
-    const DEADLINE_DAYS = 3;
+    const DEADLINE_DAYS = 0;
     let ev = null;
     try {
       const origin = new URL(request.url).origin;
@@ -88,7 +88,7 @@ export async function onRequestPost({ request, env }) {
       const evUtcMid = Date.UTC(y, m - 1, d);
       const daysUntil = Math.round((evUtcMid - todayUtcMid) / 86400000);
       if (daysUntil < DEADLINE_DAYS) {
-        return json({ ok: false, error: '回答の締め切り（開催3日前）を過ぎています。変更が必要な場合は運営（e活）までご連絡ください' }, 409);
+        return json({ ok: false, error: 'この大会は終了しています' }, 409);
       }
     }
 
