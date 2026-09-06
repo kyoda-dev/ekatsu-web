@@ -11,6 +11,14 @@ on:
   schedule:
     - cron: '5 * * * *'     # 毎時5分（UTC。JSTでも毎時5分）
   workflow_dispatch:        # 手動実行ボタン
+  # ★2026-09-06：足した日の 16:05・17:05・18:05 と3回スケジュールが鳴らなかった（実行0回）。
+  #   GitHubは新しい schedule をすぐ拾わないことがあるので、このファイルか生成スクリプトを
+  #   押した時にも1回走らせて、鍵と手順が通ることを確かめられるようにした。
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-calendar.yml'
+      - 'tools/build-calendar.js'
 
 permissions:
   contents: write
