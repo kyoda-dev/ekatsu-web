@@ -1,0 +1,52 @@
+name: ミラー配信カレンダーの更新
+
+# 2026-09-06 新設（依田の指示）。
+# Discordのテキストの予定表は見づらいので、ブラウザの月カレンダー（/calendar）に移した。
+# ここはマスターと参加可否シートを読んで calendar-data.json を書き出すだけ。
+#
+# ★1時間ごとに回している。参加可否の回答は日中よく動くため。
+#   中身が変わらなければコミットしないので、無駄なデプロイは起きない。
+#   止める時は schedule の2行をコメントに戻す。
+on:
+  schedule:
+    - cron: '5 * * * *'     # 毎時5分（UTC。JSTでも毎時5分）
+  workflow_dispatch:        # 手動実行ボタン
+
+permissions:
+  contents: write
+
+# 前の回が走っている間に次が始まらないようにする（同じファイルを取り合わない）
+concurrency:
+  group: build-calendar
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 依存パッケージをインストール
+        run: cd tools && npm install
+
+      - name: calendar-data.json を作る
+        env:
+          ENV_PATH: /dev/null
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          MASTER_SCHEDULE_ID: ${{ secrets.MASTER_SCHEDULE_ID }}
+          PARTICIPATION_SHEET_ID: ${{ secrets.PARTICIPATION_SHEET_ID }}
+        run: cd tools && node build-calendar.js
+
+      - name: 変更があればコミット＆プッシュ
+        run: |
+          git config user.name "e-katsu-bot"
+          git config user.email "k_yoda@alonzo.jp"
+          git add calendar-data.json
+          git diff --cached --quiet || git commit -m "auto: ミラー配信カレンダーを更新"
+          git push
