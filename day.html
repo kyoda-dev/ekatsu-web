@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>その日の大会 ｜ ミラー配信カレンダー ｜ e活</title>
+  <meta name="description" content="e活が協賛する大会の詳細と、応援配信（ミラー配信）への参加のご回答ページです。" />
+  <meta name="robots" content="noindex" />
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicon-180.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+
+  <style>
+  /* ===== その日の大会（2026-09-06 新設）=====
+     カレンダーの日付を押すとここへ来る。1日ぶんの大会を全部出して、参加のご回答まで取る。 */
+  .day{
+    --cal-surface:#faf9f7;
+    --cal-surface-2:#f2efeb;
+    --cal-line:#e6e2dd;
+    --cal-line-strong:#d6d0c8;
+    --cal-ink:#14110f;
+    --cal-ink-2:#4a443f;
+    --cal-muted:#8c8682;
+    --cal-go:#2e6b4f;
+    --cal-go-soft:#e8f0ea;
+    --cal-open:#a06a2c;
+    --cal-open-soft:#f7efe3;
+    --cal-today:#b33a2b;
+    --cal-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    max-width:760px;margin:0 auto;padding:0 20px 80px;color:var(--cal-ink);
+  }
+  .day *{box-sizing:border-box}
+
+  .day__back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--cal-ink-2);
+    text-decoration:none;border:1px solid var(--cal-line-strong);border-radius:4px;padding:6px 13px;
+    background:#fff;margin-bottom:22px}
+  .day__back:hover{background:var(--cal-surface-2)}
+
+  .day__head{border-bottom:1px solid var(--cal-line);padding-bottom:16px;margin-bottom:26px;
+    display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between}
+  .day__date{font-family:var(--cal-mono);font-size:26px;font-weight:600;margin:0;letter-spacing:.01em}
+  .day__count{color:var(--cal-muted);font-size:12.5px;margin:3px 0 0}
+  .day__who{display:flex;align-items:center;gap:9px}
+  .day__who label{font-size:11px;letter-spacing:.14em;color:var(--cal-muted);text-transform:uppercase}
+  .day select{font-family:inherit;font-size:14px;color:var(--cal-ink);background:#fff;
+    border:1px solid var(--cal-line-strong);border-radius:4px;padding:8px 11px;min-width:190px}
+  .day select:focus-visible{outline:2px solid var(--cal-ink);outline-offset:1px}
+
+  .day__card{border:1px solid var(--cal-line);border-radius:6px;background:var(--cal-surface);
+    padding:22px;margin-bottom:18px}
+  .day__t{display:flex;gap:11px;align-items:baseline;flex-wrap:wrap}
+  .day__time{font-family:var(--cal-mono);font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+  .day__name{font-size:19px;font-weight:700;line-height:1.45;margin:0;text-wrap:balance}
+  .day__game{font-size:12px;color:var(--cal-muted);letter-spacing:.05em;margin:4px 0 0}
+
+  .day__people{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+  .day__tag{font-size:12px;padding:3px 11px;border-radius:99px;background:var(--cal-go-soft);
+    color:var(--cal-go);white-space:nowrap}
+  .day__tag.is-may{background:var(--cal-open-soft);color:var(--cal-open)}
+  .day__tag.is-none{background:transparent;color:var(--cal-muted);padding-left:0}
+  .day__tag.is-me{box-shadow:inset 0 0 0 1.5px currentColor;font-weight:700}
+
+  /* ---- 参加のご回答 ---- */
+  .day__ask{margin-top:20px;padding-top:18px;border-top:1px solid var(--cal-line)}
+  .day__ask h3{margin:0 0 3px;font-size:14.5px;font-weight:700}
+  .day__ask p{margin:0 0 12px;font-size:12.5px;color:var(--cal-muted);line-height:1.7}
+  .day__join{display:flex;gap:8px;flex-wrap:wrap}
+  .day__join button{flex:1 1 120px;font-family:inherit;font-size:14px;font-weight:500;
+    padding:12px 8px;border-radius:5px;border:1px solid var(--cal-line-strong);background:#fff;
+    color:var(--cal-ink-2);cursor:pointer;line-height:1.4}
+  .day__join button:hover:not(:disabled){border-color:var(--cal-ink);color:var(--cal-ink)}
+  .day__join button:focus-visible{outline:2px solid var(--cal-ink);outline-offset:1px}
+  .day__join button[aria-pressed="true"]{background:var(--cal-go);border-color:var(--cal-go);
+    color:#fff;font-weight:700}
+  .day__join button[aria-pressed="true"].is-may{background:var(--cal-open);border-color:var(--cal-open)}
+  .day__join button[aria-pressed="true"].is-no{background:var(--cal-muted);border-color:var(--cal-muted)}
+  .day__join button:disabled{opacity:.45;cursor:default}
+  .day__said{margin-top:10px;font-size:12.5px;color:var(--cal-go);min-height:1.2em}
+  .day__said.is-err{color:var(--cal-today)}
+
+  .day__meta{font-size:13px;color:var(--cal-ink-2);margin:16px 0 0;padding-left:13px;
+    border-left:2px solid var(--cal-line-strong);line-height:1.85}
+  .day__meta b{font-weight:500;color:var(--cal-muted);font-size:10.5px;letter-spacing:.1em;
+    display:block;text-transform:uppercase;margin-bottom:3px}
+  .day__meta a{color:var(--cal-ink);word-break:break-all}
+  .day__clamp{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+  .day__clamp.is-open{display:block}
+  .day__more-btn{font-family:inherit;font-size:12px;color:var(--cal-muted);background:none;
+    border:0;padding:3px 0 0;cursor:pointer;text-decoration:underline}
+  .day__more-btn:hover{color:var(--cal-ink)}
+
+  .day__empty{color:var(--cal-muted);font-size:14px;padding:44px 0;text-align:center;
+    border:1px dashed var(--cal-line-strong);border-radius:6px}
+  .day__notice{background:#fff;border:1px solid var(--cal-line);border-left:3px solid var(--cal-ink);
+    border-radius:4px;padding:12px 15px;font-size:12.5px;color:var(--cal-ink-2);
+    line-height:1.8;margin-bottom:24px}
+  .day__nav{display:flex;justify-content:space-between;gap:10px;margin-top:26px;
+    padding-top:18px;border-top:1px solid var(--cal-line)}
+  .day__nav a{font-size:13px;color:var(--cal-ink-2);text-decoration:none;
+    border:1px solid var(--cal-line-strong);border-radius:4px;padding:8px 14px;background:#fff}
+  .day__nav a:hover{background:var(--cal-surface-2)}
+
+  @media(max-width:560px){
+    .day{padding:0 14px 60px}
+    .day__card{padding:17px 15px}
+    .day__date{font-size:22px}
+    .day__who{width:100%}
+    .day select{flex:1;min-width:0}
+    .day__join button{flex:1 1 100%}
+  }
+  </style>
+</head>
+<body>
+
+  <span class="side-rail side-rail--left">A&amp;L project 株式会社</span>
+  <span class="side-rail side-rail--right">eスポーツに社会的意義を</span>
+
+  <header class="site-header" id="top">
+    <nav class="nav">
+      <a href="index.html#message">ご挨拶</a>
+      <a href="works.html">協賛大会</a>
+      <a href="calendar.html">カレンダー</a>
+      <a href="reports.html">協賛レポート</a>
+      <a href="sponsors.html">共同スポンサー</a>
+      <a href="vtuber.html">VTuber</a>
+      <a href="news.html">お知らせ</a>
+      <a href="index.html#contact">お問い合わせ</a>
+    </nav>
+    <a href="index.html" class="brand">
+      <img src="assets/img/logo.webp" alt="e活 ロゴ" width="120" />
+    </a>
+  </header>
+
+  <main>
+    <section class="day">
+      <a class="day__back" id="dayBack" href="calendar.html">← カレンダーに戻る</a>
+
+      <div class="day__head">
+        <div>
+          <h1 class="day__date" id="dayDate">　</h1>
+          <p class="day__count" id="dayCount">読み込んでいます…</p>
+        </div>
+        <div class="day__who">
+          <label for="dayMe">あなた</label>
+          <select id="dayMe"><option value="">（選んでください）</option></select>
+        </div>
+      </div>
+
+      <p class="day__notice" id="dayNotice"></p>
+      <div id="dayList"></div>
+
+      <div class="day__nav">
+        <a id="dayPrev" href="#">← 前の日</a>
+        <a id="dayNext" href="#">次の日 →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <img src="assets/img/logo.webp" alt="e活 ロゴ" width="90" class="site-footer__logo" />
+    <p class="site-footer__copy">&copy; <a href="https://alonzo.jp" target="_blank" rel="noopener">A&amp;L project 株式会社</a> / e活</p>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script>
+  (function () {
+    var DOW = ['日','月','火','水','木','金','土'];
+    var params = new URLSearchParams(location.search);
+    var dateKey = params.get('d') || '';
+    var secret = params.get('k') || '';       // 本人だけに配る合言葉。無ければ回答できない。
+    var DATA = { members: [], events: [] };
+    var me = '';
+    var sending = false;
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) {
+      var t = new Date();
+      dateKey = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+    }
+    function shift(days) {
+      var p = dateKey.split('-');
+      var d = new Date(+p[0], +p[1] - 1, +p[2] + days);
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    function withKey(url) { return secret ? url + '&k=' + encodeURIComponent(secret) : url; }
+    function el(tag, cls, text) {
+      var n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text != null) n.textContent = text;
+      return n;
+    }
+    function metaBlock(label, body) {
+      var box = el('div', 'day__meta');
+      box.appendChild(el('b', null, label));
+      var text = el('div', 'day__clamp', body);
+      box.appendChild(text);
+      if (body.length > 110) {
+        var btn = el('button', 'day__more-btn', 'すべて見る');
+        btn.type = 'button';
+        btn.addEventListener('click', function () {
+          var open = text.classList.toggle('is-open');
+          btn.textContent = open ? '閉じる' : 'すべて見る';
+        });
+        box.appendChild(btn);
+      }
+      return box;
+    }
+
+    document.getElementById('dayBack').href = withKey('calendar.html?d=' + dateKey);
+    document.getElementById('dayPrev').href = withKey('day.html?d=' + shift(-1));
+    document.getElementById('dayNext').href = withKey('day.html?d=' + shift(1));
+
+    var p0 = dateKey.split('-');
+    var dObj = new Date(+p0[0], +p0[1] - 1, +p0[2]);
+    document.getElementById('dayDate').textContent =
+      (dObj.getMonth() + 1) + '月' + dObj.getDate() + '日（' + DOW[dObj.getDay()] + '）';
+
+    fetch('calendar-data.json?v=' + Date.now())
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (j) {
+        DATA = j;
+        var sel = document.getElementById('dayMe');
+        for (var k = 0; k < j.members.length; k++) {
+          var o = document.createElement('option');
+          o.value = j.members[k].name; o.textContent = j.members[k].name;
+          sel.appendChild(o);
+        }
+        var saved = null;
+        try { saved = localStorage.getItem('ekatsu-cal-me'); } catch (e) {}
+        if (saved && j.members.some(function (m) { return m.name === saved; })) { me = saved; sel.value = saved; }
+        sel.addEventListener('change', function (ev) {
+          me = ev.target.value;
+          try { localStorage.setItem('ekatsu-cal-me', me); } catch (e) {}
+          render();
+        });
+        document.getElementById('dayNotice').textContent = secret
+          ? 'このページからご回答いただけます。あとから押し直せます。'
+          : 'ご回答には、ご自身のお部屋にお配りした専用のリンクからお入りください。このページでは内容の確認のみできます。';
+        render();
+      })
+      .catch(function (err) {
+        document.getElementById('dayCount').textContent =
+          '予定を読み込めませんでした。時間をおいて開き直してください。（' + err.message + '）';
+      });
+
+    function render() {
+      var box = document.getElementById('dayList');
+      box.textContent = '';
+      var list = DATA.events.filter(function (e) { return e.date === dateKey; });
+      list.sort(function (a, b) { return String(a.time).localeCompare(String(b.time)); });
+      document.getElementById('dayCount').textContent =
+        list.length ? 'e活が協賛する大会 ' + list.length + '本' : 'この日は協賛大会がありません';
+
+      if (!list.length) {
+        box.appendChild(el('p', 'day__empty', 'この日は予定がありません。'));
+        return;
+      }
+
+      for (var i = 0; i < list.length; i++) {
+        (function (ev) {
+          var card = el('div', 'day__card');
+
+          var t = el('div', 'day__t');
+          t.appendChild(el('span', 'day__time', ev.time || '時間未定'));
+          t.appendChild(el('h2', 'day__name', ev.name));
+          card.appendChild(t);
+          if (ev.game) card.appendChild(el('p', 'day__game', ev.game));
+
+          var ppl = el('div', 'day__people');
+          if (!ev.yes.length && !ev.maybe.length) {
+            ppl.appendChild(el('span', 'day__tag is-none', 'まだ決まっていません（募集中）'));
+          } else {
+            for (var a = 0; a < ev.yes.length; a++) {
+              ppl.appendChild(el('span', 'day__tag' + (ev.yes[a] === me ? ' is-me' : ''), ev.yes[a]));
+            }
+            for (var b = 0; b < ev.maybe.length; b++) {
+              ppl.appendChild(el('span', 'day__tag is-may' + (ev.maybe[b] === me ? ' is-me' : ''), ev.maybe[b] + '（未定）'));
+            }
+          }
+          card.appendChild(ppl);
+
+          // ---- 参加のご回答 ----
+          var ask = el('div', 'day__ask');
+          ask.appendChild(el('h3', null, 'この大会のミラー配信に参加されますか？'));
+          var lead = el('p', null,
+            !secret ? 'ご回答は、ご自身のお部屋にお配りした専用のリンクからお願いします。'
+              : (!me ? '上の「あなた」でお名前を選んでからお答えください。'
+                : '押すだけで回答できます。あとから変更できます。'));
+          ask.appendChild(lead);
+
+          var cur = ev.yes.indexOf(me) >= 0 ? 'yes'
+            : ev.maybe.indexOf(me) >= 0 ? 'maybe'
+              : ev.no.indexOf(me) >= 0 ? 'no' : null;
+
+          var row = el('div', 'day__join');
+          var said = el('p', 'day__said', '');
+          var opts = [['yes', '参加します', ''], ['maybe', '未定', 'is-may'], ['no', '参加しません', 'is-no']];
+          for (var o = 0; o < opts.length; o++) {
+            (function (val, label, cls) {
+              var btn = el('button', cls, label);
+              btn.type = 'button';
+              btn.setAttribute('aria-pressed', String(cur === val));
+              btn.disabled = !secret || !me;
+              btn.addEventListener('click', function () { answer(ev, val, row, said); });
+              row.appendChild(btn);
+            })(opts[o][0], opts[o][1], opts[o][2]);
+          }
+          ask.appendChild(row);
+          ask.appendChild(said);
+          card.appendChild(ask);
+
+          if (ev.rule) card.appendChild(metaBlock('ミラー配信のルール', ev.rule));
+          if (ev.highlight) card.appendChild(metaBlock('見どころ', ev.highlight));
+          if (ev.streamUrl) {
+            var u = el('div', 'day__meta');
+            u.appendChild(el('b', null, '本配信'));
+            var link = document.createElement('a');
+            link.href = ev.streamUrl; link.textContent = ev.streamUrl;
+            link.target = '_blank'; link.rel = 'noopener noreferrer';
+            u.appendChild(link);
+            card.appendChild(u);
+          }
+          box.appendChild(card);
+        })(list[i]);
+      }
+    }
+
+    // 回答を送る。受け口は Cloudflare の /api/participate。
+    function answer(ev, status, row, said) {
+      if (sending) return;
+      sending = true;
+      said.className = 'day__said';
+      said.textContent = '送っています…';
+      var btns = row.querySelectorAll('button');
+      for (var i = 0; i < btns.length; i++) btns[i].disabled = true;
+
+      fetch('/api/participate', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ k: secret, tournament: ev.name, status: status }),
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (res) {
+          if (!res.ok || !res.j.ok) throw new Error(res.j && res.j.error ? res.j.error : '受け付けられませんでした');
+          var label = status === 'yes' ? '参加' : status === 'maybe' ? '未定' : '不参加';
+          said.textContent = '「' + label + '」で承りました。ありがとうございます。';
+          for (var i = 0; i < btns.length; i++) {
+            btns[i].setAttribute('aria-pressed', String(
+              (i === 0 && status === 'yes') || (i === 1 && status === 'maybe') || (i === 2 && status === 'no')));
+          }
+          // 表示中のデータも合わせて直す（開き直さなくても反映されるように）
+          var lists = { yes: ev.yes, maybe: ev.maybe, no: ev.no };
+          for (var key in lists) {
+            var idx = lists[key].indexOf(me);
+            if (idx >= 0) lists[key].splice(idx, 1);
+          }
+          lists[status].push(me);
+        })
+        .catch(function (err) {
+          said.className = 'day__said is-err';
+          said.textContent = '送れませんでした。' + err.message;
+        })
+        .then(function () {
+          sending = false;
+          for (var i = 0; i < btns.length; i++) btns[i].disabled = !secret || !me;
+          render();
+        });
+    }
+  })();
+  </script>
+</body>
+</html>

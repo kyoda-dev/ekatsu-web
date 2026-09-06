@@ -75,13 +75,16 @@
 
   .cal__grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
   .cal__cell{position:relative;min-width:0;min-height:84px;background:var(--cal-surface);
-    border:1px solid var(--cal-line);
+    border:1px solid var(--cal-line);text-decoration:none;
     border-radius:4px;padding:6px;text-align:left;cursor:pointer;font-family:inherit;color:inherit;
     display:flex;flex-direction:column;gap:3px}
   .cal__cell:hover{background:var(--cal-surface-2);border-color:var(--cal-line-strong)}
   .cal__cell:focus-visible{outline:2px solid var(--cal-ink);outline-offset:1px}
   .cal__cell.is-blank{background:transparent;border-color:transparent;cursor:default}
   .cal__cell.is-blank:hover{background:transparent}
+  /* 大会が無い日はリンクにしない（押しても何も無いページに飛ばさない） */
+  .cal__cell.is-nolink{cursor:default}
+  .cal__cell.is-nolink:hover{background:var(--cal-surface);border-color:var(--cal-line)}
   .cal__num{font-family:var(--cal-mono);font-size:13px;color:var(--cal-ink-2);
     font-variant-numeric:tabular-nums;line-height:1.3}
   .cal__cell.is-sun .cal__num{color:var(--cal-today)}
@@ -102,31 +105,23 @@
   .cal__panel h2{margin:0 0 2px;font-family:var(--cal-mono);font-size:17px;font-weight:600;letter-spacing:.01em}
   .cal__dsub{color:var(--cal-muted);font-size:12px;margin:0 0 18px}
 
-  .cal__card{border-top:1px solid var(--cal-line);padding-top:16px;margin-top:16px}
-  .cal__card:first-of-type{border-top:0;padding-top:0;margin-top:0}
-  .cal__t{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
-  .cal__time{font-family:var(--cal-mono);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
-  .cal__name{font-size:15px;font-weight:700;line-height:1.5}
-  .cal__game{font-size:11.5px;color:var(--cal-muted);letter-spacing:.04em;margin:2px 0 0}
-  .cal__meta{font-size:12.5px;color:var(--cal-ink-2);margin:10px 0 0;padding-left:11px;
-    border-left:2px solid var(--cal-line-strong);line-height:1.75}
-  .cal__meta b{font-weight:500;color:var(--cal-muted);font-size:10.5px;letter-spacing:.1em;
-    display:block;text-transform:uppercase;margin-bottom:2px}
-  .cal__meta a{color:var(--cal-ink);word-break:break-all}
-  /* 主催者が書く見どころは長い（400字近い大会もある）。4行で畳んで、押したら全部出す。 */
-  .cal__clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-  .cal__clamp.is-open{display:block}
-  .cal__more-btn{font-family:inherit;font-size:11.5px;color:var(--cal-muted);background:none;
-    border:0;padding:2px 0 0;cursor:pointer;text-decoration:underline}
-  .cal__more-btn:hover{color:var(--cal-ink)}
-  .cal__more-btn:focus-visible{outline:2px solid var(--cal-ink);outline-offset:1px}
-
-  .cal__people{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px}
-  .cal__tag{font-size:11.5px;padding:2.5px 10px;border-radius:99px;background:var(--cal-go-soft);
-    color:var(--cal-go);white-space:nowrap}
-  .cal__tag.is-may{background:var(--cal-open-soft);color:var(--cal-open)}
-  .cal__tag.is-none{background:transparent;color:var(--cal-muted);padding-left:0}
-  .cal__tag.is-me{box-shadow:inset 0 0 0 1.5px currentColor;font-weight:700}
+  /* 右側＝近いうちの大会。1日1ブロック、押すとその日の詳細ページへ。 */
+  .cal__up{display:block;text-decoration:none;color:inherit;background:#fff;
+    border:1px solid var(--cal-line);border-radius:5px;padding:11px 13px;margin-bottom:8px}
+  .cal__up:hover{border-color:var(--cal-line-strong);background:var(--cal-surface-2)}
+  .cal__up:focus-visible{outline:2px solid var(--cal-ink);outline-offset:1px}
+  .cal__up.is-today{border-color:var(--cal-today)}
+  .cal__up-day{font-family:var(--cal-mono);font-size:12.5px;font-weight:600;color:var(--cal-ink-2);
+    margin-bottom:5px;font-variant-numeric:tabular-nums}
+  .cal__up.is-today .cal__up-day{color:var(--cal-today)}
+  .cal__up-ev{display:flex;gap:8px;align-items:baseline;font-size:12.5px;line-height:1.6;min-width:0}
+  .cal__up-time{font-family:var(--cal-mono);color:var(--cal-muted);flex:none;
+    font-variant-numeric:tabular-nums}
+  .cal__up-name{font-weight:500;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap}
+  .cal__up-who{flex:none;font-size:11px;color:var(--cal-go);max-width:40%;overflow:hidden;
+    text-overflow:ellipsis;white-space:nowrap}
+  .cal__up-who.is-open{color:var(--cal-open)}
 
   .cal__empty{color:var(--cal-muted);font-size:13px;padding:28px 0;text-align:center}
   .cal__foot{margin-top:26px;padding-top:14px;border-top:1px solid var(--cal-line);
@@ -198,7 +193,7 @@
       </div>
 
       <div class="cal__cols">
-        <div>
+        <div class="cal__main">
           <div class="cal__mon">
             <div class="cal__mlabel" id="calMlabel">　</div>
             <div class="cal__nav">
@@ -220,9 +215,9 @@
         </div>
 
         <div class="cal__panel">
-          <h2 id="calDlabel">日を選んでください</h2>
-          <p class="cal__dsub" id="calDsub">カレンダーの日付を選ぶと、その日の大会と参加状況が出ます。</p>
-          <div id="calDetail"><p class="cal__empty">カレンダーから日を選んでください。</p></div>
+          <h2 id="calDlabel">近いうちの大会</h2>
+          <p class="cal__dsub">日付を押すと、その日の詳細と参加のご回答ページへ進みます。</p>
+          <div id="calUpcoming"></div>
         </div>
       </div>
     </section>
@@ -241,37 +236,24 @@
     var DATA = { members: [], events: [], generatedAt: null };
     var now = new Date();
     var todayKey = fmt(now);
-    var view = new Date(now.getFullYear(), now.getMonth(), 1);
-    var selected = todayKey;
+    var params = new URLSearchParams(location.search);
+    // 本人だけに配る合言葉。あれば詳細ページまで持っていく（そちらで回答するのに使う）。
+    var secret = params.get('k') || '';
+    var start = params.get('d') || '';
+    var view = /^\d{4}-\d{2}-\d{2}$/.test(start)
+      ? new Date(+start.slice(0, 4), +start.slice(5, 7) - 1, 1)
+      : new Date(now.getFullYear(), now.getMonth(), 1);
     var me = '';
 
     function fmt(d) {
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
+    function withKey(url) { return secret ? url + '&k=' + encodeURIComponent(secret) : url; }
     function el(tag, cls, text) {
       var n = document.createElement(tag);
       if (cls) n.className = cls;
       if (text != null) n.textContent = text;
       return n;
-    }
-
-    // 見出し＋本文の1ブロック。長い本文は4行で畳んで、押したら全部出す。
-    // （主催者が書く見どころは400字近いことがあり、そのまま出すと詳細が読めなくなる）
-    function metaBlock(label, body) {
-      var box = el('div', 'cal__meta');
-      box.appendChild(el('b', null, label));
-      var text = el('div', 'cal__clamp', body);
-      box.appendChild(text);
-      if (body.length > 90) {
-        var btn = el('button', 'cal__more-btn', 'すべて見る');
-        btn.type = 'button';
-        btn.addEventListener('click', function () {
-          var open = text.classList.toggle('is-open');
-          btn.textContent = open ? '閉じる' : 'すべて見る';
-        });
-        box.appendChild(btn);
-      }
-      return box;
     }
 
     fetch('calendar-data.json?v=' + Date.now())
@@ -293,10 +275,11 @@
         var saved = null;
         try { saved = localStorage.getItem('ekatsu-cal-me'); } catch (err) {}
         if (saved && j.members.some(function (m) { return m.name === saved; })) { me = saved; sel.value = saved; }
-        document.getElementById('calNotice').innerHTML =
-          '<b>参加のご回答はDiscordの参加可否カードからお願いします。</b>'
-          + 'このページからも回答できるようにする準備を進めています。'
-          + '上の「配信者」でお名前を選ぶと、ご自身の予定に印が付きます。';
+        document.getElementById('calNotice').innerHTML = secret
+          ? '<b>日付を押すと、その日の詳細と参加のご回答ページへ進みます。</b>'
+            + '上の「配信者」でお名前を選ぶと、ご自身の予定に印が付きます。'
+          : '<b>日付を押すと、その日の大会の詳細が見られます。</b>'
+            + '参加のご回答には、ご自身のお部屋にお配りした専用のリンクからお入りください。';
         document.getElementById('calGen').textContent =
           '最終更新 ' + new Date(j.generatedAt).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
         render();
@@ -314,7 +297,7 @@
     document.getElementById('calPrev').addEventListener('click', function () { view.setMonth(view.getMonth() - 1); render(); });
     document.getElementById('calNext').addEventListener('click', function () { view.setMonth(view.getMonth() + 1); render(); });
     document.getElementById('calToday').addEventListener('click', function () {
-      view = new Date(now.getFullYear(), now.getMonth(), 1); selected = todayKey; render();
+      view = new Date(now.getFullYear(), now.getMonth(), 1); render();
     });
 
     function render() {
@@ -330,12 +313,14 @@
       for (var d = 1; d <= last; d++) {
         var date = new Date(y, m, d), key = fmt(date);
         var list = byDate.get(key) || [];
-        var cell = document.createElement('button');
-        cell.type = 'button';
+        // ★2026-09-06 依田の指示で、日付を押したら詳細ページ（day.html）へ飛ぶ形にした。
+        //   参加のご回答もそちらで取る。<a> にしてあるので新しいタブで開くこともできる。
+        var cell = document.createElement(list.length ? 'a' : 'div');
+        if (list.length) cell.href = withKey('day.html?d=' + key);
         cell.className = 'cal__cell'
+          + (list.length ? '' : ' is-nolink')
           + (date.getDay() === 0 ? ' is-sun' : '')
           + (key === todayKey ? ' is-today' : '')
-          + (key === selected ? ' is-sel' : '')
           + (key < todayKey ? ' is-past' : '');
         cell.setAttribute('aria-label', (m + 1) + '月' + d + '日 大会' + list.length + '件');
         cell.appendChild(el('div', 'cal__num', String(d)));
@@ -346,72 +331,43 @@
           cell.appendChild(bar);
         }
         if (list.length > 2) cell.appendChild(el('div', 'cal__more', 'ほか' + (list.length - 2) + '件'));
-        (function (k) {
-          cell.addEventListener('click', function () {
-            selected = k;
-            render();
-            // スマホは詳細がカレンダーの下にあるので、選んだらそこまで運ぶ
-            if (window.matchMedia('(max-width:900px)').matches) {
-              var smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-              document.querySelector('.cal__panel')
-                .scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
-            }
-          });
-        })(key);
         grid.appendChild(cell);
       }
-      renderDetail();
+      renderUpcoming();
     }
 
-    function renderDetail() {
-      var box = document.getElementById('calDetail');
+    // 右側は「近いうちの大会」の一覧にした。日付ごとに1行、押すとその日の詳細へ。
+    function renderUpcoming() {
+      var box = document.getElementById('calUpcoming');
       box.textContent = '';
-      var parts = selected.split('-');
-      var d = new Date(+parts[0], +parts[1] - 1, +parts[2]);
-      document.getElementById('calDlabel').textContent =
-        (d.getMonth() + 1) + '月' + d.getDate() + '日（' + DOW[d.getDay()] + '）';
-      var list = byDate.get(selected) || [];
-      document.getElementById('calDsub').textContent =
-        list.length ? '協賛大会 ' + list.length + '本' : 'この日は協賛大会がありません';
-      if (!list.length) {
-        box.appendChild(el('p', 'cal__empty', 'この日は予定がありません。'));
+      var days = [];
+      byDate.forEach(function (list, key) { if (key >= todayKey) days.push({ key: key, list: list }); });
+      days.sort(function (a, b) { return a.key.localeCompare(b.key); });
+      days = days.slice(0, 8);
+      if (!days.length) {
+        box.appendChild(el('p', 'cal__empty', 'これから先の予定はまだありません。'));
         return;
       }
-      for (var i = 0; i < list.length; i++) {
-        var ev = list[i];
-        var card = el('div', 'cal__card');
-
-        var t = el('div', 'cal__t');
-        t.appendChild(el('span', 'cal__time', ev.time || '時間未定'));
-        t.appendChild(el('span', 'cal__name', ev.name));
-        card.appendChild(t);
-        if (ev.game) card.appendChild(el('p', 'cal__game', ev.game));
-
-        var ppl = el('div', 'cal__people');
-        if (!ev.yes.length && !ev.maybe.length) {
-          ppl.appendChild(el('span', 'cal__tag is-none', 'まだ決まっていません（募集中）'));
-        } else {
-          for (var a = 0; a < ev.yes.length; a++) {
-            ppl.appendChild(el('span', 'cal__tag' + (ev.yes[a] === me ? ' is-me' : ''), ev.yes[a]));
-          }
-          for (var b2 = 0; b2 < ev.maybe.length; b2++) {
-            ppl.appendChild(el('span', 'cal__tag is-may' + (ev.maybe[b2] === me ? ' is-me' : ''), ev.maybe[b2] + '（未定）'));
-          }
+      for (var i = 0; i < days.length; i++) {
+        var p = days[i].key.split('-');
+        var dd = new Date(+p[0], +p[1] - 1, +p[2]);
+        var a = document.createElement('a');
+        a.className = 'cal__up' + (days[i].key === todayKey ? ' is-today' : '');
+        a.href = withKey('day.html?d=' + days[i].key);
+        var head = el('div', 'cal__up-day',
+          (dd.getMonth() + 1) + '/' + dd.getDate() + '（' + DOW[dd.getDay()] + '）'
+          + (days[i].key === todayKey ? '　本日' : ''));
+        a.appendChild(head);
+        for (var k = 0; k < days[i].list.length; k++) {
+          var ev = days[i].list[k];
+          var line = el('div', 'cal__up-ev');
+          line.appendChild(el('span', 'cal__up-time', ev.time || '未定'));
+          line.appendChild(el('span', 'cal__up-name', ev.name));
+          var who = ev.yes.length ? ev.yes.join('・') : '募集中';
+          line.appendChild(el('span', 'cal__up-who' + (ev.yes.length ? '' : ' is-open'), who));
+          a.appendChild(line);
         }
-        card.appendChild(ppl);
-
-        if (ev.rule) card.appendChild(metaBlock('ミラー配信のルール', ev.rule));
-        if (ev.highlight) card.appendChild(metaBlock('見どころ', ev.highlight));
-        if (ev.streamUrl) {
-          var u = el('div', 'cal__meta');
-          u.appendChild(el('b', null, '本配信'));
-          var link = document.createElement('a');
-          link.href = ev.streamUrl; link.textContent = ev.streamUrl;
-          link.target = '_blank'; link.rel = 'noopener noreferrer';
-          u.appendChild(link);
-          card.appendChild(u);
-        }
-        box.appendChild(card);
+        box.appendChild(a);
       }
     }
   })();
