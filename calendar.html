@@ -53,7 +53,8 @@
   .cal select{font-family:inherit;font-size:14px;color:var(--cal-ink);background:#fff;
     border:1px solid var(--cal-line-strong);border-radius:4px;padding:7px 11px;min-width:200px}
   .cal select:focus-visible{outline:2px solid var(--cal-ink);outline-offset:1px}
-  .cal__hint{font-size:12.5px;color:var(--cal-muted);line-height:1.7;margin:0}
+  /* 名前のタグが無いとき（専用リンク以外で開いたとき）は、この帯ごと出さない */
+  .cal__bar:has(#calMe[hidden]){display:none}
 
   /* ★スマホでも minmax(0,1fr)。ただの 1fr は minmax(auto,1fr) なので、
      中身（大会名など）の最小幅で列が押し広げられて、パネルごと画面の外へ出る。
@@ -189,14 +190,13 @@
     <section class="page-head">
       <p class="eyebrow">calendar</p>
       <h1 class="page-head__title">ミラー配信カレンダー</h1>
-      <p class="page-head__lead">e活が協賛する大会の開催日と、応援配信の参加状況です。日付を選ぶと詳しい内容が出ます。</p>
+      <p class="page-head__lead">e活が協賛する大会の開催日と、ご自身の参加状況です。</p>
     </section>
 
     <section class="cal">
       <p class="cal__notice" id="calNotice">読み込んでいます…</p>
 
       <div class="cal__bar">
-        <p class="cal__hint">緑は配信する方が決まっている大会、オレンジは募集中の大会です。</p>
         <p class="cal__me" id="calMe" hidden></p>
       </div>
 
@@ -274,7 +274,7 @@
           byDate.get(e.date).push(e);
         }
         document.getElementById('calNotice').textContent =
-          '日付を押すと、その日の大会の詳細と、参加のご回答ページへ進みます。';
+          '日付を押すと、大会の詳細と、参加のご回答ページへ進みます。';
         document.getElementById('calGen').textContent =
           '最終更新 ' + new Date(j.generatedAt).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
         render();
