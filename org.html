@@ -429,7 +429,7 @@
 
       var fTime = field(id + 'time', '開始時間', '大会の開始時刻です。応援配信の枠取りに使わせていただきます。', 'time', t.time);
       var fUrl = field(id + 'url', '本番配信枠URL', '主催者さまの配信ページのURLです。応援配信からご案内いたします。', 'url', t.streamUrl);
-      var fHl = field(id + 'hl', '見どころ', '注目選手・強豪チーム・特別ルールなど。配信で触れさせていただきます。', 'text', t.highlight);
+      var fHl = field(id + 'hl', '見どころ', '注目選手・強豪チーム・特別ルールなど。ミラー配信で触れさせていただきます。', 'text', t.highlight);
       var fRule = field(id + 'rule', 'ミラー配信のルール・条件', '「遅延◯分」「実況の音声は流さない」など、守っていただきたいことをご記入ください。', 'text', t.rule);
       var fNote = field(id + 'note', '備考', 'そのほか、お伝えいただきたいことがあればご記入ください。', 'text', t.note);
       [fTime, fUrl, fHl, fRule, fNote].forEach(function (f) { form.appendChild(f); });
