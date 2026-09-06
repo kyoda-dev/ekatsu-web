@@ -1,0 +1,29 @@
+# Cloudflare Pages のヘッダー（静的ページ向け。Functions の応答には効かない）
+# 2026-09-06 セキュリティ強化：サポーター専用のカレンダーは検索に載せない・専用リンクを外へ漏らさない・他サイトに埋め込ませない
+
+/calendar
+  X-Robots-Tag: noindex, nofollow
+  Referrer-Policy: no-referrer
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+
+/calendar.html
+  X-Robots-Tag: noindex, nofollow
+  Referrer-Policy: no-referrer
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+
+/day
+  X-Robots-Tag: noindex, nofollow
+  Referrer-Policy: no-referrer
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+
+/day.html
+  X-Robots-Tag: noindex, nofollow
+  Referrer-Policy: no-referrer
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+
+/calendar-kv.json
+  X-Robots-Tag: noindex

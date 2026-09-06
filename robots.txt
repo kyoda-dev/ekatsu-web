@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /calendar
+Disallow: /calendar.html
+Disallow: /day
+Disallow: /day.html
+Disallow: /api/
+Disallow: /stats.html
+Disallow: /calendar-kv.json
