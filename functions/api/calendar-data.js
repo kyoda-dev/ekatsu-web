@@ -18,6 +18,8 @@
    必要なシークレット：GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_REFRESH_TOKEN
    ========================================================= */
 
+import { checkAccess } from '../_lib/gate.js';
+
 const MASTER_ID = '1J3A9VXi72s4mEsBUVr6tpO3X_lzalCS7L6wweGj11dU';
 const PART_ID = '1GwQPo1rx6sHAQKdyoVAYlyYjTZYPmEJP7bsX0QBrTOU';
 const MONTHS_BACK = 2;
@@ -86,12 +88,13 @@ async function build(env, origin) {
     values(token, PART_ID, '名簿!A2:D'),
   ]);
 
-  // KV画像の場所は静的ファイルから引き写す（無ければ空）
+  // KV画像の場所は calendar-kv.json（tools/build-calendar.js が作る、大会名→画像パスの表）から引き写す（無ければ空）
+  //   ★大会の中身を静的ファイルに置かない（リポジトリは公開なので、素材が無い人にも見えてしまう）
   const kvByName = new Map();
   try {
-    const st = await fetch(origin + '/calendar-data.json', { cf: { cacheTtl: 600 } }).then(r => r.json());
-    for (const e of st.events || []) if (e.kv) kvByName.set(e.name, e.kv);
-  } catch (e) { /* 静的ファイルが無いだけ。画像なしで出す */ }
+    const st = await fetch(origin + '/calendar-kv.json', { cf: { cacheTtl: 600 } }).then(r => r.json());
+    for (const [n, kv] of Object.entries(st.kv || {})) if (kv) kvByName.set(n, kv);
+  } catch (e) { /* 表が無いだけ。画像なしで出す */ }
 
   const part = new Map();
   for (const r of pRows) {
@@ -138,6 +141,14 @@ async function build(env, origin) {
 
 export async function onRequestGet({ request, env, waitUntil }) {
   const origin = new URL(request.url).origin;
+  // ★門番（2026-09-06 依田「素材を出していない人に大会情報を与えない」）
+  //   専用リンクが無い／名簿に無い／素材がまだ → 大会の中身は返さない（空の一覧＋理由だけ）
+  try {
+    const g = await checkAccess(env, request, new URL(request.url).searchParams.get('k'));
+    if (!g.ok) return json({ generatedAt: new Date().toISOString(), gated: true, reason: g.reason, members: [], events: [] }, 200, { 'cache-control': 'no-store' });
+  } catch (e) {
+    return json({ generatedAt: new Date().toISOString(), gated: true, reason: 'error', error: e.message, members: [], events: [] }, 200, { 'cache-control': 'no-store' });
+  }
   const cache = caches.default;
   const cacheKey = new Request(origin + '/api/calendar-data', { method: 'GET' });
   const hit = await cache.match(cacheKey);
@@ -149,12 +160,6 @@ export async function onRequestGet({ request, env, waitUntil }) {
     waitUntil(cache.put(cacheKey, res.clone()));
     return res;
   } catch (e) {
-    // 読めない時は静的ファイルをそのまま返す（ページを真っ白にしない）
-    try {
-      const st = await fetch(origin + '/calendar-data.json').then(r => r.json());
-      st.source = 'static';
-      st.liveError = e.message;
-      return json(st, 200, { 'cache-control': 'no-store' });
-    } catch { return json({ ok: false, error: e.message }, 500); }
+    return json({ ok: false, error: e.message }, 500);
   }
 }

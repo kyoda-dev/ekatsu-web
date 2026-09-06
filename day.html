@@ -226,6 +226,13 @@
       return box;
     }
 
+    // 門番に止められた時の文（2026-09-06）。絵文字は使わない
+    function gateText(reason) {
+      if (reason === 'notready') return '立ち絵などの素材が届いてから、大会の予定をご覧いただけます。ご自身のお部屋の「素材提出」スレッドへお願いします。';
+      if (reason === 'badkey') return 'リンクが確かめられませんでした。お手数ですが運営までお知らせください。';
+      if (reason === 'error') return '確認に失敗しました。時間をおいて開き直してください。';
+      return '大会の予定は、ご自身の専用リンクからご覧いただけます。リンクは #大会参加 のボタンから受け取れます。';
+    }
     document.getElementById('dayBack').href = withKey('calendar.html?d=' + dateKey);
     document.getElementById('dayPrev').href = withKey('day.html?d=' + shift(-1));
     document.getElementById('dayNext').href = withKey('day.html?d=' + shift(1));
@@ -235,10 +242,11 @@
     document.getElementById('dayDate').textContent =
       (dObj.getMonth() + 1) + '月' + dObj.getDate() + '日（' + DOW[dObj.getDay()] + '）';
 
-    fetch('/api/calendar-data?v=' + Date.now()).then(function (r) { if (!r.ok) throw new Error('api'); return r; }).catch(function () { return fetch('calendar-data.json?v=' + Date.now()); })
+    fetch('/api/calendar-data?v=' + Date.now() + (secret ? '&k=' + encodeURIComponent(secret) : ''))
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (j) {
         DATA = j;
+        if (j.gated) { document.getElementById('dayNotice').textContent = gateText(j.reason); render(); return; }
         var notice = document.getElementById('dayNotice');
         notice.textContent = secret
           ? 'お名前を確かめています…'

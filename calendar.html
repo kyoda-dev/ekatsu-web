@@ -256,6 +256,13 @@
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
     function withKey(url) { return secret ? url + '&k=' + encodeURIComponent(secret) : url; }
+    // 門番に止められた時の文（2026-09-06）。絵文字は使わない
+    function gateText(reason) {
+      if (reason === 'notready') return '立ち絵などの素材が届いてから、大会の予定をご覧いただけます。ご自身のお部屋の「素材提出」スレッドへお願いします。';
+      if (reason === 'badkey') return 'リンクが確かめられませんでした。お手数ですが運営までお知らせください。';
+      if (reason === 'error') return '確認に失敗しました。時間をおいて開き直してください。';
+      return '大会の予定は、ご自身の専用リンクからご覧いただけます。リンクは #大会参加 のボタンから受け取れます。';
+    }
     // 動作確認用の枠（e活運営…）の回答は、本人が開いている時だけ見せる。サポーターの画面には出さない。
     function pub(list) { return list.filter(function (n) { return n === me || !/^e活運営/.test(n); }); }
     function el(tag, cls, text) {
@@ -265,10 +272,11 @@
       return n;
     }
 
-    fetch('/api/calendar-data?v=' + Date.now()).then(function (r) { if (!r.ok) throw new Error('api'); return r; }).catch(function () { return fetch('calendar-data.json?v=' + Date.now()); })
+    fetch('/api/calendar-data?v=' + Date.now() + (secret ? '&k=' + encodeURIComponent(secret) : ''))
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (j) {
         DATA = j;
+        if (j.gated) { var gn = document.getElementById('calNotice'); gn.textContent = gateText(j.reason); gn.hidden = false; }
         for (var i = 0; i < j.events.length; i++) {
           var e = j.events[i];
           if (!byDate.has(e.date)) byDate.set(e.date, []);

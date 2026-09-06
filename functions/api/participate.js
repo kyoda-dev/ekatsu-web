@@ -19,6 +19,8 @@
    ※ googleapis は Workers で動かないので、fetch でGoogleのAPIを直接叩いている。
    ========================================================= */
 
+import { checkAccess } from '../_lib/gate.js';
+
 const PART_SHEET_ID = '1GwQPo1rx6sHAQKdyoVAYlyYjTZYPmEJP7bsX0QBrTOU';
 const STATUS_MARK = { yes: '○', maybe: '△', no: '×' };
 
@@ -68,6 +70,13 @@ export async function onRequestPost({ request, env }) {
     if (!tournament) return json({ ok: false, error: '大会が分かりませんでした' }, 400);
     if (!STATUS_MARK[status]) return json({ ok: false, error: '回答の中身が正しくありません' }, 400);
 
+    // ---- 素材が届いていない人は受け付けない（2026-09-06 依田「素材を出していない人に大会情報を与えない」）----
+    {
+      const g = await checkAccess(env, request, key);
+      if (g.reason === 'badkey') return json({ ok: false, error: 'リンクが正しくないようです。運営までお知らせください' }, 401);
+      if (!g.ok) return json({ ok: false, error: '立ち絵などの素材が届いてから、ご回答いただけます' }, 403);
+    }
+
     // ---- 大会が本当にあるか／締め切りを過ぎていないか（2026-09-06 不備チェックで追加）----
     //   ★2026-09-06 依田：サポーターは当日でも急遽参加できるようにする。締切は「開催日が過ぎたら」だけ。
     //     （厳しくするのは主催者側＝3日前までに情報を出してもらう）
@@ -77,8 +86,7 @@ export async function onRequestPost({ request, env }) {
     let ev = null;
     try {
       const origin = new URL(request.url).origin;
-      const data = await fetch(origin + '/api/calendar-data').then(r => r.json()).catch(() => ({}));
-      if (!Array.isArray(data.events)) Object.assign(data, await fetch(origin + '/calendar-data.json', { cf: { cacheTtl: 300 } }).then(r => r.json()));
+      const data = await fetch(origin + '/api/calendar-data?k=' + encodeURIComponent(key)).then(r => r.json()).catch(() => ({}));
       ev = (data.events || []).find(e => String(e.name || '').trim() === tournament) || null;
     } catch (e) { /* 一覧が読めない時は下で「見つからない」扱い */ }
     if (!ev) return json({ ok: false, error: 'この大会が見つかりませんでした' }, 404);

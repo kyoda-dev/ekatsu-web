@@ -28,7 +28,10 @@ const { google } = require('googleapis');
 //   鍵＝GOOGLE_REFRESH_TOKEN だけは必ず Secrets から渡す。ここには絶対に書かない）
 const MASTER_ID = process.env.MASTER_SCHEDULE_ID || '1J3A9VXi72s4mEsBUVr6tpO3X_lzalCS7L6wweGj11dU';
 const PART_ID = process.env.PARTICIPATION_SHEET_ID || '1GwQPo1rx6sHAQKdyoVAYlyYjTZYPmEJP7bsX0QBrTOU';
-const OUT = path.join(__dirname, '..', 'calendar-data.json');
+// ★2026-09-06 夜：書き出すのは「大会名→KV画像の場所」の表だけ（calendar-kv.json）。
+//   大会の中身（日程・ルール・見どころ）は /api/calendar-data がシートを直接読んで、専用リンクの人にだけ返す。
+//   リポジトリは公開なので、中身を静的ファイルに置くと素材を出していない人にも見えてしまう。
+const OUT = path.join(__dirname, '..', 'calendar-kv.json');
 
 // 前後どこまで載せるか。過去は「実績として見える」ぶんだけ、先は決まっている範囲。
 const MONTHS_BACK = 2;
@@ -140,7 +143,9 @@ function findKv(dateIso, name) {
   }
   events.sort((a, b) => a.date.localeCompare(b.date) || String(a.time).localeCompare(String(b.time)));
 
-  const out = { generatedAt: new Date().toISOString(), members, events };
+  const kv = {};
+  for (const e of events) if (e.kv) kv[e.name] = e.kv;
+  const out = { generatedAt: new Date().toISOString(), kv };
   fs.writeFileSync(OUT, JSON.stringify(out), 'utf8');
-  console.log(`calendar-data.json を書き出した … 大会 ${events.length}本 / サポーター ${members.length}名`);
+  console.log(`calendar-kv.json を書き出した … 大会 ${events.length}本のうちKVあり ${Object.keys(kv).length}本（サポーター ${members.length}名）`);
 })().catch(e => { console.error('エラー:', e.message); process.exit(1); });
