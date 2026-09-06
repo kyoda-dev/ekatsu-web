@@ -3,6 +3,8 @@ Disallow: /calendar
 Disallow: /calendar.html
 Disallow: /day
 Disallow: /day.html
+Disallow: /org
+Disallow: /org.html
 Disallow: /api/
 Disallow: /stats.html
 Disallow: /calendar-kv.json

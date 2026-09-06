@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="no-referrer" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>大会情報ページ ｜ e活</title>
+  <meta name="description" content="e活が協賛する大会の主催者さま向けのページです。開催情報のご登録と、応援配信に参加するVTuberの状況をご確認いただけます。" />
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/assets/img/favicon-512.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicon-180.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+
+  <style>
+  /* ===== 主催者ページ（2026-09-06 新設・段階1＋2）=====
+     読む相手は主催者＝お客様。サポーター向けのカレンダーより一段ていねいに作る。
+     色はミラー配信カレンダー（calendar.html / day.html）と同じ組を使う。青は使わない。 */
+  .org{
+    --o-surface:#faf9f7;
+    --o-surface-2:#f2efeb;
+    --o-line:#e6e2dd;
+    --o-line-strong:#d6d0c8;
+    --o-ink:#14110f;
+    --o-ink-2:#4a443f;
+    --o-muted:#8c8682;
+    --o-go:#2e6b4f;          /* そろっている／参加が決まっている */
+    --o-go-soft:#e8f0ea;
+    --o-open:#a06a2c;        /* まだ／募集中 */
+    --o-open-soft:#f7efe3;
+    --o-today:#b33a2b;       /* 開催が近い */
+    --o-today-soft:#faece9;
+    --o-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    max-width:820px;margin:0 auto;padding:0 20px 90px;color:var(--o-ink);
+  }
+  .org *{box-sizing:border-box}
+
+  /* 上の帯＝「◯◯ 様」「あと◯件」。ページを開いた瞬間に、やることがあるか分かるようにする。 */
+  .org__top{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;
+    padding-bottom:16px;margin-bottom:8px;border-bottom:1px solid var(--o-line)}
+  .org__who{margin:0;font-size:13px;background:var(--o-go-soft);color:var(--o-go);
+    border-radius:99px;padding:5px 15px;white-space:nowrap}
+  .org__todo{margin:0 0 0 auto;font-size:13px;color:var(--o-ink-2)}
+  .org__todo.is-open{color:var(--o-open);font-weight:700}
+  @media(max-width:560px){.org__todo{margin-left:0;width:100%}}
+
+  .org__notice{background:#fff;border:1px solid var(--o-line);border-left:3px solid var(--o-ink);
+    border-radius:4px;padding:13px 16px;font-size:13px;color:var(--o-ink-2);
+    line-height:1.85;margin:18px 0 0}
+
+  .org__sec{margin-top:34px}
+  .org__sec h2{margin:0 0 4px;font-family:var(--o-mono);font-size:16px;font-weight:600;letter-spacing:.02em}
+  .org__sec p.org__lead{margin:0 0 16px;font-size:12.5px;color:var(--o-muted);line-height:1.8}
+
+  /* ---- 大会1本のカード ---- */
+  .org__card{border:1px solid var(--o-line);border-radius:6px;background:var(--o-surface);
+    padding:22px;margin-bottom:16px}
+  .org__card.is-soon{border-color:var(--o-line-strong)}
+  .org__head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
+  .org__date{font-family:var(--o-mono);font-size:14px;font-weight:600;color:var(--o-ink-2);
+    font-variant-numeric:tabular-nums;flex:none}
+  .org__name{margin:0;font-size:18px;font-weight:700;line-height:1.5;flex:1 1 240px;min-width:0;text-wrap:balance}
+  .org__sub{margin:6px 0 0;font-size:11.5px;color:var(--o-muted);letter-spacing:.04em}
+
+  .org__flags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .org__flag{font-size:11.5px;padding:3px 11px;border-radius:99px;white-space:nowrap;
+    background:var(--o-surface-2);color:var(--o-ink-2)}
+  .org__flag.is-soon{background:var(--o-today-soft);color:var(--o-today);font-weight:700}
+  .org__flag.is-miss{background:var(--o-open-soft);color:var(--o-open)}
+  .org__flag.is-ok{background:var(--o-go-soft);color:var(--o-go)}
+
+  /* ---- いま入っている情報 ---- */
+  .org__rows{margin:16px 0 0;border-top:1px solid var(--o-line)}
+  .org__row{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid var(--o-line);
+    font-size:13px;line-height:1.85;align-items:flex-start}
+  .org__row dt{flex:none;width:132px;color:var(--o-muted);font-size:11.5px;letter-spacing:.04em;
+    padding-top:3px;margin:0}
+  .org__row dd{flex:1 1 auto;min-width:0;margin:0;white-space:pre-wrap;word-break:break-word}
+  .org__row dd a{color:var(--o-ink);word-break:break-all}
+  .org__row dd.is-empty{color:var(--o-open)}
+  @media(max-width:560px){
+    .org__row{flex-direction:column;gap:2px}
+    .org__row dt{width:auto}
+  }
+
+  /* ---- ミラー配信をする方 ---- */
+  .org__people{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .org__tag{font-size:12px;padding:3px 11px;border-radius:99px;background:var(--o-go-soft);
+    color:var(--o-go);white-space:nowrap}
+  .org__tag.is-may{background:var(--o-open-soft);color:var(--o-open)}
+  .org__tag.is-none{background:transparent;color:var(--o-muted);padding-left:0}
+
+  /* ---- 入力（段階2） ---- */
+  .org__actions{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+  .org__btn{font-family:inherit;font-size:13px;color:var(--o-ink-2);background:#fff;
+    border:1px solid var(--o-line-strong);border-radius:5px;padding:9px 16px;cursor:pointer;line-height:1.5}
+  .org__btn:hover:not(:disabled){background:var(--o-surface-2);border-color:var(--o-ink)}
+  .org__btn:focus-visible{outline:2px solid var(--o-ink);outline-offset:1px}
+  .org__btn.is-primary{background:var(--o-go);border-color:var(--o-go);color:#fff;font-weight:700}
+  .org__btn.is-primary:hover:not(:disabled){background:#26583f;border-color:#26583f}
+  .org__btn:disabled{opacity:.45;cursor:default}
+
+  .org__form{margin-top:18px;padding-top:18px;border-top:1px solid var(--o-line)}
+  .org__field{margin-bottom:15px}
+  .org__field label{display:block;font-size:12px;font-weight:500;margin-bottom:5px}
+  .org__field .org__hint{display:block;font-size:11.5px;color:var(--o-muted);font-weight:400;
+    margin-top:2px;line-height:1.7}
+  .org__field input,.org__field textarea{width:100%;font-family:inherit;font-size:14px;
+    color:var(--o-ink);background:#fff;border:1px solid var(--o-line-strong);border-radius:5px;
+    padding:10px 12px;line-height:1.7}
+  .org__field textarea{min-height:96px;resize:vertical}
+  .org__field input:focus,.org__field textarea:focus{outline:2px solid var(--o-ink);outline-offset:-1px;border-color:var(--o-ink)}
+  .org__field input[type="time"]{max-width:160px}
+  .org__also{display:block;margin:2px 0 14px;font-size:12.5px;color:var(--o-ink-2);
+    line-height:1.8;cursor:pointer}
+  .org__also input{margin-right:5px;vertical-align:middle}
+  .org__said{margin:12px 0 0;font-size:12.5px;color:var(--o-go);line-height:1.8;min-height:1.2em}
+  .org__said.is-err{color:var(--o-today)}
+
+  .org__empty{color:var(--o-muted);font-size:13.5px;padding:40px 0;text-align:center;
+    border:1px dashed var(--o-line-strong);border-radius:6px;line-height:1.9}
+
+  /* 終わった大会はたたんでおく（見たい時だけ開く） */
+  .org__past{margin-top:34px;border-top:1px solid var(--o-line);padding-top:18px}
+  .org__past summary{cursor:pointer;font-size:13px;color:var(--o-ink-2);list-style:none}
+  .org__past summary::-webkit-details-marker{display:none}
+  .org__past summary::before{content:"▸ ";color:var(--o-muted)}
+  .org__past[open] summary::before{content:"▾ "}
+  .org__pastline{display:flex;gap:12px;font-size:12.5px;color:var(--o-muted);
+    padding:8px 0;border-bottom:1px solid var(--o-line);line-height:1.7}
+  .org__pastline b{font-family:var(--o-mono);font-weight:500;flex:none;font-variant-numeric:tabular-nums}
+  .org__pastline span{min-width:0;word-break:break-word}
+
+  .org__foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--o-line);
+    font-size:11.5px;color:var(--o-muted);line-height:1.9}
+
+  @media(max-width:560px){
+    .org{padding:0 14px 60px}
+    .org__card{padding:17px 15px}
+    .org__name{font-size:16.5px}
+    .org__btn{flex:1 1 100%}
+  }
+  </style>
+</head>
+<body>
+  <!-- 縦書きの飾り（side-rail）はこのページでは出さない。カレンダーと同じ理由（中身の上に乗る）。 -->
+
+  <header class="site-header" id="top">
+    <nav class="nav">
+      <a href="index.html#message">ご挨拶</a>
+      <a href="works.html">協賛大会</a>
+      <a href="reports.html">協賛レポート</a>
+      <a href="sponsors.html">共同スポンサー</a>
+      <a href="vtuber.html">VTuber</a>
+      <a href="news.html">お知らせ</a>
+      <a href="index.html#contact">お問い合わせ</a>
+    </nav>
+    <a href="index.html" class="brand">
+      <img src="assets/img/logo.webp" alt="e活 ロゴ" width="120" />
+    </a>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <p class="eyebrow">for organizers</p>
+      <h1 class="page-head__title">大会情報ページ</h1>
+      <p class="page-head__lead">ご協賛させていただく大会の開催情報を、こちらでご登録いただけます。<br />応援配信（ミラー配信）に参加するVTuberの状況もあわせてご確認いただけます。</p>
+    </section>
+
+    <section class="org">
+      <div class="org__top">
+        <p class="org__who" id="orgWho" hidden></p>
+        <p class="org__todo" id="orgTodo"></p>
+      </div>
+
+      <p class="org__notice" id="orgNotice" hidden></p>
+
+      <div class="org__sec" id="orgUpcomingSec" hidden>
+        <h2>これからの大会</h2>
+        <p class="org__lead">開始時間・本番配信枠URL・見どころ・ミラー配信のルールは、こちらから直接ご登録いただけます。<br />大会名と開催日の変更、KV画像のご提出、中止のご連絡は、これまでどおりDiscordのお部屋で承ります。</p>
+        <div id="orgUpcoming"></div>
+      </div>
+
+      <details class="org__past" id="orgPastSec" hidden>
+        <summary id="orgPastLabel">終了した大会</summary>
+        <div id="orgPast"></div>
+      </details>
+
+      <p class="org__foot" id="orgFoot"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <img src="assets/img/logo.webp" alt="e活 ロゴ" width="90" class="site-footer__logo" />
+    <p class="site-footer__copy">&copy; <a href="https://alonzo.jp" target="_blank" rel="noopener">A&amp;L project 株式会社</a> / e活</p>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script>
+  (function () {
+    var DOW = ['日', '月', '火', '水', '木', '金', '土'];
+    var params = new URLSearchParams(location.search);
+    var secret = params.get('k') || '';       // 主催者お一人ずつにお配りする合言葉
+    var DATA = { tournaments: [] };
+    var sending = false;
+
+    function el(tag, cls, text) {
+      var n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text != null) n.textContent = text;
+      return n;
+    }
+    function jpDate(key) {
+      var p = String(key).split('-');
+      var d = new Date(+p[0], +p[1] - 1, +p[2]);
+      return (d.getMonth() + 1) + '/' + d.getDate() + '（' + DOW[d.getDay()] + '）';
+    }
+    // 門番に止められた時の文。主催者はお客様なので、原因ではなく次にどうすればよいかを書く。
+    function gateText(reason) {
+      if (reason === 'badkey') return 'リンクを確かめられませんでした。お手数ですが、Discordのお部屋でお知らせいただけますでしょうか。新しいリンクをお送りいたします。';
+      if (reason === 'setup') return 'ただいま準備中です。お手数ですが、時間をおいて開き直してください。';
+      return 'このページは、Discordのお部屋にお送りした専用のリンクからご覧いただけます。お部屋の「大会情報ページを開く」ボタンからお進みください。';
+    }
+    // シリーズもの（Day1／Day2…）の共通部分
+    function seriesBase(n) {
+      return String(n || '').replace(/[　\s]*(?:Day\s*\d+|D\d+|第?\s*\d+\s*日目?)\s*$/i, '').trim() || String(n || '');
+    }
+    // 同じシリーズの、これからの他の日程
+    function siblingsOf(ev) {
+      var base = seriesBase(ev.name);
+      return DATA.tournaments.filter(function (x) {
+        return x.row !== ev.row && !x.past && seriesBase(x.name) === base;
+      });
+    }
+
+    load();
+
+    function load() {
+      fetch('/api/org-data?v=' + Date.now() + (secret ? '&k=' + encodeURIComponent(secret) : ''))
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (j.gated || !j.ok) {
+            var n = document.getElementById('orgNotice');
+            n.textContent = j.gated ? gateText(j.reason) : ('読み込めませんでした。時間をおいて開き直してください。（' + (j.error || '') + '）');
+            n.hidden = false;
+            document.getElementById('orgTodo').textContent = '';
+            return;
+          }
+          DATA = j;
+          render();
+        })
+        .catch(function (err) {
+          var n = document.getElementById('orgNotice');
+          n.textContent = '読み込めませんでした。時間をおいて開き直してください。（' + err.message + '）';
+          n.hidden = false;
+        });
+    }
+
+    function render() {
+      var who = document.getElementById('orgWho');
+      who.textContent = String(DATA.room || '').trim() + ' 主催者さま';
+      who.hidden = false;
+
+      var upcoming = DATA.tournaments.filter(function (t) { return !t.past; });
+      var past = DATA.tournaments.filter(function (t) { return t.past; }).reverse();
+
+      // 上の帯＝残っているご登録の数
+      var missCount = 0;
+      upcoming.forEach(function (t) { missCount += (t.miss || []).length; });
+      var todo = document.getElementById('orgTodo');
+      if (!upcoming.length) {
+        todo.textContent = '';
+        todo.className = 'org__todo';
+      } else if (missCount) {
+        todo.textContent = 'ご登録をお待ちしている項目が ' + missCount + '件 あります';
+        todo.className = 'org__todo is-open';
+      } else {
+        todo.textContent = 'ご登録いただく項目はすべてそろっています。ありがとうございます。';
+        todo.className = 'org__todo';
+      }
+
+      // これからの大会
+      var box = document.getElementById('orgUpcoming');
+      box.textContent = '';
+      document.getElementById('orgUpcomingSec').hidden = false;
+      if (!upcoming.length) {
+        box.appendChild(el('p', 'org__empty',
+          '開催日が決まっている大会は、いまのところございません。\n日程が決まりましたら、Discordのお部屋で承ります。'));
+      } else {
+        upcoming.forEach(function (t) { box.appendChild(card(t)); });
+      }
+
+      // 終了した大会（たたんでおく）
+      var pastSec = document.getElementById('orgPastSec');
+      if (past.length) {
+        pastSec.hidden = false;
+        document.getElementById('orgPastLabel').textContent = '終了した大会（' + past.length + '本）';
+        var pbox = document.getElementById('orgPast');
+        pbox.textContent = '';
+        past.forEach(function (t) {
+          var line = el('div', 'org__pastline');
+          line.appendChild(el('b', null, t.date.replace(/-/g, '/')));
+          line.appendChild(el('span', null, t.name));
+          pbox.appendChild(line);
+        });
+      } else {
+        pastSec.hidden = true;
+      }
+
+      document.getElementById('orgFoot').textContent =
+        '最終更新 ' + new Date(DATA.generatedAt).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
+        + '　／　このページはあなた専用です。リンクを他の方にお渡しにならないようお願いいたします。';
+    }
+
+    function card(t) {
+      var c = el('div', 'org__card' + (t.daysUntil <= 10 ? ' is-soon' : ''));
+
+      var head = el('div', 'org__head');
+      head.appendChild(el('span', 'org__date', jpDate(t.date)));
+      head.appendChild(el('h3', 'org__name', t.name));
+      c.appendChild(head);
+      if (t.game) c.appendChild(el('p', 'org__sub', t.game));
+
+      // 状態の札
+      var flags = el('div', 'org__flags');
+      if (t.daysUntil === 0) flags.appendChild(el('span', 'org__flag is-soon', '本日'));
+      else if (t.daysUntil <= 10) flags.appendChild(el('span', 'org__flag is-soon', 'あと' + t.daysUntil + '日'));
+      if (!t.mirror) {
+        flags.appendChild(el('span', 'org__flag', '応援配信は未定'));
+      } else if ((t.miss || []).length) {
+        flags.appendChild(el('span', 'org__flag is-miss',
+          'ご登録をお待ちしています：' + t.miss.map(function (m) { return m.label; }).join('／')));
+      } else {
+        flags.appendChild(el('span', 'org__flag is-ok', '必要な情報はそろっています'));
+      }
+      c.appendChild(flags);
+
+      // いま入っている情報
+      var dl = el('dl', 'org__rows');
+      dl.appendChild(row('開始時間', t.time, t.time ? null : '未登録'));
+      dl.appendChild(row('本番配信枠URL', t.streamUrl, t.streamUrl ? null : '未登録', true));
+      dl.appendChild(row('見どころ', t.highlight, t.highlight ? null : '未登録'));
+      dl.appendChild(row('ミラー配信のルール', t.rule, t.rule ? null : '未登録'));
+      if (t.note) dl.appendChild(row('備考', t.note, null));
+      dl.appendChild(row('大会KV画像',
+        (t.kv || t.kvInDrive) ? 'お預かりしています' : (DATA.kvSkip || DATA.seasonKv ? 'このシリーズは受領済みのものを使用します' : ''),
+        (t.kv || t.kvInDrive || DATA.kvSkip || DATA.seasonKv) ? null : 'Discordのお部屋の「KV画像を提出」ボタンからお願いいたします'));
+      c.appendChild(dl);
+
+      // ミラー配信をする方
+      var ppl = el('div', 'org__people');
+      var yes = t.yes || [], may = t.maybe || [];
+      if (!t.mirror) {
+        ppl.appendChild(el('span', 'org__tag is-none', '応援配信の可否はこれから決まります'));
+      } else if (!yes.length && !may.length) {
+        ppl.appendChild(el('span', 'org__tag is-none', 'まだ決まっていません（募集中）'));
+      } else {
+        yes.forEach(function (n) { ppl.appendChild(el('span', 'org__tag', n)); });
+        may.forEach(function (n) { ppl.appendChild(el('span', 'org__tag is-may', n + '（未定）')); });
+      }
+      c.appendChild(ppl);
+
+      // 入力（段階2）
+      var actions = el('div', 'org__actions');
+      var editBtn = el('button', 'org__btn', '大会情報を登録・変更する');
+      editBtn.type = 'button';
+      actions.appendChild(editBtn);
+      c.appendChild(actions);
+
+      var form = null;
+      editBtn.addEventListener('click', function () {
+        if (form) { form.remove(); form = null; editBtn.textContent = '大会情報を登録・変更する'; return; }
+        form = buildForm(t, function () { form = null; editBtn.textContent = '大会情報を登録・変更する'; });
+        editBtn.textContent = '入力をやめる';
+        c.appendChild(form);
+        var first = form.querySelector('input,textarea');
+        if (first) first.focus();
+      });
+      return c;
+    }
+
+    function row(label, value, emptyText, isUrl) {
+      var d = el('div', 'org__row');
+      d.appendChild(el('dt', null, label));
+      var dd = el('dd', emptyText ? 'is-empty' : null);
+      if (emptyText) {
+        dd.textContent = emptyText;
+      } else if (isUrl && value) {
+        var a = document.createElement('a');
+        a.href = value; a.textContent = value; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        dd.appendChild(a);
+      } else {
+        dd.textContent = value || '';
+      }
+      d.appendChild(dd);
+      return d;
+    }
+
+    function field(id, label, hint, kind, value) {
+      var f = el('div', 'org__field');
+      var lab = el('label', null, label);
+      lab.setAttribute('for', id);
+      if (hint) lab.appendChild(el('span', 'org__hint', hint));
+      f.appendChild(lab);
+      var input = document.createElement(kind === 'text' ? 'textarea' : 'input');
+      input.id = id;
+      // ★開始時間は <input type="time"> にしない。
+      //   マスターには「21:00　(本配信20時半スタート)」のように但し書きが付いた行が実際にある。
+      //   type="time" はそれを読めず黙って空にするので、開いただけで補足が消える事故になる。
+      if (kind === 'time') { input.type = 'text'; input.placeholder = '20:00'; input.setAttribute('inputmode', 'numeric'); }
+      else if (kind === 'url') { input.type = 'url'; input.placeholder = 'https://'; }
+      input.value = value || '';
+      f.appendChild(input);
+      f._input = input;
+      return f;
+    }
+
+    function buildForm(t, onClose) {
+      var form = el('div', 'org__form');
+      var id = 'f' + t.row;
+
+      var fTime = field(id + 'time', '開始時間', '大会の開始時刻です。応援配信の枠取りに使わせていただきます。', 'time', t.time);
+      var fUrl = field(id + 'url', '本番配信枠URL', '主催者さまの配信ページのURLです。応援配信からご案内いたします。', 'url', t.streamUrl);
+      var fHl = field(id + 'hl', '見どころ', '注目選手・強豪チーム・特別ルールなど。配信で触れさせていただきます。', 'text', t.highlight);
+      var fRule = field(id + 'rule', 'ミラー配信のルール・条件', '「遅延◯分」「実況の音声は流さない」など、守っていただきたいことをご記入ください。', 'text', t.rule);
+      var fNote = field(id + 'note', '備考', 'そのほか、お伝えいただきたいことがあればご記入ください。', 'text', t.note);
+      [fTime, fUrl, fHl, fRule, fNote].forEach(function (f) { form.appendChild(f); });
+
+      // シリーズもの＝残りの日程にもまとめて入れられるようにする（1日ずつ入力させない）
+      var sibs = siblingsOf(t);
+      var alsoCb = null;
+      if (sibs.length) {
+        var lab = el('label', 'org__also');
+        alsoCb = document.createElement('input');
+        alsoCb.type = 'checkbox';
+        alsoCb.checked = true;
+        lab.appendChild(alsoCb);
+        lab.appendChild(document.createTextNode(
+          ' 残りの日程（' + sibs.map(function (x) { return jpDate(x.date); }).join('・') + '）にも同じ内容を登録する'));
+        form.appendChild(lab);
+      }
+
+      var said = el('p', 'org__said', '');
+      var actions = el('div', 'org__actions');
+      var save = el('button', 'org__btn is-primary', 'この内容で登録する');
+      save.type = 'button';
+      var cancel = el('button', 'org__btn', 'やめる');
+      cancel.type = 'button';
+      actions.appendChild(save);
+      actions.appendChild(cancel);
+      form.appendChild(actions);
+      form.appendChild(said);
+
+      cancel.addEventListener('click', function () { form.remove(); onClose(); });
+
+      save.addEventListener('click', function () {
+        if (sending) return;
+        // 変わったところだけ送る（触っていない欄は上書きしない）
+        var fields = {};
+        if (fTime._input.value !== (t.time || '')) fields.time = fTime._input.value;
+        if (fUrl._input.value.trim() !== (t.streamUrl || '')) fields.streamUrl = fUrl._input.value.trim();
+        if (fHl._input.value.trim() !== (t.highlight || '')) fields.highlight = fHl._input.value.trim();
+        if (fRule._input.value.trim() !== (t.rule || '')) fields.rule = fRule._input.value.trim();
+        if (fNote._input.value.trim() !== (t.note || '')) fields.note = fNote._input.value.trim();
+        if (!Object.keys(fields).length) {
+          said.className = 'org__said is-err';
+          said.textContent = '変更されたところがありませんでした。';
+          return;
+        }
+        var rows = [t.row];
+        if (alsoCb && alsoCb.checked) rows = rows.concat(sibs.map(function (x) { return x.row; }));
+
+        sending = true;
+        save.disabled = true; cancel.disabled = true;
+        said.className = 'org__said';
+        said.textContent = '登録しています…';
+
+        fetch('/api/org-update', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ k: secret, rows: rows, fields: fields }),
+        })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+          .then(function (res) {
+            if (!res.ok || !res.j.ok) throw new Error((res.j && res.j.error) || '登録できませんでした');
+            said.textContent = rows.length > 1
+              ? 'ありがとうございます。' + rows.length + '本の大会に登録いたしました。'
+              : 'ありがとうございます。登録いたしました。';
+            // 画面を作り直して、入った内容をそのまま見せる
+            setTimeout(function () { load(); }, 700);
+          })
+          .catch(function (err) {
+            said.className = 'org__said is-err';
+            said.textContent = '登録できませんでした。' + err.message;
+            save.disabled = false; cancel.disabled = false;
+          })
+          .then(function () { sending = false; });
+      });
+
+      return form;
+    }
+  })();
+  </script>
+</body>
+</html>
