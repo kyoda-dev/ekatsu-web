@@ -68,6 +68,30 @@ export async function onRequestPost({ request, env }) {
     if (!tournament) return json({ ok: false, error: '大会が分かりませんでした' }, 400);
     if (!STATUS_MARK[status]) return json({ ok: false, error: '回答の中身が正しくありません' }, 400);
 
+    // ---- 大会が本当にあるか／締め切りを過ぎていないか（2026-09-06 不備チェックで追加）----
+    //   Discordのカードは「開催3日前」で回答を締め切る（index.js の answerLocked）。Webも同じにしないと、
+    //   Webからだけ締切後や過去の大会に答えられてしまい、2か所で言うことが変わる。
+    //   大会の一覧はこのサイトの calendar-data.json（毎時更新）を読む。無い名前は受け付けない。
+    const DEADLINE_DAYS = 3;
+    let ev = null;
+    try {
+      const origin = new URL(request.url).origin;
+      const data = await fetch(origin + '/calendar-data.json', { cf: { cacheTtl: 300 } }).then(r => r.json());
+      ev = (data.events || []).find(e => String(e.name || '').trim() === tournament) || null;
+    } catch (e) { /* 一覧が読めない時は下で「見つからない」扱い */ }
+    if (!ev) return json({ ok: false, error: 'この大会が見つかりませんでした' }, 404);
+    {
+      const [y, m, d] = String(ev.date).split('-').map(Number);
+      // JSTの「今日」を出す（Cloudflareの時計はUTC）
+      const nowJst = new Date(Date.now() + 9 * 3600 * 1000);
+      const todayUtcMid = Date.UTC(nowJst.getUTCFullYear(), nowJst.getUTCMonth(), nowJst.getUTCDate());
+      const evUtcMid = Date.UTC(y, m - 1, d);
+      const daysUntil = Math.round((evUtcMid - todayUtcMid) / 86400000);
+      if (daysUntil < DEADLINE_DAYS) {
+        return json({ ok: false, error: '回答の締め切り（開催3日前）を過ぎています。変更が必要な場合は運営（e活）までご連絡ください' }, 409);
+      }
+    }
+
     const token = await accessToken(env);
 
     // ---- 合言葉から本人を引く ----

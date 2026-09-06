@@ -189,6 +189,12 @@
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
     function withKey(url) { return secret ? url + '&k=' + encodeURIComponent(secret) : url; }
+    // 開催日まであと何日か（今日＝0、過ぎていればマイナス）
+    function daysUntil(dateKey) {
+      var p = String(dateKey).split('-');
+      var t = new Date(); var today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+      return Math.round((new Date(+p[0], +p[1] - 1, +p[2]) - today) / 86400000);
+    }
     function el(tag, cls, text) {
       var n = document.createElement(tag);
       if (cls) n.className = cls;
@@ -314,6 +320,9 @@
             : ev.maybe.indexOf(me) >= 0 ? 'maybe'
               : ev.no.indexOf(me) >= 0 ? 'no' : null;
 
+          // 回答の締め切り＝開催3日前（Discordのカードと同じ）。過ぎていたらボタンを押せなくする。
+          var locked = daysUntil(ev.date) < 3;
+
           var row = el('div', 'day__join');
           var said = el('p', 'day__said', '');
           var opts = [['yes', '参加します', ''], ['maybe', '未定', 'is-may'], ['no', '参加しません', 'is-no']];
@@ -322,12 +331,17 @@
               var btn = el('button', cls, label);
               btn.type = 'button';
               btn.setAttribute('aria-pressed', String(cur === val));
-              btn.disabled = !secret || !me;
+              btn.disabled = !secret || !me || locked;
               btn.addEventListener('click', function () { answer(ev, val, row, said); });
               row.appendChild(btn);
             })(opts[o][0], opts[o][1], opts[o][2]);
           }
           ask.appendChild(row);
+          if (locked) {
+            said.textContent = daysUntil(ev.date) < 0
+              ? 'この大会は終了しています。'
+              : '回答の締め切り（開催3日前）を過ぎています。変更が必要な場合は運営（e活）までご連絡ください。';
+          }
           ask.appendChild(said);
           card.appendChild(ask);
 
