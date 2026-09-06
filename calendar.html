@@ -249,6 +249,8 @@
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
     function withKey(url) { return secret ? url + '&k=' + encodeURIComponent(secret) : url; }
+    // 動作確認用の枠（e活運営…）の回答は、本人が開いている時だけ見せる。サポーターの画面には出さない。
+    function pub(list) { return list.filter(function (n) { return n === me || !/^e活運営/.test(n); }); }
     function el(tag, cls, text) {
       var n = document.createElement(tag);
       if (cls) n.className = cls;
@@ -326,7 +328,7 @@
           // 末尾の「Day2」も外す＝升目そのものが日付なので要らない。単語で折り返すため
           // 「NOBORI Season1 Day5」が3行になっていた。正式名はマウスを乗せると出る（title）。
           var shortName = e.name.replace(/[　\s]*(?:Day\s*\d+|D\d+|第?\s*\d+\s*日目?)\s*$/i, '') || e.name;
-          var bar = el('div', 'cal__ev' + (e.yes.length ? ' is-filled' : ''), shortName);
+          var bar = el('div', 'cal__ev' + (pub(e.yes).length ? ' is-filled' : ''), shortName);
           bar.title = (e.time ? e.time + ' ' : '') + e.name;
           cell.appendChild(bar);
         }
@@ -379,8 +381,9 @@
         top.appendChild(el('span', 'cal__up-time', ev.time || '未定'));
         top.appendChild(el('span', 'cal__up-name', ev.name));
         body.appendChild(top);
-        body.appendChild(el('div', 'cal__up-who' + (ev.yes.length ? '' : ' is-open'),
-          ev.yes.length ? ev.yes.join('・') : '募集中'));
+        var yesPub = pub(ev.yes);
+        body.appendChild(el('div', 'cal__up-who' + (yesPub.length ? '' : ' is-open'),
+          yesPub.length ? yesPub.join('・') : '募集中'));
         line.appendChild(body);
         a.appendChild(line);
       }

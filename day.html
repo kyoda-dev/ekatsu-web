@@ -189,6 +189,8 @@
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
     function withKey(url) { return secret ? url + '&k=' + encodeURIComponent(secret) : url; }
+    // 動作確認用の枠（e活運営…）の回答は、本人が開いている時だけ見せる。サポーターの画面には出さない。
+    function pub(list) { return list.filter(function (n) { return n === me || !/^e活運営/.test(n); }); }
     // 開催日まであと何日か（今日＝0、過ぎていればマイナス）
     function daysUntil(dateKey) {
       var p = String(dateKey).split('-');
@@ -296,14 +298,15 @@
           if (ev.game) card.appendChild(el('p', 'day__game', ev.game));
 
           var ppl = el('div', 'day__people');
-          if (!ev.yes.length && !ev.maybe.length) {
+          var yesPub = pub(ev.yes), mayPub = pub(ev.maybe);
+          if (!yesPub.length && !mayPub.length) {
             ppl.appendChild(el('span', 'day__tag is-none', 'まだ決まっていません（募集中）'));
           } else {
-            for (var a = 0; a < ev.yes.length; a++) {
-              ppl.appendChild(el('span', 'day__tag' + (ev.yes[a] === me ? ' is-me' : ''), ev.yes[a]));
+            for (var a = 0; a < yesPub.length; a++) {
+              ppl.appendChild(el('span', 'day__tag' + (yesPub[a] === me ? ' is-me' : ''), yesPub[a]));
             }
-            for (var b = 0; b < ev.maybe.length; b++) {
-              ppl.appendChild(el('span', 'day__tag is-may' + (ev.maybe[b] === me ? ' is-me' : ''), ev.maybe[b] + '（未定）'));
+            for (var b = 0; b < mayPub.length; b++) {
+              ppl.appendChild(el('span', 'day__tag is-may' + (mayPub[b] === me ? ' is-me' : ''), mayPub[b] + '（未定）'));
             }
           }
           card.appendChild(ppl);
