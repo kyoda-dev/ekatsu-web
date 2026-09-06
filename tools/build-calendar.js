@@ -119,9 +119,15 @@ function findKv(dateIso, name) {
     if (!d || d < from || d > to) continue;
     const ans = part.get(name) || new Map();
     const pick = mark => [...ans.entries()].filter(([, s]) => s.includes(mark)).map(([n]) => n);
+    // ★2026-09-06 依田「配信者のランクによって分けよう」：
+    //   マスターB列＝パートナーにミラー許諾、C列＝カジュアルにミラー許諾（○のとき）。
+    //   ページ側は本人のランクで絞り、API側は違うランクの大会への回答を断る。
+    const partner = String(r[1] || '').includes('○');
+    const casual = String(r[2] || '').includes('○');
     events.push({
       date: ymd(d),
       name: name.replace(/\s+/g, ' '),
+      partner, casual,
       kv: findKv(ymd(d), name),
       game: (r[6] || '').trim(),                 // G列
       time: (r[9] || '').trim().replace(/\s+/g, '').slice(0, 5) || '',   // J列＝開始時間

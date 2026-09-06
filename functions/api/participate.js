@@ -97,11 +97,18 @@ export async function onRequestPost({ request, env }) {
     // ---- 合言葉から本人を引く ----
     // 名簿 A=活動名 / B=区分 / C=部屋ID / D=予定メッセージID(bot管理・触らない) / E=合言葉
     const roster = await getRange(token, '名簿!A2:E');
-    let who = '';
+    let who = '', tier = '';
     for (const row of roster) {
-      if (String(row[4] || '').trim() && String(row[4]).trim() === key) { who = String(row[0] || '').trim(); break; }
+      if (String(row[4] || '').trim() && String(row[4]).trim() === key) { who = String(row[0] || '').trim(); tier = String(row[1] || '').trim(); break; }
     }
     if (!who) return json({ ok: false, error: 'リンクが正しくないようです。運営までお知らせください' }, 401);
+
+    // ---- ランク（パートナー／カジュアル）に許可が出ていない大会は受け付けない（2026-09-06 依田「ランクで分けよう」）----
+    const isPartner = tier.includes('パートナー');
+    const allowed = isPartner ? ev.partner : ev.casual;
+    if (allowed === false) {
+      return json({ ok: false, error: 'この大会は' + (isPartner ? 'パートナー' : 'カジュアルサポーター') + 'の枠では募集していません' }, 403);
+    }
 
     // ---- 既にその大会に同じ人の行があれば書き換え、無ければ足す ----
     const rows = await getRange(token, '参加可否!A2:D');

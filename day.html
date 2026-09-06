@@ -177,6 +177,12 @@
     var secret = params.get('k') || '';       // 本人だけに配る合言葉。無ければ回答できない。
     var DATA = { members: [], events: [] };
     var me = '';
+    var myTier = '';
+    function visible(e) {
+      if (myTier.indexOf('パートナー') >= 0) return e.partner !== false;
+      if (myTier) return e.casual !== false;
+      return e.partner !== false || e.casual !== false;
+    }
     var sending = false;
 
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) {
@@ -244,7 +250,7 @@
             .then(function (r) { return r.json(); })
             .then(function (res) {
               if (res.ok && res.who) {
-                me = res.who;
+                me = res.who; myTier = String(res.tier || '');
                 var tag = document.getElementById('dayMe');
                 tag.textContent = res.who + ' さんとして開いています';
                 tag.hidden = false;
@@ -268,7 +274,7 @@
     function render() {
       var box = document.getElementById('dayList');
       box.textContent = '';
-      var list = DATA.events.filter(function (e) { return e.date === dateKey; });
+      var list = DATA.events.filter(function (e) { return e.date === dateKey && visible(e); });
       list.sort(function (a, b) { return String(a.time).localeCompare(String(b.time)); });
       document.getElementById('dayCount').textContent =
         list.length ? 'e活が協賛する大会 ' + list.length + '本' : 'この日は協賛大会がありません';

@@ -244,6 +244,13 @@
       ? new Date(+start.slice(0, 4), +start.slice(5, 7) - 1, 1)
       : new Date(now.getFullYear(), now.getMonth(), 1);
     var me = '';
+    var myTier = '';   // パートナー／カジュアル（専用リンクで開いた時だけ分かる）
+    // ランクで見せる大会を絞る。専用リンク無し（公開）の時は、どちらかに許可が出ている大会だけ。
+    function visible(e) {
+      if (myTier.indexOf('パートナー') >= 0) return e.partner !== false;
+      if (myTier) return e.casual !== false;
+      return e.partner !== false || e.casual !== false;
+    }
 
     function fmt(d) {
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -277,7 +284,7 @@
             .then(function (r) { return r.json(); })
             .then(function (res) {
               if (!res.ok || !res.who) return;
-              me = res.who;
+              me = res.who; myTier = String(res.tier || '');
               var tag = document.getElementById('calMe');
               tag.textContent = res.who + ' さんとして開いています';
               tag.hidden = false;
@@ -310,7 +317,7 @@
 
       for (var d = 1; d <= last; d++) {
         var date = new Date(y, m, d), key = fmt(date);
-        var list = byDate.get(key) || [];
+        var list = (byDate.get(key) || []).filter(visible);
         // ★2026-09-06 依田の指示で、日付を押したら詳細ページ（day.html）へ飛ぶ形にした。
         //   参加のご回答もそちらで取る。<a> にしてあるので新しいタブで開くこともできる。
         var cell = document.createElement(list.length ? 'a' : 'div');
@@ -345,17 +352,17 @@
       var head = document.getElementById('calDlabel');
       box.textContent = '';
 
-      var key = todayKey, list = byDate.get(todayKey) || [];
+      var key = todayKey, list = (byDate.get(todayKey) || []).filter(visible);
       if (!list.length) {
         var nexts = [];
-        byDate.forEach(function (l, k) { if (k > todayKey) nexts.push(k); });
+        byDate.forEach(function (l, k) { if (k > todayKey && l.some(visible)) nexts.push(k); });
         nexts.sort();
         if (!nexts.length) {
           head.textContent = '本日の大会';
           box.appendChild(el('p', 'cal__empty', 'これから先の予定はまだありません。'));
           return;
         }
-        key = nexts[0]; list = byDate.get(key);
+        key = nexts[0]; list = byDate.get(key).filter(visible);
       }
       var isToday = key === todayKey;
       head.textContent = isToday ? '本日の大会' : '次の大会';
