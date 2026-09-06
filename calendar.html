@@ -66,12 +66,16 @@
   .cal__nav button:hover{background:var(--cal-surface-2)}
   .cal__nav button:focus-visible{outline:2px solid var(--cal-ink);outline-offset:1px}
 
-  .cal__dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px}
+  /* ★minmax(0,1fr) にしないと、升目の中身（大会名）の幅で列が押し広げられて
+     グリッドが親からはみ出し、右のパネルの下に潜る（2026-09-06 実際に起きた）。
+     1fr は minmax(auto,1fr) の略なので、auto＝中身の最小幅が効いてしまう。 */
+  .cal__dow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-bottom:5px}
   .cal__dow span{text-align:center;font-size:11px;letter-spacing:.1em;color:var(--cal-muted);padding:3px 0}
   .cal__dow span:first-child{color:var(--cal-today)}
 
-  .cal__grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-  .cal__cell{position:relative;min-height:84px;background:var(--cal-surface);border:1px solid var(--cal-line);
+  .cal__grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+  .cal__cell{position:relative;min-width:0;min-height:84px;background:var(--cal-surface);
+    border:1px solid var(--cal-line);
     border-radius:4px;padding:6px;text-align:left;cursor:pointer;font-family:inherit;color:inherit;
     display:flex;flex-direction:column;gap:3px}
   .cal__cell:hover{background:var(--cal-surface-2);border-color:var(--cal-line-strong)}
@@ -87,7 +91,7 @@
   .cal__cell.is-past{opacity:.42}
 
   .cal__ev{font-size:10.5px;line-height:1.35;padding:2px 5px;border-radius:3px;overflow:hidden;
-    white-space:nowrap;text-overflow:ellipsis;border-left:3px solid var(--cal-open);
+    white-space:nowrap;text-overflow:ellipsis;min-width:0;border-left:3px solid var(--cal-open);
     background:var(--cal-open-soft);color:var(--cal-ink-2)}
   .cal__ev.is-filled{border-left-color:var(--cal-go);background:var(--cal-go-soft)}
   .cal__more{font-size:10px;color:var(--cal-muted);padding-left:2px}
@@ -109,6 +113,13 @@
   .cal__meta b{font-weight:500;color:var(--cal-muted);font-size:10.5px;letter-spacing:.1em;
     display:block;text-transform:uppercase;margin-bottom:2px}
   .cal__meta a{color:var(--cal-ink);word-break:break-all}
+  /* 主催者が書く見どころは長い（400字近い大会もある）。4行で畳んで、押したら全部出す。 */
+  .cal__clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  .cal__clamp.is-open{display:block}
+  .cal__more-btn{font-family:inherit;font-size:11.5px;color:var(--cal-muted);background:none;
+    border:0;padding:2px 0 0;cursor:pointer;text-decoration:underline}
+  .cal__more-btn:hover{color:var(--cal-ink)}
+  .cal__more-btn:focus-visible{outline:2px solid var(--cal-ink);outline-offset:1px}
 
   .cal__people{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px}
   .cal__tag{font-size:11.5px;padding:2.5px 10px;border-radius:99px;background:var(--cal-go-soft);
@@ -223,6 +234,25 @@
       if (cls) n.className = cls;
       if (text != null) n.textContent = text;
       return n;
+    }
+
+    // 見出し＋本文の1ブロック。長い本文は4行で畳んで、押したら全部出す。
+    // （主催者が書く見どころは400字近いことがあり、そのまま出すと詳細が読めなくなる）
+    function metaBlock(label, body) {
+      var box = el('div', 'cal__meta');
+      box.appendChild(el('b', null, label));
+      var text = el('div', 'cal__clamp', body);
+      box.appendChild(text);
+      if (body.length > 90) {
+        var btn = el('button', 'cal__more-btn', 'すべて見る');
+        btn.type = 'button';
+        btn.addEventListener('click', function () {
+          var open = text.classList.toggle('is-open');
+          btn.textContent = open ? '閉じる' : 'すべて見る';
+        });
+        box.appendChild(btn);
+      }
+      return box;
     }
 
     fetch('calendar-data.json?v=' + Date.now())
@@ -340,18 +370,8 @@
         }
         card.appendChild(ppl);
 
-        if (ev.rule) {
-          var r = el('div', 'cal__meta');
-          r.appendChild(el('b', null, 'ミラー配信のルール'));
-          r.appendChild(document.createTextNode(ev.rule));
-          card.appendChild(r);
-        }
-        if (ev.highlight) {
-          var h = el('div', 'cal__meta');
-          h.appendChild(el('b', null, '見どころ'));
-          h.appendChild(document.createTextNode(ev.highlight));
-          card.appendChild(h);
-        }
+        if (ev.rule) card.appendChild(metaBlock('ミラー配信のルール', ev.rule));
+        if (ev.highlight) card.appendChild(metaBlock('見どころ', ev.highlight));
         if (ev.streamUrl) {
           var u = el('div', 'cal__meta');
           u.appendChild(el('b', null, '本配信'));
