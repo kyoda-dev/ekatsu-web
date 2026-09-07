@@ -288,7 +288,9 @@ function replaceBlock(html, marker, body, file) {
   const people = [];
   const skipped = [];
 
+  let rowNo = 0;
   for (const r of rows) {
+    rowNo++;   // シートの並び＝古い順（申し込んだ順に下へ足されている）
     const name = String(r[1]).trim();
     const tier = tierOf(r[0]);
     if (!tier) { skipped.push({ name, why: `枠が読めない（${r[0]}）` }); continue; }
@@ -314,6 +316,7 @@ function replaceBlock(html, marker, body, file) {
       bio: m.bio || autoBio(r[6], r[5]),
       links,
       order: typeof m.order === "number" ? m.order : 999,
+      row: rowNo,   // 並び順を書いていない人は、シートの並び（＝古い順）で出す
       xHandle: xHandleOf(r[2]),
       autoBio: !m.bio,
       isNew: !published[name],
@@ -322,7 +325,9 @@ function replaceBlock(html, marker, body, file) {
       `${icon.reused ? "（既存アイコン）" : `（素材から作成: ${icon.picked}）`}${published[name] ? "" : "  ★新規"}`);
   }
 
-  people.sort((a, b) => a.order - b.order || a.name.localeCompare(b.name, "ja"));
+  // ★2026-09-07 依田の指示「古い順で並べて出そう」。
+  //   order を書いていない人は名前順ではなく、シートの並び（＝申し込んだ順＝古い順）にする。
+  people.sort((a, b) => a.order - b.order || a.row - b.row);
   const partners = people.filter(p => p.tier === "partner");
   const casuals = people.filter(p => p.tier === "casual");
 
