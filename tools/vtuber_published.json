@@ -53,5 +53,23 @@
     "slug": "neru",
     "x": "@nerulifx",
     "tier": "casual"
+  },
+  "AMEPERO": {
+    "firstPublished": "2026-09-07",
+    "slug": "amepero",
+    "x": "@ameperocandy",
+    "tier": "casual"
+  },
+  "月詠サキ": {
+    "firstPublished": "2026-09-07",
+    "slug": "vt11",
+    "x": "@72525Osaka2",
+    "tier": "casual"
+  },
+  "夜更カシ": {
+    "firstPublished": "2026-09-07",
+    "slug": "vt7",
+    "x": "@yohukashi__game",
+    "tier": "casual"
   }
 }
