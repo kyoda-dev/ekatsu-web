@@ -34,9 +34,9 @@ const norm = s => String(s || "").replace(/[（(][^（）()]*[）)]/g, "").repla
 //   site … true にすると、サイトにアイコンがあってもDriveから作り直す（サイトの切り方が緩い人）
 const FIX = {
   "まぐまぐ":   { file: "おすまし_微笑み.png", crop: { side: 0.40, top: 0.03 } },
-  "夜更カシ":   { file: "IMG_0130.png" },
+  "夜更カシ":   { site: false, file: "IMG_0130.png", crop: { side: 0.72, top: 0.01 } },   // もう少し上を出す（2026-09-07 依田）
   "JELOM":      { file: "IMG_4934.png" },
-  "月詠サキ":   { crop: { side: 0.30, top: 0.02 } },
+  "月詠サキ":   { site: false, crop: { side: 0.22, top: 0.045 } },   // バストアップに（2026-09-07 依田）
   "白峰凱志":   { site: false, crop: { side: 0.80, top: 0.02 } },
 };
 
