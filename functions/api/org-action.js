@@ -207,6 +207,22 @@ export async function onRequestPost({ request, env }) {
       return json({ ok: true, note: 'reflect-async' });
     }
 
+    // ───────── 次回大会の申し込み（申請フォームの代わり）
+    //   ★部屋を作る・日程の枠表を出す・契約判断を出す、は全部Botがやる（Discordのボタンと同じ関数）。
+    if (action === 'nextcup') {
+      const name = clean(body.name, NAME_MAX);
+      if (!name) return json({ ok: false, error: '次回の大会名をご入力ください' }, 400);
+      if (!gate.channelId) return json({ ok: false, error: 'お部屋が分かりませんでした。運営までお知らせください' }, 409);
+      await tellBot(env, {
+        kind: 'nextcup',
+        channelId: gate.channelId,
+        name,
+        game: clean(body.game, 60),
+        url: clean(body.url, 200),
+      });
+      return json({ ok: true, name, note: 'reflect-async' });
+    }
+
     return json({ ok: false, error: '受け付けられない操作です' }, 400);
   } catch (e) {
     return json({ ok: false, error: e.message || '受け付けられませんでした' }, 500);
