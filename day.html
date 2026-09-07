@@ -373,7 +373,17 @@
           ask.appendChild(said);
           card.appendChild(ask);
 
-          if (ev.rule) card.appendChild(metaBlock('ミラー配信のルール', ev.rule));
+          // ★2026-09-07 依田OK：大会側の指定が無いときは e活の標準ルールを出す。
+          //   「特になし」で来た時に、何を守ればいいのか誰にも分からない状態だった。
+          var STD = ["1. 大会画面は20分以上映してください（そのあとはワイプに縮小・通常配信に戻してOK）",
+                     "2. 配信タイトルに大会名を入れてください（概要欄に大会の公式リンクも）",
+                     "3. 大会の画面とロゴを隠さない・加工しないでください"].join(String.fromCharCode(10));
+          var ruleTxt = String(ev.rule || "").trim();
+          if (ruleTxt && !/^(特に(条件|制限)?(は)?(なし|ありません|ないです)|なし|無し)。?$/.test(ruleTxt)) {
+            card.appendChild(metaBlock("ミラー配信のルール", ruleTxt));
+          } else {
+            card.appendChild(metaBlock("ミラー配信のルール（e活の標準）", STD));
+          }
           if (ev.highlight) card.appendChild(metaBlock('見どころ', ev.highlight));
           if (ev.streamUrl) {
             var u = el('div', 'day__meta');
