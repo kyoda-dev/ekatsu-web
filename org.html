@@ -109,6 +109,10 @@
   .org__btn.is-primary:hover:not(:disabled){background:#26583f;border-color:#26583f}
   .org__btn:disabled{opacity:.45;cursor:default}
   /* 2026-09-07：開催日の変更・中止・大会名の変更をサイトからできるようにした時に足した */
+  /* 2026-09-07：いま選ばれている方をはっきり見せる（依田指示） */
+  .org__btn.is-on{background:var(--o-go);border-color:var(--o-go);color:#fff;font-weight:700}
+  .org__btn.is-on:hover:not(:disabled){background:#26583f;border-color:#26583f}
+  .org__btn.is-on::before{content:"✓ ";font-weight:700}
   .org__btn--sub{color:var(--o-muted)}
   .org__btn--danger{color:var(--o-today);border-color:#e8d7d3}
   .org__btn--danger:hover:not(:disabled){background:#fbf2f0;border-color:var(--o-today)}
@@ -489,7 +493,9 @@
       var host = document.getElementById("orgUpcomingSec").parentNode;
       var old = document.getElementById("orgSettings");
       if (old) old.remove();
-      var st = DATA.settings || {};
+      // ★settings が無いと、押しても書き換え先が消えて色が変わらなかった（2026-09-07）
+      if (!DATA.settings) DATA.settings = {};
+      var st = DATA.settings;
       var sec = el("div", "org__sec");
       sec.id = "orgSettings";
       sec.appendChild(el("h2", null, "ミラー配信の設定"));
@@ -504,7 +510,7 @@
       var said1 = el("div", "org__said");
       [["both", "両方に許可"], ["partner", "パートナーのみ"], ["next", "カジュアルのみ"], ["none", "許可しない"]]
         .forEach(function (o) {
-          var b = el("button", "org__btn" + (st.mirror === o[0] ? "" : " org__btn--sub"), o[1]);
+          var b = el("button", "org__btn" + (st.mirror === o[0] ? " is-on" : " org__btn--sub"), o[1]);
           b.type = "button";
           b.addEventListener("click", function () {
             if (st.mirror === o[0]) return;
@@ -528,7 +534,7 @@
         var row = el("div", "org__btns");
         var said = el("div", "org__said");
         [[true, yesText], [false, noText]].forEach(function (o) {
-          var b = el("button", "org__btn" + (now === o[0] ? "" : " org__btn--sub"), o[1]);
+          var b = el("button", "org__btn" + (now === o[0] ? " is-on" : " org__btn--sub"), o[1]);
           b.type = "button";
           b.addEventListener("click", function () {
             if (now === o[0]) return;
