@@ -83,7 +83,7 @@ async function build(env, origin) {
   const meta = await gget(token, `https://sheets.googleapis.com/v4/spreadsheets/${MASTER_ID}?fields=sheets.properties.title`);
   const tab = meta.sheets[0].properties.title;
   const [mRows, pRows, rRows] = await Promise.all([
-    values(token, MASTER_ID, `${tab}!A2:O`),
+    values(token, MASTER_ID, `${tab}!A2:P`),
     values(token, PART_ID, '参加可否!A2:D'),
     values(token, PART_ID, '名簿!A2:D'),
   ]);
@@ -115,6 +115,9 @@ async function build(env, origin) {
   for (const r of mRows) {
     const name = (r[0] || '').trim();
     if (!name) continue;
+    // ★2026-09-07：中止（P列）にした大会はサポーターのカレンダーから消す。
+    //   Bot側は今日から中止を見て止まるのに、ここだけ出し続けていた。
+    if (String(r[15] || '').trim()) continue;
     const d = parseDate((r[4] || '').trim(), now);
     if (!d || d.t < from || d.t > to) continue;
     const ans = part.get(name) || new Map();
