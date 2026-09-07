@@ -177,7 +177,21 @@
       "top": 0.03
     },
     "slug": "vt12",
-    "bio": "大会に向けた本気の練習配信と、深夜の落ち着いた雑談のギャップが持ち味。Escape from Tarkov / APEX。"
+    "bio": "2歳からゲームに一途。元競技勢で、いまはゲーム開発もエンジン開発もする普通な女の子。",
+    "links": [
+      {
+        "label": "X",
+        "url": "https://x.com/baziru_ttv"
+      },
+      {
+        "label": "Twitch",
+        "url": "https://www.twitch.tv/baziru_ttv"
+      },
+      {
+        "label": "YouTube",
+        "url": "https://youtube.com/@baziru_ttv"
+      }
+    ]
   },
   "夜更カシ": {
     "slug": "vt7",
@@ -185,7 +199,7 @@
   },
   "月詠サキ": {
     "slug": "vt11",
-    "bio": "大阪ご当地VTuber。観光や名物の話と食レポが得意。エレメンタルストーリー。"
+    "bio": "大阪ご当地VTuber。観光や名物の話と食レポが得意。エレスト / モンスト / NIKKE。"
   },
   "AMEPERO": {
     "slug": "amepero",
