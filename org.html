@@ -113,6 +113,7 @@
   .org__btn.is-on{background:var(--o-go);border-color:var(--o-go);color:#fff;font-weight:700}
   .org__btn.is-on:hover:not(:disabled){background:#26583f;border-color:#26583f}
   .org__btn.is-on::before{content:"✓ ";font-weight:700}
+  .org__formnote{margin:0 0 16px;padding:10px 12px;border-radius:6px;background:var(--o-surface-2);font-size:12.5px;color:var(--o-ink-2);line-height:1.8}
   .org__btn--sub{color:var(--o-muted)}
   .org__btn--danger{color:var(--o-today);border-color:#e8d7d3}
   .org__btn--danger:hover:not(:disabled){background:#fbf2f0;border-color:var(--o-today)}
@@ -720,6 +721,9 @@
 
     function buildForm(t, onClose) {
       var form = el('div', 'org__form');
+      // ★2026-09-07 依田指示：ここに入れた内容がそのまま配信者へ渡ることを、先に書いておく
+      form.appendChild(el('p', 'org__formnote',
+        'ここでご登録いただいた内容は、応援配信をするVTuberへそのままお伝えします。見どころとミラー配信のルールは、本人が配信の準備に使います。'));
       var id = 'f' + t.row;
 
       var fTime = field(id + 'time', '開始時間', '大会の開始時刻です。応援配信の枠取りに使わせていただきます。', 'time', t.time);
