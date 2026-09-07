@@ -34,6 +34,10 @@ const { google } = require("googleapis");
 const sharp = require("sharp");
 
 const DRY = process.argv.includes("--dry");
+// ★2026-09-07 依田の指示「サイト掲載だけ今日やろう、Xでの発表は明日／3人だけ」
+//   サイトのカードだけ足して、お知らせ記事とXの紹介は次の回に回したい時に使う。
+//   その人を「初掲載の記録」にも書かないので、次に回した時ちゃんと新顔として記事に入る。
+const SITE_ONLY = process.argv.includes("--site-only");
 
 const PROFILE_ID = process.env.PUBLIC_PROFILE_SHEET_ID || "1byI6JCSV1rPTyZwCp9ospUmXbJm1GJ6g9wdtqGPZPvg";
 const PROFILE_TAB = "プロフィール一覧";
@@ -130,12 +134,29 @@ async function ensureIcon(drive, name, slug, crop) {
   const assets = await findFolder(drive, ASSET_SUBFOLDER, personFolder.id);
   if (!assets) return { ok: false, why: `「${ASSET_SUBFOLDER}」フォルダが無い` };
 
-  const list = await drive.files.list({
-    q: `'${assets.id}' in parents and trashed = false`,
-    fields: "files(id,name,mimeType,size)", pageSize: 100,
-    supportsAllDrives: true, includeItemsFromAllDrives: true,
-  });
-  const imgs = (list.data.files || []).filter(f => IMG_RE.test(f.name || "") || /^image\//.test(f.mimeType || ""));
+  const listImgs = async (folderId) => {
+    const r = await drive.files.list({
+      q: `'${folderId}' in parents and trashed = false`,
+      fields: "files(id,name,mimeType,size)", pageSize: 100,
+      supportsAllDrives: true, includeItemsFromAllDrives: true,
+    });
+    const kids = r.data.files || [];
+    return {
+      imgs: kids.filter(f => IMG_RE.test(f.name || "") || /^image\//.test(f.mimeType || "")),
+      subs: kids.filter(f => f.mimeType === "application/vnd.google-apps.folder"),
+    };
+  };
+  // ★素材を「live2D」などのフォルダに入れて出す人がいる（2026-09-07 バジル・セグリアで発覚）。
+  //   直下しか見ていなかったので「素材フォルダが空」と誤判定し、掲載から漏れていた。
+  //   画像が直下に無ければ、1つ下のフォルダまで見に行く。
+  const top = await listImgs(assets.id);
+  let imgs = top.imgs;
+  if (!imgs.length) {
+    for (const sub of top.subs) {
+      const got = await listImgs(sub.id);
+      if (got.imgs.length) { imgs = got.imgs; break; }
+    }
+  }
   if (!imgs.length) return { ok: false, why: "素材フォルダが空（画像なし）" };
 
   // どれを使うかは名前で決める。差分（表情違い）を何枚も置く人がいるので、
@@ -337,14 +358,19 @@ function replaceBlock(html, marker, body, file) {
   // 初掲載の記録。X紹介ポストはこれを見て「今週の新顔」を決める。
   const today = new Date().toISOString().slice(0, 10);
   let added = 0;
-  for (const p of people) if (!published[p.name]) { published[p.name] = { firstPublished: today, slug: p.slug, x: p.xHandle, tier: p.tier }; added++; }
+  for (const p of people) if (!published[p.name]) {
+    if (SITE_ONLY) continue;   // 記事に出していないので「掲載済み」にはしない（次の回の新顔になる）
+    published[p.name] = { firstPublished: today, slug: p.slug, x: p.xHandle, tier: p.tier }; added++;
+  }
   fs.writeFileSync(PUBLISHED_PATH, JSON.stringify(published, null, 2) + "\n");
 
   console.log(`\n書き込み完了。vtuber.html / index.html を更新、初掲載の記録を ${added} 件追加した。`);
 
   // ★2026-08-29 依田の指示：カードを足すだけでなく、掲載した週ごとに「お知らせ記事」も出す。
   //   その記事をXでもポストする（Botが supporter_news.json を読む）。
-  if (newcomers.length) {
+  if (newcomers.length && SITE_ONLY) {
+    console.log(`\n--site-only：お知らせ記事とXの紹介は作っていない。次に回した時の新顔として残してある（${newcomers.map(p => p.displayName).join(" / ")}）。`);
+  } else if (newcomers.length) {
     const { publishSupporterNews } = require("./supporter-news");
     await publishSupporterNews(newcomers, today, { dry: DRY });
   }
