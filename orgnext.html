@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="no-referrer" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>次の大会のお申し込み ｜ e活</title>
+  <meta name="description" content="e活が協賛する大会の主催者さま向け。続けて協賛をご希望の場合のお申し込みページです。" />
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicon-180.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+
+  <style>
+  /* 2026-09-07 依田「次の大会を申し込むは別リンクにしよう」＝大会情報の入力と間違えないよう1枚に分けた。
+     色と余白は org.html と同じ組。 */
+  .on{--c-line:#e6e2dd;--c-ink:#14110f;--c-ink2:#4a443f;--c-muted:#8c8682;--c-go:#2e6b4f;--c-err:#b33a2b;
+      max-width:760px;margin:0 auto;padding:32px 20px 80px;color:var(--c-ink);
+      font-family:'Noto Sans JP',system-ui,sans-serif;line-height:1.9}
+  .on h1{font-size:26px;font-weight:700;margin:0 0 8px;text-align:center}
+  .on__lead{margin:0 0 6px;font-size:13px;color:var(--c-muted);text-align:center}
+  .on__who{display:inline-block;margin:18px 0 0;padding:4px 12px;border-radius:999px;
+           background:#eef3ef;color:var(--c-go);font-size:12.5px}
+  .on__sec{margin-top:28px;border-top:1px solid var(--c-line);padding-top:24px}
+  .on__field{margin:0 0 20px}
+  .on__field label{display:block;font-size:13.5px;font-weight:600;margin:0 0 4px}
+  .on__hint{display:block;font-weight:400;font-size:12px;color:var(--c-muted);line-height:1.7;margin-top:2px}
+  .on__field input,.on__field textarea{width:100%;box-sizing:border-box;padding:10px 12px;
+    border:1px solid var(--c-line);border-radius:8px;font:inherit;font-size:14px;background:#fff}
+  .on__field textarea{min-height:96px;resize:vertical}
+  .on__req{margin-left:6px;font-size:11px;color:var(--c-err)}
+  .on__btn{display:inline-block;padding:11px 22px;border:1px solid var(--c-ink);border-radius:8px;
+    background:var(--c-ink);color:#fff;font:inherit;font-size:14px;cursor:pointer;text-decoration:none}
+  .on__btn[disabled]{opacity:.5;cursor:default}
+  .on__back{display:inline-block;margin-top:26px;font-size:13px;color:var(--c-muted)}
+  .on__said{margin-top:12px;font-size:13px;color:var(--c-muted);white-space:pre-wrap}
+  .on__said.is-ok{color:var(--c-go)}
+  .on__said.is-err{color:var(--c-err)}
+  .on__note{margin-top:26px;font-size:12.5px;color:var(--c-muted);line-height:1.9}
+  </style>
+</head>
+<body>
+  <main class="on">
+    <h1>次の大会のお申し込み</h1>
+    <p class="on__lead">続けてe活の協賛をご希望の場合は、こちらからどうぞ。</p>
+    <p class="on__lead">申請フォームのご記入は不要です。すでにお預かりしている内容は入れてあります。</p>
+    <div style="text-align:center"><span class="on__who" id="onWho" hidden></span></div>
+
+    <div class="on__sec" id="onForm" hidden></div>
+    <div class="on__said" id="onSaid"></div>
+    <a class="on__back" id="onBack" href="#">← 大会情報ページへ戻る</a>
+
+    <p class="on__note">
+      お申し込みいただくと、新しい大会専用のお部屋をDiscordにご用意します。<br />
+      日程はこちらから候補をお出ししますので、決まっていなくて大丈夫です。<br />
+      <strong>入れていただくのは大会名だけで結構です。</strong>ほかは後からでも、決まってからでも構いません。
+    </p>
+  </main>
+
+  <script>
+  (function () {
+    var params = new URLSearchParams(location.search);
+    var secret = (params.get('k') || '').trim();
+    var said = document.getElementById('onSaid');
+    var back = document.getElementById('onBack');
+    back.href = '/org?k=' + encodeURIComponent(secret);
+
+    function el(tag, cls, text) {
+      var n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text != null) n.textContent = text;
+      return n;
+    }
+    function field(id, label, hint, value, ph, required, multi) {
+      var w = el('div', 'on__field');
+      var l = el('label', null, label);
+      l.setAttribute('for', id);
+      if (required) l.appendChild(el('span', 'on__req', '必須'));
+      if (hint) l.appendChild(el('span', 'on__hint', hint));
+      w.appendChild(l);
+      var i = document.createElement(multi ? 'textarea' : 'input');
+      i.id = id;
+      if (!multi) i.type = 'text';
+      i.value = value || '';
+      if (ph) i.placeholder = ph;
+      w.appendChild(i);
+      w._input = i;
+      return w;
+    }
+
+    if (!secret) {
+      said.className = 'on__said is-err';
+      said.textContent = '専用のリンクからお入りください。';
+      return;
+    }
+
+    fetch('/api/org-data?k=' + encodeURIComponent(secret))
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data || !data.room) throw new Error('リンクが確かめられませんでした。お手数ですが運営までお知らせください。');
+        var who = document.getElementById('onWho');
+        who.textContent = data.room + ' 主催者さま';
+        who.hidden = false;
+
+        // 直近の大会からゲーム名・告知URLを引き継ぐ（もらっている情報は入れておく）
+        var base = (data.tournaments || []).slice().reverse()[0] || {};
+        var host = document.getElementById('onForm');
+        var fName = field('nName', '次回の大会名', '仮の名前でも大丈夫です。決まったら、大会情報ページからいつでも変更できます。', '', '例：' + data.room + ' vol.2', true, false);
+        var fGame = field('nGame', 'ゲーム名（任意）', '前回と同じならそのままで大丈夫です。', base.game || '', '', false, false);
+        var fUrl = field('nUrl', '大会の告知URL（任意）', '大会ページやXの投稿など。まだ無ければ空のままで大丈夫です。', base.xUrl || '', 'https://', false, false);
+        [fName, fGame, fUrl].forEach(function (f) { host.appendChild(f); });
+
+        var go = el('button', 'on__btn', 'この内容で申し込む');
+        go.type = 'button';
+        go.addEventListener('click', function () {
+          var name = fName._input.value.trim();
+          if (!name) {
+            said.className = 'on__said is-err';
+            said.textContent = '次回の大会名をご入力ください。';
+            fName._input.focus();
+            return;
+          }
+          go.disabled = true;
+          said.className = 'on__said';
+          said.textContent = '送っています…';
+          fetch('/api/org-action', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+              k: secret, action: 'nextcup', name: name,
+              game: fGame._input.value.trim(), url: fUrl._input.value.trim(),
+            }),
+          })
+            .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+            .then(function (res) {
+              if (!res.ok || !res.j.ok) throw new Error((res.j && res.j.error) || '受け付けられませんでした');
+              said.className = 'on__said is-ok';
+              said.textContent = '「' + name + '」で承りました。\n新しい大会専用のお部屋をDiscordにご用意しますので、そちらをご確認ください。';
+              host.hidden = true;
+            })
+            .catch(function (err) {
+              go.disabled = false;
+              said.className = 'on__said is-err';
+              said.textContent = err.message;
+            });
+        });
+        host.appendChild(go);
+        host.hidden = false;
+      })
+      .catch(function (err) {
+        said.className = 'on__said is-err';
+        said.textContent = err.message;
+      });
+  })();
+  </script>
+</body>
+</html>

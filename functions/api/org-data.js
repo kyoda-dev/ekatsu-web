@@ -65,7 +65,7 @@ async function build(env, request, gate) {
   const token = await accessToken(env);
   const tab = await firstTabTitle(token, MASTER_ID);
   const [mRows, pRows, kvNames, oRows] = await Promise.all([
-    sheetValues(token, MASTER_ID, `${tab}!A2:Q`),
+    sheetValues(token, MASTER_ID, `${tab}!A2:R`),
     sheetValues(token, PART_SHEET_ID, '参加可否!A2:D'),
     listTournamentKVs(env, request, token),
     sheetValues(token, PART_SHEET_ID, '主催者!A2:H'),
@@ -112,6 +112,7 @@ async function build(env, request, gate) {
       highlight: cut(r[13], 1200),
       rule: cut(r[14], 1200),
       publishAt: cut(r[16], 40),   // Q列：告知してよい日（2026-09-07）
+      xText: cut(r[17], 600),      // R列：Xで出す文（主催者が書いたもの・2026-09-07）
       partner: String(r[1] || '').includes('○'),
       casual: String(r[2] || '').includes('○'),
       yes: pick('○'), maybe: pick('△'),

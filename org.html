@@ -555,59 +555,21 @@
 
       host.insertBefore(sec, document.getElementById("orgUpcomingSec").nextSibling);
     }
-    // ★2026-09-07：次回大会の申し込み。申請フォームを出し直す代わりに、
-    //   もうお預かりしている内容（ゲーム名・告知URL）を入れた状態で出す。
+    // ★2026-09-07 依田「次の大会を申し込むは別リンクにしよう」
+    //   同じ画面に置くと、大会情報の入力と間違えて押されるため別のページにした。
     function nextCupBox() {
       var host = document.getElementById("orgUpcomingSec").parentNode;
       var old = document.getElementById("orgNextCup");
       if (old) old.remove();
-      var base = (DATA.tournaments || []).slice().reverse()[0] || {};
       var sec = el("div", "org__sec");
       sec.id = "orgNextCup";
       sec.appendChild(el("h2", null, "次の大会を申し込む"));
-      sec.appendChild(el("p", "org__lead", "続けてe活の協賛をご希望の場合は、こちらからどうぞ。申請フォームのご記入は不要です。お申し込みいただくと、新しい大会専用のお部屋をご用意します。"));
-
-      function f(label, hint, value, ph) {
-        var w = el("div", "org__field");
-        var l = el("label", null, label);
-        if (hint) l.appendChild(el("span", "org__hint", hint));
-        w.appendChild(l);
-        var i = document.createElement("input");
-        i.type = "text";
-        i.value = value || "";
-        if (ph) i.placeholder = ph;
-        w.appendChild(i);
-        w._input = i;
-        return w;
-      }
-      var fName = f("次回の大会名", "仮の名前でも大丈夫です。決まったら後から変更できます。", "", "例：" + String(DATA.room || "大会") + " vol.2");
-      var fGame = f("ゲーム名", "前回と同じならそのままで大丈夫です。", base.game || "");
-      var fUrl = f("大会の告知URL", "大会ページやXの投稿など。まだ無ければ空のままで大丈夫です。", base.xUrl || "");
-      [fName, fGame, fUrl].forEach(function (x) { sec.appendChild(x); });
-
-      var said = el("div", "org__said");
-      var go = el("button", "org__btn", "この内容で申し込む");
-      go.type = "button";
-      go.addEventListener("click", function () {
-        var name = fName._input.value.trim();
-        if (!name) {
-          said.className = "org__said is-err";
-          said.textContent = "次回の大会名をご入力ください。";
-          return;
-        }
-        go.disabled = true;
-        postAction({
-          action: "nextcup",
-          name: name,
-          game: fGame._input.value.trim(),
-          url: fUrl._input.value.trim(),
-        }, said, function () {
-          said.className = "org__said is-ok";
-          said.textContent = "「" + name + "」で承りました。専用のお部屋をご用意しますので、Discordをご確認ください。";
-        });
-      });
-      sec.appendChild(go);
-      sec.appendChild(said);
+      sec.appendChild(el("p", "org__lead", "続けてe活の協賛をご希望の場合は、こちらからどうぞ。申請フォームのご記入は不要です。"));
+      var a = document.createElement("a");
+      a.className = "org__btn";
+      a.href = "/orgnext?k=" + encodeURIComponent(secret);
+      a.textContent = "次の大会の申し込みへ";
+      sec.appendChild(a);
       host.appendChild(sec);
     }
     function postAction(payload, said, onOk) {
@@ -760,8 +722,11 @@
       var fRule = field(id + 'rule', 'ミラー配信のルール・条件', '「遅延◯分」「実況の音声は流さない」など、守っていただきたいことをご記入ください。未記入の場合は、e活の標準ルール（大会画面を20分以上／配信タイトルに大会名／画面とロゴを隠さない）が適用されます。', 'text', t.rule);
       var fNote = field(id + 'note', '備考', 'そのほか、お伝えいただきたいことがあればご記入ください。', 'text', t.note);
       // ★2026-09-07 依田指示：協賛の発表を出してよい日を主催者が選べるようにした
+      var fX = field(id + 'xtext', 'Xで出す文（任意）',
+        'e活の公式Xで紹介するときの文です。ご記入いただいた文は、そのまま出します。空のままなら、こちらで用意した文でお出しします。',
+        'text', t.xText);
       var fPub = field(id + 'pub', '告知してよい日', 'e活の公式Xで「この大会に協賛します」と発表してよい日です。大会側の発表より先に出したくない場合にご指定ください。空のままなら、こちらの都合のよいときに発表します。', 'date', t.publishAt);
-      [fTime, fUrl, fHl, fRule, fNote, fPub].forEach(function (f) { form.appendChild(f); });
+      [fTime, fUrl, fHl, fRule, fNote, fPub, fX].forEach(function (f) { form.appendChild(f); });
 
       // シリーズもの＝残りの日程にもまとめて入れられるようにする（1日ずつ入力させない）
       var sibs = siblingsOf(t);
@@ -800,6 +765,7 @@
         if (fRule._input.value.trim() !== (t.rule || '')) fields.rule = fRule._input.value.trim();
         if (fNote._input.value.trim() !== (t.note || '')) fields.note = fNote._input.value.trim();
         if (fPub._input.value !== (t.publishAt || '')) fields.publishAt = fPub._input.value;
+        if (fX._input.value.trim() !== (t.xText || '')) fields.xText = fX._input.value.trim();
         if (!Object.keys(fields).length) {
           said.className = 'org__said is-err';
           said.textContent = '変更されたところがありませんでした。';

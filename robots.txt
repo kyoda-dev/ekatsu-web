@@ -5,6 +5,8 @@ Disallow: /day
 Disallow: /day.html
 Disallow: /org
 Disallow: /org.html
+Disallow: /orgnext
+Disallow: /orgnext.html
 Disallow: /api/
 Disallow: /stats.html
 Disallow: /calendar-kv.json
