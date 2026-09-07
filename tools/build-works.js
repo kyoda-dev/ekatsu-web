@@ -130,14 +130,16 @@ async function main() {
   const drive = google.drive({ version: "v3", auth: getAuth() });
   const meta = await sheets.spreadsheets.get({ spreadsheetId: MASTER_ID, fields: "sheets.properties.title" });
   const tab = meta.data.sheets[0].properties.title;
-  const res = await sheets.spreadsheets.values.get({ spreadsheetId: MASTER_ID, range: `${tab}!A2:M` });
+  const res = await sheets.spreadsheets.values.get({ spreadsheetId: MASTER_ID, range: `${tab}!A2:P` });
   const rows = res.data.values || [];
 
   // 大会名がある行はすべて掲載（情報公開フラグでの絞り込みは廃止）。
   // ※「情報公開」列(D)は残してあるが現在は不問。将来は主催者側の掲載可否選択などに転用予定。
   // ただし works-hidden.json に載っている大会だけはサイトに出さない。
   const hidden = loadHidden();
-  const named = rows.filter((r) => (r[0] || "").trim());
+  // ★2026-09-07：中止（P列）にした大会はサイトの実績に出さない。
+  //   中止したのに「協賛大会」として残ると、こちらが嘘をつくことになる。
+  const named = rows.filter((r) => (r[0] || "").trim() && !String(r[15] || "").trim());
   const pub = named.filter((r) => !isHidden(hidden, r[0], r[4]));
   console.log(`掲載対象: ${pub.length} 件（全件・情報公開フラグは不問）`);
   for (const r of named.filter((r) => isHidden(hidden, r[0], r[4]))) {

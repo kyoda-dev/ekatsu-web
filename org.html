@@ -367,6 +367,7 @@
       dl.appendChild(row('本番配信枠URL', t.streamUrl, t.streamUrl ? null : '未登録', true));
       dl.appendChild(row('見どころ', t.highlight, t.highlight ? null : '未登録'));
       dl.appendChild(row('ミラー配信のルール', t.rule, t.rule ? null : '未登録'));
+      if (t.cancelled) dl.appendChild(row('この大会', '中止として登録されています', null));
       if (t.note) dl.appendChild(row('備考', t.note, null));
       dl.appendChild(row('大会KV画像',
         (t.kv || t.kvInDrive) ? 'お預かりしています' : (DATA.kvSkip || DATA.seasonKv ? 'このシリーズは受領済みのものを使用します' : ''),

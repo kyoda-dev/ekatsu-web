@@ -117,10 +117,13 @@ async function build(env, request, gate) {
       casual: String(r[2] || '').includes('○'),
       yes: pick('○'), maybe: pick('△'),
     };
+    // ★2026-09-07：中止（P列）にした大会は「中止」として出す。
+    //   足りないものも数えない（中止したのに催促されているように見えていた）。
+    t.cancelled = String(r[15] || '').trim() ? true : false;
     t.mirror = t.partner || t.casual;
     t.kvInDrive = !t.kv && kvExistsFor(kvNames, name);
     // 「足りないもの」はミラー配信をする大会だけ数える（Botの催促と同じ線）
-    t.miss = t.mirror && !t.past
+    t.miss = t.mirror && !t.past && !t.cancelled
       ? missingInfo(t, { kvInDrive: t.kvInDrive, kvSkip: gate.kvSkip, seasonKv: gate.seasonKv })
       : [];
     tournaments.push(t);
