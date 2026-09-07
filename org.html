@@ -107,6 +107,15 @@
   .org__btn.is-primary{background:var(--o-go);border-color:var(--o-go);color:#fff;font-weight:700}
   .org__btn.is-primary:hover:not(:disabled){background:#26583f;border-color:#26583f}
   .org__btn:disabled{opacity:.45;cursor:default}
+  /* 2026-09-07：開催日の変更・中止・大会名の変更をサイトからできるようにした時に足した */
+  .org__btn--sub{color:var(--o-muted)}
+  .org__btn--danger{color:var(--o-today);border-color:#e8d7d3}
+  .org__btn--danger:hover:not(:disabled){background:#fbf2f0;border-color:var(--o-today)}
+  .org__also{display:block;margin:12px 0 0;font-size:12.5px;color:var(--o-ink-2);line-height:1.8}
+  .org__renamebar{margin:10px 0 0}
+  .org__link{font-family:inherit;font-size:12px;color:var(--o-muted);background:none;border:0;
+    padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .org__link:hover{color:var(--o-ink)}
 
   .org__form{margin-top:18px;padding-top:18px;border-top:1px solid var(--o-line)}
   .org__field{margin-bottom:15px}
@@ -185,7 +194,7 @@
 
       <div class="org__sec" id="orgUpcomingSec" hidden>
         <h2>これからの大会</h2>
-        <p class="org__lead">開始時間・本番配信枠URL・見どころ・ミラー配信のルールは、こちらから直接ご登録いただけます。<br /><strong>開催の3日前まで</strong>にご登録をお願いいたします（応援配信の枠取りとサムネイルの準備に、日数がかかるためです）。<br />大会名と開催日の変更、KV画像のご提出、中止のご連絡は、これまでどおりDiscordのお部屋で承ります。</p>
+        <p class="org__lead">開始時間・本番配信枠URL・見どころ・ミラー配信のルールは、こちらから直接ご登録いただけます。<br /><strong>開催の3日前まで</strong>にご登録をお願いいたします（応援配信の枠取りとサムネイルの準備に、日数がかかるためです）。<br />大会名の変更・開催日の変更・大会の中止も、こちらから承ります。KV画像のご提出だけ、これまでどおりDiscordのお部屋でお願いいたします。</p>
         <div id="orgUpcoming"></div>
       </div>
 
@@ -268,6 +277,7 @@
       var who = document.getElementById('orgWho');
       who.textContent = String(DATA.room || '').trim() + ' 主催者さま';
       who.hidden = false;
+      renameBar();   // ★2026-09-07：大会名の変更もここからできるようにした
 
       var upcoming = DATA.tournaments.filter(function (t) { return !t.past; });
       var past = DATA.tournaments.filter(function (t) { return t.past; }).reverse();
@@ -373,10 +383,21 @@
       var editBtn = el('button', 'org__btn', '大会情報を登録・変更する');
       editBtn.type = 'button';
       actions.appendChild(editBtn);
+      // ★2026-09-07：開催日の変更と中止も、ここからできるようにした（依田指示）
+      var dateBtn = el('button', 'org__btn org__btn--sub', '開催日を変更する');
+      dateBtn.type = 'button';
+      actions.appendChild(dateBtn);
+      var cancelBtn = el('button', 'org__btn org__btn--danger', 'この大会を中止する');
+      cancelBtn.type = 'button';
+      actions.appendChild(cancelBtn);
       c.appendChild(actions);
 
       var form = null;
+      var sub = null;                                   // 開催日／中止のちいさな画面
+      function closeSub() { if (sub) { sub.remove(); sub = null; } dateBtn.textContent = '開催日を変更する'; cancelBtn.textContent = 'この大会を中止する'; }
+
       editBtn.addEventListener('click', function () {
+        closeSub();
         if (form) { form.remove(); form = null; editBtn.textContent = '大会情報を登録・変更する'; return; }
         form = buildForm(t, function () { form = null; editBtn.textContent = '大会情報を登録・変更する'; });
         editBtn.textContent = '入力をやめる';
@@ -384,7 +405,183 @@
         var first = form.querySelector('input,textarea');
         if (first) first.focus();
       });
+
+      dateBtn.addEventListener('click', function () {
+        if (form) { form.remove(); form = null; editBtn.textContent = '大会情報を登録・変更する'; }
+        if (sub && sub._kind === 'date') { closeSub(); return; }
+        closeSub();
+        sub = dateBox(t); sub._kind = 'date';
+        dateBtn.textContent = 'やめる';
+        c.appendChild(sub);
+        var i = sub.querySelector('input'); if (i) i.focus();
+      });
+
+      cancelBtn.addEventListener('click', function () {
+        if (form) { form.remove(); form = null; editBtn.textContent = '大会情報を登録・変更する'; }
+        if (sub && sub._kind === 'cancel') { closeSub(); return; }
+        closeSub();
+        sub = cancelBox(t); sub._kind = 'cancel';
+        cancelBtn.textContent = 'やめる';
+        c.appendChild(sub);
+      });
       return c;
+    }
+
+    // 大会名の変更（ページの上・大会ごとではなく主催者さま単位）
+    function renameBar() {
+      var host = document.getElementById('orgWho').parentNode;
+      var old = document.getElementById('orgRenameBar');
+      if (old) old.remove();
+      var bar = el('div', 'org__renamebar');
+      bar.id = 'orgRenameBar';
+      var open = el('button', 'org__link', '大会名を変更する');
+      open.type = 'button';
+      bar.appendChild(open);
+      host.appendChild(bar);
+
+      var box = null;
+      open.addEventListener('click', function () {
+        if (box) { box.remove(); box = null; open.textContent = '大会名を変更する'; return; }
+        open.textContent = 'やめる';
+        box = el('div', 'org__form');
+        var f = el('div', 'org__field');
+        var lab = el('label', null, '新しい大会名');
+        lab.appendChild(el('span', 'org__hint',
+          'お部屋の名前と大会の一覧も、あわせて新しい名前に変わります。'));
+        f.appendChild(lab);
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.value = String(DATA.room || '').trim();
+        input.maxLength = 80;
+        f.appendChild(input);
+        box.appendChild(f);
+
+        var said = el('p', 'org__said', '');
+        var act = el('div', 'org__actions');
+        var go = el('button', 'org__btn', 'この名前に変更する');
+        go.type = 'button';
+        act.appendChild(go);
+        box.appendChild(act);
+        box.appendChild(said);
+        bar.appendChild(box);
+        input.focus();
+
+        go.addEventListener('click', function () {
+          var v = String(input.value || '').trim();
+          if (!v) { said.className = 'org__said is-err'; said.textContent = '新しい大会名をご入力ください'; return; }
+          go.disabled = true;
+          postAction({ action: 'rename', newName: v }, said, function () {
+            said.className = 'org__said';
+            said.textContent = 'ありがとうございます。「' + v + '」に変更いたしました。';
+            setTimeout(function () { load(); }, 1500);   // 反映に少し時間がかかるので長めに待つ
+          });
+          setTimeout(function () { go.disabled = false; }, 2500);
+        });
+      });
+    }
+
+    // ───────── サイトから出す変更（開催日・中止・大会名）。2026-09-07 新設
+    function postAction(payload, said, onOk) {
+      said.className = 'org__said';
+      said.textContent = '送っています…';
+      fetch('/api/org-action', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(Object.assign({ k: secret }, payload)),
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (res) {
+          if (!res.ok || !res.j.ok) throw new Error((res.j && res.j.error) || '受け付けられませんでした');
+          onOk(res.j);
+        })
+        .catch(function (err) {
+          said.className = 'org__said is-err';
+          said.textContent = err.message;
+        });
+    }
+
+    // 開催日の変更
+    function dateBox(t) {
+      var b = el('div', 'org__form');
+      var f = el('div', 'org__field');
+      var lab = el('label', null, '新しい開催日');
+      lab.appendChild(el('span', 'org__hint',
+        '日付が変わったことは、応援配信に参加予定の方へこちらからお知らせします。'));
+      f.appendChild(lab);
+      var input = document.createElement('input');
+      input.type = 'date';
+      input.value = String(t.date || '').replace(/\//g, '-');
+      f.appendChild(input);
+      b.appendChild(f);
+
+      var said = el('p', 'org__said', '');
+      var go = el('button', 'org__btn', 'この日付に変更する');
+      go.type = 'button';
+      var act = el('div', 'org__actions');
+      act.appendChild(go);
+      b.appendChild(act);
+      b.appendChild(said);
+
+      go.addEventListener('click', function () {
+        if (!input.value) { said.className = 'org__said is-err'; said.textContent = '日付をお選びください'; return; }
+        go.disabled = true;
+        postAction({ action: 'date', row: t.row, newDate: input.value }, said, function () {
+          said.className = 'org__said';
+          said.textContent = 'ありがとうございます。開催日を変更いたしました。';
+          setTimeout(function () { load(); }, 900);
+        });
+        setTimeout(function () { go.disabled = false; }, 2000);
+      });
+      return b;
+    }
+
+    // 大会の中止（2段階。押し間違いで止まらないように）
+    function cancelBox(t) {
+      var b = el('div', 'org__form');
+      var sibs = siblingsOf(t);
+      b.appendChild(el('p', null, '「' + t.name + '」を中止として登録します。'));
+      b.appendChild(el('p', 'org__hint',
+        '中止にすると、この大会の応援配信・ご案内・告知はすべて止まります。\n'
+        + '応援配信に参加予定の方には、こちらから中止のお知らせをお送りします。'));
+
+      var alsoCb = null;
+      if (sibs.length) {
+        var wrap = el('label', 'org__also');
+        alsoCb = document.createElement('input');
+        alsoCb.type = 'checkbox';
+        wrap.appendChild(alsoCb);
+        wrap.appendChild(document.createTextNode(' 残りの日程（'
+          + sibs.map(function (x) { return jpDate(x.date); }).join('・') + '）も中止にする'));
+        b.appendChild(wrap);
+      }
+
+      var said = el('p', 'org__said', '');
+      var act = el('div', 'org__actions');
+      var go = el('button', 'org__btn org__btn--danger', '中止として登録する');
+      go.type = 'button';
+      act.appendChild(go);
+      b.appendChild(act);
+      b.appendChild(said);
+
+      var armed = false;
+      go.addEventListener('click', function () {
+        if (!armed) {                                   // 1回目＝確認
+          armed = true;
+          go.textContent = 'もう一度押すと中止になります';
+          said.className = 'org__said is-err';
+          said.textContent = '本当によろしければ、もう一度押してください。';
+          return;
+        }
+        go.disabled = true;
+        var rows = [t.row];
+        if (alsoCb && alsoCb.checked) rows = rows.concat(sibs.map(function (x) { return x.row; }));
+        postAction({ action: 'cancel', rows: rows }, said, function () {
+          said.className = 'org__said';
+          said.textContent = '中止として登録いたしました。ご連絡ありがとうございます。';
+          setTimeout(function () { load(); }, 1200);
+        });
+      });
+      return b;
     }
 
     function row(label, value, emptyText, isUrl) {
