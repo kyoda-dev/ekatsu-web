@@ -56,6 +56,7 @@
     border-radius:4px;padding:13px 16px;font-size:13px;color:var(--o-ink-2);
     line-height:1.85;margin:18px 0 0}
 
+  .org__btns{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
   .org__sec{margin-top:34px}
   .org__sec h2{margin:0 0 4px;font-family:var(--o-mono);font-size:16px;font-weight:600;letter-spacing:.02em}
   .org__sec p.org__lead{margin:0 0 16px;font-size:12.5px;color:var(--o-muted);line-height:1.8}
@@ -278,6 +279,7 @@
       who.textContent = String(DATA.room || '').trim() + ' 主催者さま';
       who.hidden = false;
       renameBar();   // ★2026-09-07：大会名の変更もここからできるようにした
+      settingsBox();  // ★2026-09-07：ミラー許諾と配信の扱いもサイトへ移した
 
       var upcoming = DATA.tournaments.filter(function (t) { return !t.past; });
       var past = DATA.tournaments.filter(function (t) { return t.past; }).reverse();
@@ -481,6 +483,77 @@
     }
 
     // ───────── サイトから出す変更（開催日・中止・大会名）。2026-09-07 新設
+    // ★2026-09-07：ミラー配信の許諾と、配信の扱い。これまでDiscordのボタンだったもの。
+    function settingsBox() {
+      var host = document.getElementById("orgUpcomingSec").parentNode;
+      var old = document.getElementById("orgSettings");
+      if (old) old.remove();
+      var st = DATA.settings || {};
+      var sec = el("div", "org__sec");
+      sec.id = "orgSettings";
+      sec.appendChild(el("h2", null, "ミラー配信の設定"));
+      sec.appendChild(el("p", "org__lead", "どちらも後から変えられます。変えると、応援配信するみなさまへこちらからお伝えします。"));
+
+      // ── 誰に許すか
+      var f1 = el("div", "org__field");
+      var l1 = el("label", null, "ミラー配信を許可する方");
+      l1.appendChild(el("span", "org__hint", "パートナーVTuber＝e活と深くご一緒している方。カジュアルサポーター＝大会を応援してくださる方。"));
+      f1.appendChild(l1);
+      var row1 = el("div", "org__btns");
+      var said1 = el("div", "org__said");
+      [["both", "両方に許可"], ["partner", "パートナーのみ"], ["next", "カジュアルのみ"], ["none", "許可しない"]]
+        .forEach(function (o) {
+          var b = el("button", "org__btn" + (st.mirror === o[0] ? "" : " org__btn--sub"), o[1]);
+          b.type = "button";
+          b.addEventListener("click", function () {
+            if (st.mirror === o[0]) return;
+            postAction({ action: "mirror", perm: o[0] }, said1, function () {
+              st.mirror = o[0];
+              said1.className = "org__said is-ok";
+              said1.textContent = "「" + o[1] + "」で承りました。";
+              settingsBox();
+            });
+          });
+          row1.appendChild(b);
+        });
+      f1.appendChild(row1); f1.appendChild(said1); sec.appendChild(f1);
+
+      // ── 配信の扱い（2問）
+      function yesno(key, label, hint, now, yesText, noText) {
+        var f = el("div", "org__field");
+        var l = el("label", null, label);
+        if (hint) l.appendChild(el("span", "org__hint", hint));
+        f.appendChild(l);
+        var row = el("div", "org__btns");
+        var said = el("div", "org__said");
+        [[true, yesText], [false, noText]].forEach(function (o) {
+          var b = el("button", "org__btn" + (now === o[0] ? "" : " org__btn--sub"), o[1]);
+          b.type = "button";
+          b.addEventListener("click", function () {
+            if (now === o[0]) return;
+            var pay = { action: "bcast" };
+            pay[key] = o[0];
+            postAction(pay, said, function () {
+              DATA.settings[key] = o[0];
+              said.className = "org__said is-ok";
+              said.textContent = "「" + o[1] + "」で承りました。";
+              settingsBox();
+            });
+          });
+          row.appendChild(b);
+        });
+        f.appendChild(row); f.appendChild(said);
+        return f;
+      }
+      sec.appendChild(yesno("closeOnResult", "結果発表のとき、ミラー配信は閉じてほしいですか",
+        "優勝の発表などを、大会の配信で先に見せたい場合にお使いください。", st.closeOnResult,
+        "閉じてほしい", "そのままでOK"));
+      sec.appendChild(yesno("allowMultiMirror", "他のe活協賛大会と同じ枠で一緒に流すのは大丈夫ですか",
+        "1つの配信枠で、複数の大会を行き来しながら応援する形です。", st.allowMultiMirror,
+        "一緒でOK", "この大会だけにしてほしい"));
+
+      host.insertBefore(sec, document.getElementById("orgUpcomingSec").nextSibling);
+    }
     function postAction(payload, said, onOk) {
       said.className = 'org__said';
       said.textContent = '送っています…';

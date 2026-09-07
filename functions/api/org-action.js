@@ -179,6 +179,34 @@ export async function onRequestPost({ request, env }) {
       return json({ ok: true, oldName: gate.room, newName, note: 'reflect-async' });
     }
 
+    // ───────── ミラー配信の許諾（誰に許すか）
+    //   ★マスターB/C列を書くのはBotの updateMirrorPermissions だけ。ここでは書かない。
+    //     参加カードの出し直しなど、書いたあとの段取りが全部Bot側にあるため。
+    if (action === 'mirror') {
+      const perm = String(body.perm || '').trim();
+      if (!['both', 'partner', 'next', 'none'].includes(perm)) {
+        return json({ ok: false, error: '選び方が正しくありません' }, 400);
+      }
+      if (!gate.channelId) return json({ ok: false, error: 'お部屋が分かりませんでした。運営までお知らせください' }, 409);
+      await tellBot(env, { kind: 'mirror', channelId: gate.channelId, perm });
+      await dropCache(request, key);
+      return json({ ok: true, perm, note: 'reflect-async' });
+    }
+
+    // ───────── 配信の扱い（結果発表で閉じるか／他の大会と同じ枠で流してよいか）
+    if (action === 'bcast') {
+      const p = { kind: 'bcast', channelId: gate.channelId };
+      if (typeof body.closeOnResult === 'boolean') p.closeOnResult = body.closeOnResult;
+      if (typeof body.allowMultiMirror === 'boolean') p.allowMultiMirror = body.allowMultiMirror;
+      if (!('closeOnResult' in p) && !('allowMultiMirror' in p)) {
+        return json({ ok: false, error: '変更するところがありませんでした' }, 400);
+      }
+      if (!gate.channelId) return json({ ok: false, error: 'お部屋が分かりませんでした。運営までお知らせください' }, 409);
+      await tellBot(env, p);
+      await dropCache(request, key);
+      return json({ ok: true, note: 'reflect-async' });
+    }
+
     return json({ ok: false, error: '受け付けられない操作です' }, 400);
   } catch (e) {
     return json({ ok: false, error: e.message || '受け付けられませんでした' }, 500);

@@ -64,10 +64,11 @@ const isStaff = n => /^e活運営/.test(String(n || '').trim());
 async function build(env, request, gate) {
   const token = await accessToken(env);
   const tab = await firstTabTitle(token, MASTER_ID);
-  const [mRows, pRows, kvNames] = await Promise.all([
+  const [mRows, pRows, kvNames, oRows] = await Promise.all([
     sheetValues(token, MASTER_ID, `${tab}!A2:Q`),
     sheetValues(token, PART_SHEET_ID, '参加可否!A2:D'),
     listTournamentKVs(env, request, token),
+    sheetValues(token, PART_SHEET_ID, '主催者!A2:H'),
   ]);
 
   // 大会名 → 回答（VTuber名 → ○△×）
@@ -125,9 +126,21 @@ async function build(env, request, gate) {
   }
   tournaments.sort((a, b) => a.date.localeCompare(b.date) || String(a.time).localeCompare(String(b.time)));
 
+  // ── いまの設定（ミラー許諾／配信の扱い）────────────────────
+  //   許諾はマスターB/C列。これからの大会の1件目を代表にする（部屋ごとに同じ値で運用している）。
+  const head = tournaments.find(t => !t.past) || tournaments[tournaments.length - 1] || null;
+  const permOf = (p, n) => (p && n ? 'both' : p ? 'partner' : n ? 'next' : 'none');
+  const flagOf = (v) => (String(v || '').trim() === 'はい' ? true : String(v || '').trim() === 'いいえ' ? false : null);
+  const myRow = (oRows || []).find(r => String((r || [])[1] || '').trim() === String(gate.channelId || '')) || [];
+
   return {
     generatedAt: new Date().toISOString(),
     room: gate.room,
+    settings: {
+      mirror: head ? permOf(head.partner, head.casual) : '',
+      closeOnResult: flagOf(myRow[6]),
+      allowMultiMirror: flagOf(myRow[7]),
+    },
     kvSkip: !!gate.kvSkip,
     seasonKv: !!gate.seasonKv,
     tournaments,
