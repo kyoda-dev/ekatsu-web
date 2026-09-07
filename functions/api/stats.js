@@ -27,12 +27,20 @@ export async function onRequest({ request, env }) {
   if (request.method !== "GET") return json({ error: "method" }, 405);
   if (!env.DB) return json({ error: "no-db" }, 500);
 
-  const token = new URL(request.url).searchParams.get("c") || "";
+  const url = new URL(request.url);
+  const token = url.searchParams.get("c") || "";
   const isAdmin = isAdminToken(env, token);
   const company = isAdmin ? null : findCompanyByToken(env, token);
   if (!isAdmin && !company) return json({ error: "not-found" }, 404);
 
-  const DAYS = 14;
+  // ★2026-09-07：月ごとの送客レポートを作るため、管理用だけ期間を伸ばせるようにした（?d=日数）。
+  //   企業に渡すリンクは今までどおり14日で固定（勝手に長い期間を見られないように）。
+  const DEFAULT_DAYS = 14;
+  let DAYS = DEFAULT_DAYS;
+  if (isAdmin) {
+    const d = parseInt(url.searchParams.get("d") || "", 10);
+    if (Number.isFinite(d) && d >= 1 && d <= 400) DAYS = d;
+  }
   const days = lastDays(DAYS);
   const since = days[0];
 
@@ -80,8 +88,8 @@ export async function onRequest({ request, env }) {
       label: e.label,
       total: t ? t.total : 0,
       updated_at: t ? t.updated_at : null,
-      recent: last, // 直近14日合計
-      trend: perDay, // 直近14日の日別
+      recent: last, // 期間の合計（既定は直近14日）
+      trend: perDay, // 期間の日別（days と同じ並び）
     };
   });
 
