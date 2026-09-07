@@ -614,6 +614,7 @@
       //   type="time" はそれを読めず黙って空にするので、開いただけで補足が消える事故になる。
       if (kind === 'time') { input.type = 'text'; input.placeholder = '20:00'; input.setAttribute('inputmode', 'numeric'); }
       else if (kind === 'url') { input.type = 'url'; input.placeholder = 'https://'; }
+      else if (kind === 'date') { input.type = 'date'; }
       input.value = value || '';
       f.appendChild(input);
       f._input = input;
@@ -629,7 +630,9 @@
       var fHl = field(id + 'hl', '見どころ', '注目選手・強豪チーム・特別ルールなど。ミラー配信で触れさせていただきます。', 'text', t.highlight);
       var fRule = field(id + 'rule', 'ミラー配信のルール・条件', '「遅延◯分」「実況の音声は流さない」など、守っていただきたいことをご記入ください。未記入の場合は、e活の標準ルール（大会画面を20分以上／配信タイトルに大会名／画面とロゴを隠さない）が適用されます。', 'text', t.rule);
       var fNote = field(id + 'note', '備考', 'そのほか、お伝えいただきたいことがあればご記入ください。', 'text', t.note);
-      [fTime, fUrl, fHl, fRule, fNote].forEach(function (f) { form.appendChild(f); });
+      // ★2026-09-07 依田指示：協賛の発表を出してよい日を主催者が選べるようにした
+      var fPub = field(id + 'pub', '告知してよい日', 'e活の公式Xで「この大会に協賛します」と発表してよい日です。大会側の発表より先に出したくない場合にご指定ください。空のままなら、こちらの都合のよいときに発表します。', 'date', t.publishAt);
+      [fTime, fUrl, fHl, fRule, fNote, fPub].forEach(function (f) { form.appendChild(f); });
 
       // シリーズもの＝残りの日程にもまとめて入れられるようにする（1日ずつ入力させない）
       var sibs = siblingsOf(t);
@@ -667,6 +670,7 @@
         if (fHl._input.value.trim() !== (t.highlight || '')) fields.highlight = fHl._input.value.trim();
         if (fRule._input.value.trim() !== (t.rule || '')) fields.rule = fRule._input.value.trim();
         if (fNote._input.value.trim() !== (t.note || '')) fields.note = fNote._input.value.trim();
+        if (fPub._input.value !== (t.publishAt || '')) fields.publishAt = fPub._input.value;
         if (!Object.keys(fields).length) {
           said.className = 'org__said is-err';
           said.textContent = '変更されたところがありませんでした。';

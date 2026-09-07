@@ -122,6 +122,12 @@ export async function onRequestPost({ request, env }) {
     if ('highlight' in f) write.N = clean(f.highlight, LONG_MAX);
     if ('rule' in f) write.O = clean(f.rule, LONG_MAX);
     if ('note' in f) write.L = clean(f.note, LONG_MAX);
+    // ★2026-09-07 依田指示：協賛の発表（Xの告知）を出してよい日。空＝いつでも出してよい。
+    if ('publishAt' in f) {
+      const v = String(f.publishAt || '').trim();
+      if (v && !/^\d{4}-\d{2}-\d{2}$/.test(v)) return json({ ok: false, error: '告知してよい日は 2026-09-20 の形でお願いします' }, 400);
+      write.Q = v;
+    }
     if (!Object.keys(write).length) return json({ ok: false, error: '変更するところがありませんでした' }, 400);
 
     const token = await accessToken(env);
