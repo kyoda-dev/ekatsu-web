@@ -101,6 +101,19 @@ function cleanUrl(u) {
   if (!/^https?:\/\//.test(s)) return "";
   return s.replace(/[?&](si|s|tt_content|tt_medium)=[^&]*/g, "").replace(/\?$/, "");
 }
+// ★2026-09-10：チャンネルURL欄は本人が自由に書くので、2通りで壊れていた。
+//   ①「www.youtube.com/@xxx」＝ https:// が無い → cleanUrl が空を返し、リンクが丸ごと消える（進翔芽吹）
+//   ②1つのセルにURLを2本並べる → そのまま href に入り、リンクが死ぬ（AMEPERO）
+//   どちらも本人は正しく書いたつもりなので、読む側で受け止める。
+function cleanUrls(u) {
+  return String(u || "")
+    .split(/[\s、,]+/)                                   // 空白・読点・カンマ区切りで複数書ける
+    .map(s => s.trim())
+    .filter(Boolean)
+    .map(s => (/^https?:\/\//.test(s) ? s : (/^[\w.-]+\.[a-z]{2,}\//i.test(s) ? "https://" + s : "")))
+    .map(cleanUrl)
+    .filter(Boolean);
+}
 
 // 配信スタイルの自由記述からカード用のひとことを作る。
 // フォームの回答は数百字になることがあるので、1文目だけ取って詰める。
@@ -303,10 +316,10 @@ function replaceBlock(html, marker, body, file) {
     if (!icon.ok) { skipped.push({ name, why: icon.why }); continue; }
 
     const xUrl = xUrlOf(r[2]);
-    const chUrl = cleanUrl(r[4]);
+    const chUrls = cleanUrls(r[4]);
     const links = m.links || [
       xUrl && { label: "X", url: xUrl },
-      chUrl && { label: serviceOf(chUrl, r[3]), url: chUrl },
+      ...chUrls.map(u => ({ label: serviceOf(u, r[3]), url: u })),
     ].filter(Boolean);
 
     const displayName = m.displayName || name;
