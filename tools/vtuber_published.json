@@ -71,5 +71,23 @@
     "slug": "vt7",
     "x": "@yohukashi__game",
     "tier": "casual"
+  },
+  "バジル・セグリア": {
+    "firstPublished": "2026-09-10",
+    "slug": "vt12",
+    "x": "@baziru_ttv",
+    "tier": "casual"
+  },
+  "進翔芽吹": {
+    "firstPublished": "2026-09-10",
+    "slug": "vt14",
+    "x": "@sinsyoumebuki",
+    "tier": "casual"
+  },
+  "うさらいと": {
+    "firstPublished": "2026-09-10",
+    "slug": "vt15",
+    "x": "",
+    "tier": "casual"
   }
 }

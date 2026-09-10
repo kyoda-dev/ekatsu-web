@@ -1,6 +1,29 @@
 {
   "articles": [
     {
+      "slug": "supporter-2026-09-10",
+      "date": "2026-09-10",
+      "title": "新しいe活カジュアルサポーターのご紹介（2026.09.10）",
+      "url": "https://ekatsu-web.pages.dev/news/supporter-2026-09-10",
+      "people": [
+        {
+          "name": "バジル・セグリア",
+          "display": "バジル・セグリア",
+          "x": "@baziru_ttv"
+        },
+        {
+          "name": "進翔芽吹",
+          "display": "進翔芽吹",
+          "x": "@sinsyoumebuki"
+        },
+        {
+          "name": "うさらいと",
+          "display": "うさらいと",
+          "x": ""
+        }
+      ]
+    },
+    {
       "slug": "supporter-2026-09-07",
       "date": "2026-09-07",
       "title": "新しいe活カジュアルサポーターのご紹介（2026.09.07）",
