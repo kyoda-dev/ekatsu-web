@@ -93,13 +93,17 @@ function serviceOf(url, fallback) {
   if (/twitch\.tv/.test(s)) return "Twitch";
   if (/tiktok\.com/.test(s)) return "TikTok";
   if (/twitcasting/.test(s)) return "ツイキャス";
+  if (/reality\.app/.test(s)) return "REALITY";       // 2026-09-10 進翔芽吹さんから
+  if (/mildom|openrec|niconico|nicovideo/.test(s)) return "配信ページ";
+  // ★フォールバック（プラットフォーム欄）は「その人の主な配信先」なので、
+  //   2本目以降のURLに使うと別サービスに間違ったラベルが付く。当たらなければ素直に「配信ページ」。
   return String(fallback || "").trim() || "配信ページ";
 }
 // %エンコードされたURL（YouTubeの日本語ハンドル等）はそのまま使う。href では有効。
 function cleanUrl(u) {
   const s = String(u || "").trim();
   if (!/^https?:\/\//.test(s)) return "";
-  return s.replace(/[?&](si|s|tt_content|tt_medium)=[^&]*/g, "").replace(/\?$/, "");
+  return s.replace(/[?&](si|s|tt_content|tt_medium|adj_t|rtime)=[^&]*/g, "").replace(/\?$/, "");
 }
 // ★2026-09-10：チャンネルURL欄は本人が自由に書くので、2通りで壊れていた。
 //   ①「www.youtube.com/@xxx」＝ https:// が無い → cleanUrl が空を返し、リンクが丸ごと消える（進翔芽吹）
@@ -319,7 +323,9 @@ function replaceBlock(html, marker, body, file) {
     const chUrls = cleanUrls(r[4]);
     const links = m.links || [
       xUrl && { label: "X", url: xUrl },
-      ...chUrls.map(u => ({ label: serviceOf(u, r[3]), url: u })),
+      // プラットフォーム欄（r[3]）は「主な配信先」なので、当てにしていいのは1本目だけ。
+      // 2本目以降にこれを当てると、REALITYのURLに「YouTube」と付くような取り違えが起きる。
+      ...chUrls.map((u, i) => ({ label: serviceOf(u, i === 0 ? r[3] : ''), url: u })),
     ].filter(Boolean);
 
     const displayName = m.displayName || name;
