@@ -200,7 +200,7 @@
 
       <div class="org__sec" id="orgUpcomingSec" hidden>
         <h2>これからの大会</h2>
-        <p class="org__lead">開始時間・本番配信枠URL・見どころ・ミラー配信のルールは、こちらから直接ご登録いただけます。<br /><strong>開催の3日前まで</strong>にご登録をお願いいたします（応援配信の枠取りとサムネイルの準備に、日数がかかるためです）。<br />大会名の変更・開催日の変更・大会の中止も、こちらから承ります。KV画像のご提出だけ、これまでどおりDiscordのお部屋でお願いいたします。</p>
+        <p class="org__lead">開始時間・本番配信枠URL・見どころ・ミラー配信のルールは、こちらから直接ご登録いただけます。<br /><strong>開催の3日前まで</strong>にご登録をお願いいたします（応援配信の枠取りとサムネイルの準備に、日数がかかるためです）。<br />開催日の登録と変更、大会名の変更、大会の中止も、こちらから承ります。KV画像のご提出だけ、これまでどおりDiscordのお部屋でお願いいたします。</p>
         <div id="orgUpcoming"></div>
       </div>
 
@@ -286,6 +286,7 @@
       renameBar();   // ★2026-09-07：大会名の変更もここからできるようにした
       settingsBox();  // ★2026-09-07：ミラー許諾と配信の扱いもサイトへ移した
       nextCupBox();   // ★2026-09-07：次回大会の申し込みもサイトから
+      addDateBox();   // ★2026-09-13：開催日の登録もサイトから（Discordの「📅 日程を入力する」をやめた）
 
       var upcoming = DATA.tournaments.filter(function (t) { return !t.past; });
       var past = DATA.tournaments.filter(function (t) { return t.past; }).reverse();
@@ -311,7 +312,7 @@
       document.getElementById('orgUpcomingSec').hidden = false;
       if (!upcoming.length) {
         box.appendChild(el('p', 'org__empty',
-          '開催日が決まっている大会は、いまのところございません。\n日程が決まりましたら、Discordのお部屋で承ります。'));
+          '開催日が決まっている大会は、いまのところございません。\n日程が決まりましたら、上の「開催日を登録する」からご登録ください。'));
       } else {
         upcoming.forEach(function (t) { box.appendChild(card(t)); });
       }
@@ -580,6 +581,65 @@
       sec.appendChild(a);
       host.appendChild(sec);
     }
+    // ★2026-09-13：開催日の登録（依田指示）。これまでDiscordの「📅 日程を入力する」で1日ずつ入れていたもの。
+    //   ここはBotに合図を送るだけ。マスターへの追記・カレンダー・お部屋へのお知らせはBotがやる。
+    function addDateBox() {
+      var old = document.getElementById('orgAddDate');
+      if (old) old.remove();
+      var sec = document.getElementById('orgUpcomingSec');
+      var list = document.getElementById('orgUpcoming');
+      var wrap = el('div', 'org__card');
+      wrap.id = 'orgAddDate';
+      wrap.appendChild(el('h3', 'org__name', '開催日を登録する'));
+      wrap.appendChild(el('p', 'org__sub', '決まっている日程をご登録ください。複数日ある場合は「日程を1つ増やす」で続けて入れられます。開始時間が未定なら空欄で大丈夫です。'));
+      var rows = el('div', 'org__form');
+      function addRow() {
+        var line = el('div', 'org__field');
+        line.style.display = 'flex';
+        line.style.gap = '8px';
+        var d = document.createElement('input');
+        d.type = 'date';
+        d.setAttribute('aria-label', '開催日');
+        var t = document.createElement('input');
+        t.type = 'text';
+        t.maxLength = 40;
+        t.placeholder = '開始時間（例：21:00）';
+        t.setAttribute('aria-label', '開始時間');
+        line.appendChild(d);
+        line.appendChild(t);
+        rows.appendChild(line);
+      }
+      addRow();
+      wrap.appendChild(rows);
+      var said = el('p', 'org__said', '');
+      var act = el('div', 'org__actions');
+      var more = el('button', 'org__btn org__btn--sub', '日程を1つ増やす');
+      more.type = 'button';
+      var go = el('button', 'org__btn is-primary', 'この内容で登録する');
+      go.type = 'button';
+      act.appendChild(more);
+      act.appendChild(go);
+      wrap.appendChild(act);
+      wrap.appendChild(said);
+      more.addEventListener('click', function () { if (rows.children.length < 14) addRow(); });
+      go.addEventListener('click', function () {
+        var days = [];
+        Array.prototype.forEach.call(rows.children, function (line) {
+          var ins = line.querySelectorAll('input');
+          if (ins[0].value) days.push({ date: ins[0].value, time: ins[1].value.trim() });
+        });
+        if (!days.length) { said.className = 'org__said is-err'; said.textContent = '開催日をお選びください'; return; }
+        go.disabled = true;
+        postAction({ action: 'adddate', days: days }, said, function (j) {
+          said.className = 'org__said';
+          said.textContent = 'ありがとうございます。' + ((j.days || days).length) + '日分を受け付けました。反映まで少しお待ちください（お部屋にもお知らせが届きます）。';
+          setTimeout(function () { load(); }, 10000);
+        });
+        setTimeout(function () { go.disabled = false; }, 3000);
+      });
+      sec.insertBefore(wrap, list);
+    }
+
     function postAction(payload, said, onOk) {
       said.className = 'org__said';
       said.textContent = '送っています…';

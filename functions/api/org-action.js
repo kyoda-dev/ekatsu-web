@@ -147,6 +147,40 @@ export async function onRequestPost({ request, env }) {
       return json({ ok: true, name: t[0].name, oldDate, newDate: nd.text });
     }
 
+    // ───────── 開催日の登録（2026-09-13 依田指示）
+    //   これまでDiscordの「📅 日程を入力する」で1日ずつ入れていたもの。
+    //   ★ここではマスターに行を足さない。Botに合図を送るだけ（書く人を1人に保つ）。
+    //     マスターへの追記・Day番号・カレンダー・お部屋へのお知らせ・大会情報カードは、全部Botの applyOrgSync がやる。
+    if (action === 'adddate') {
+      if (!gate.channelId) return json({ ok: false, error: 'お部屋が分かりませんでした。運営までお知らせください' }, 409);
+      const list = Array.isArray(body.days) ? body.days : [];
+      if (!list.length) return json({ ok: false, error: '開催日をご入力ください' }, 400);
+      if (list.length > 14) return json({ ok: false, error: '一度に登録できるのは14日分までです' }, 400);
+      const days = [];
+      const seen = new Set();
+      for (const d of list) {
+        const nd = normDate(d && d.date);
+        if (!nd) return json({ ok: false, error: '日付の形が違います（例：2026-09-20）' }, 400);
+        if (nd.utc < todayUtc()) return json({ ok: false, error: '過ぎた日付は登録できません' }, 400);
+        if (seen.has(nd.text)) continue;
+        seen.add(nd.text);
+        days.push({ date: nd.text, time: clean(d && d.time, 40) });
+      }
+      // すでに登録してある日付は外す（二度押し・読み込み直し前の再送の対策）
+      const cur = await sheetValues(token, MASTER_ID, `${tab}!A2:E`);
+      const have = new Set();
+      for (const r of cur) {
+        if (!belongsToRoom(String((r || [])[0] || '').trim(), gate.room)) continue;
+        const nd = normDate(String((r || [])[4] || '').trim());
+        if (nd) have.add(nd.text);
+      }
+      const fresh = days.filter(d => !have.has(d.date));
+      if (!fresh.length) return json({ ok: false, error: 'その日程はすでに登録されています' }, 400);
+      await tellBot(env, { kind: 'adddate', channelId: gate.channelId, days: fresh });
+      await dropCache(request, key);
+      return json({ ok: true, days: fresh, note: 'reflect-async' });
+    }
+
     // ───────── 大会の中止
     if (action === 'cancel') {
       const rows = asRows(body.rows != null ? body.rows : body.row);
