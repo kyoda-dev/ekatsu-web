@@ -154,7 +154,7 @@ async function ensureIcon(drive, name, slug, crop) {
   const listImgs = async (folderId) => {
     const r = await drive.files.list({
       q: `'${folderId}' in parents and trashed = false`,
-      fields: "files(id,name,mimeType,size)", pageSize: 100,
+      fields: "files(id,name,mimeType,size,createdTime,imageMediaMetadata(width,height))", pageSize: 100,
       supportsAllDrives: true, includeItemsFromAllDrives: true,
     });
     const kids = r.data.files || [];
@@ -178,16 +178,33 @@ async function ensureIcon(drive, name, slug, crop) {
 
   // どれを使うかは名前で決める。差分（表情違い）を何枚も置く人がいるので、
   // 「怒り」「驚き」などの表情ではなく、通常顔・上半身を選ぶ。ロゴは人物ではないので最後。
+  // ★2026-09-12：名前だけでなく「絵の形」も見る。
+  //   月夜きらりさんの素材に、配信画面用の16:9レイアウト画像（1404x790・人物が右端・左下に別キャラ）が
+  //   立ち絵と一緒に入っていた。名前が「5.png」「316.png」で区別が付かず、
+  //   あとから入ったほうを採る規則でレイアウト画像が選ばれ、正方形に切ると顔が入らない状態だった。
+  //   横長はアイコンに向かないので後ろへ回す（ただし横長しか無い人のために、外しはしない）。
+  const shapePenalty = (f) => {
+    const m = f.imageMediaMetadata;
+    if (!m || !m.width || !m.height) return 0;   // 寸法が取れない時は何もしない
+    return (m.height / m.width) < 0.9 ? 4 : 0;   // 横長だけ下げる
+  };
   const score = (f) => {
     const n = String(f.name);
     if (/ロゴ|logo|バナー|banner/i.test(n)) return 9;
-    if (/怒|泣|驚|困|照|angry|sad|cry|surprised|annoyed|shy|blush/i.test(n)) return 5;
-    if (/上半身|バストア|アイコン|icon|顔/.test(n)) return 0;
-    if (/default|normal|通常|smile|笑/i.test(n)) return 1;
-    if (/立ち絵|全身/.test(n)) return 2;
-    return 3;
+    if (/怒|泣|驚|困|照|angry|sad|cry|surprised|annoyed|shy|blush/i.test(n)) return 5 + shapePenalty(f);
+    if (/上半身|バストア|アイコン|icon|顔/.test(n)) return 0 + shapePenalty(f);
+    if (/default|normal|通常|smile|笑/i.test(n)) return 1 + shapePenalty(f);
+    if (/立ち絵|全身/.test(n)) return 2 + shapePenalty(f);
+    return 3 + shapePenalty(f);
   };
-  imgs.sort((a, b) => score(a) - score(b) || String(a.name).localeCompare(String(b.name)));
+  // ★2026-09-10：同じ点数の時は「あとから出したもの」を使う。
+  //   素材提出スレッドのBotの案内は「差し替えたいときも貼り直せば最新のものを使います」と約束している。
+  //   ところが名前順（IMG_4548 < IMG_4934）で拾っていたので、古いほうが選ばれていた。
+  //   実害＝JELOMさんに「もう少しマイルドな画像を」と頼み、5分後に差し替えが届いたのに、
+  //        サイトを作り直すと却下したほうの画像が使われる状態だった（2026-09-10に発覚）。
+  imgs.sort((a, b) => score(a) - score(b)
+    || (Date.parse(b.createdTime || 0) - Date.parse(a.createdTime || 0))
+    || String(a.name).localeCompare(String(b.name)));
   const pick = imgs[0];
 
   const res = await drive.files.get({ fileId: pick.id, alt: "media", supportsAllDrives: true }, { responseType: "arraybuffer" });

@@ -89,5 +89,17 @@
     "slug": "vt15",
     "x": "",
     "tier": "casual"
+  },
+  "JELOM": {
+    "firstPublished": "2026-09-13",
+    "slug": "jelom",
+    "x": "@JELOM_yokomore",
+    "tier": "casual"
+  },
+  "月夜きらり": {
+    "firstPublished": "2026-09-13",
+    "slug": "kirari",
+    "x": "@Kaguyakirari_V",
+    "tier": "casual"
   }
 }
