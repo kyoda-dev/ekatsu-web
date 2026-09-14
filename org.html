@@ -287,6 +287,7 @@
       settingsBox();  // ★2026-09-07：ミラー許諾と配信の扱いもサイトへ移した
       nextCupBox();   // ★2026-09-07：次回大会の申し込みもサイトから
       addDateBox();   // ★2026-09-13：開催日の登録もサイトから（Discordの「📅 日程を入力する」をやめた）
+      recordBox();    // ★2026-09-15：開催記録（優勝シーンの動画・ロゴの画面）の提出
 
       var upcoming = DATA.tournaments.filter(function (t) { return !t.past; });
       var past = DATA.tournaments.filter(function (t) { return t.past; }).reverse();
@@ -663,6 +664,108 @@
       wrap.appendChild(fin);
       wrap.appendChild(finSaid);
       sec.insertBefore(wrap, list);
+    }
+
+    // ★2026-09-15：開催記録（依田指示・社長「協賛した大会が開催された証拠を残す」）。
+    //   ファイルはサイトを通さず、ブラウザからDriveへ直接送る（/api/org-record が送り先を発行するだけ）。
+    //   Discordに貼ってもらわない理由＝主催者サーバーは10MBまでで、20秒の動画が入らないことがある。
+    //   終わった大会が無い主催者には出さない。
+    function recordBox() {
+      var old = document.getElementById('orgRecord');
+      if (old) old.remove();
+      fetch('/api/org-record?v=' + Date.now() + '&k=' + encodeURIComponent(secret))
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (!j.ok || !j.target) return;
+          var sec = el('div', 'org__sec');
+          sec.id = 'orgRecord';
+          sec.appendChild(el('h2', null, '開催の記録'));
+          sec.appendChild(el('p', 'org__lead',
+            '大会が終わりましたら、請求書と同じタイミングでご提出ください。協賛の記録として保管いたします。'));
+          var c = el('div', 'org__card');
+          c.appendChild(el('p', 'org__sub', '対象：' + j.target.label + 'の大会（最終開催日 ' + jpDate(j.target.lastDate) + '）'));
+          var rows = el('dl', 'org__rows');
+          [
+            ['video', '優勝が決まる場面の動画', '20秒ほど。動画ファイル（300MBまで）', 'video/*'],
+            ['logo', 'e活のロゴが映っている画面', '画像1枚（スクリーンショットで大丈夫です）', 'image/*'],
+          ].forEach(function (o) {
+            var have = j.have && j.have[o[0]];
+            var r = el('div', 'org__row');
+            r.appendChild(el('dt', null, o[1]));
+            var dd = el('dd');
+            dd.appendChild(el('span', 'org__flag ' + (have ? 'is-ok' : 'is-miss'), have ? '✓ 受け取りました' : 'まだです'));
+            dd.appendChild(el('span', 'org__hint', '　' + o[2]));
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.accept = o[3];
+            input.hidden = true;
+            var pick = el('button', 'org__btn' + (have ? ' org__btn--sub' : ' is-primary'), have ? '出し直す' : 'ファイルを選んで送る');
+            pick.type = 'button';
+            pick.style.display = 'block';
+            pick.style.marginTop = '8px';
+            var said = el('p', 'org__said', '');
+            pick.addEventListener('click', function () { input.click(); });
+            input.addEventListener('change', function () {
+              var f = input.files && input.files[0];
+              if (f) sendRecord(o[0], f, pick, said);
+              input.value = '';
+            });
+            dd.appendChild(pick);
+            dd.appendChild(input);
+            dd.appendChild(said);
+            r.appendChild(dd);
+            rows.appendChild(r);
+          });
+          c.appendChild(rows);
+          sec.appendChild(c);
+          var host = document.getElementById('orgUpcomingSec');
+          host.parentNode.insertBefore(sec, document.getElementById('orgPastSec'));
+        })
+        .catch(function () { /* 出せない時は欄ごと出さない（他の欄は使える） */ });
+    }
+
+    function sendRecord(kind, file, btn, said) {
+      var limit = kind === 'video' ? 300 : 20;
+      if (file.size > limit * 1024 * 1024) { said.className = 'org__said is-err'; said.textContent = limit + 'MBまでのファイルでお願いいたします'; return; }
+      var ext = (String(file.name).match(/\.([A-Za-z0-9]{1,5})$/) || [, ''])[1];
+      btn.disabled = true;
+      said.className = 'org__said';
+      said.textContent = '準備しています…';
+      var api = function (payload) {
+        return fetch('/api/org-record', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(Object.assign({ k: secret }, payload)),
+        }).then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.ok) throw new Error(j.error || '受け付けられませんでした'); return j; }); });
+      };
+      api({ action: 'start', kind: kind, size: file.size, mime: file.type || '', ext: ext })
+        .then(function (s) {
+          return new Promise(function (resolve, reject) {
+            var x = new XMLHttpRequest();
+            x.open('PUT', s.uploadUrl);
+            if (file.type) x.setRequestHeader('content-type', file.type);
+            x.upload.onprogress = function (e) {
+              if (e.lengthComputable) said.textContent = '送っています… ' + Math.floor(e.loaded / e.total * 100) + '%（画面を閉じないでください）';
+            };
+            x.onload = function () {
+              if (x.status >= 200 && x.status < 300) {
+                try { resolve(JSON.parse(x.responseText).id); } catch (e) { reject(new Error('送り終わりを確かめられませんでした')); }
+              } else reject(new Error('送れませんでした（' + x.status + '）。時間をおいてお試しください'));
+            };
+            x.onerror = function () { reject(new Error('通信が切れました。時間をおいてお試しください')); };
+            x.send(file);
+          });
+        })
+        .then(function (fileId) { return api({ action: 'done', fileId: fileId }); })
+        .then(function () {
+          said.className = 'org__said';
+          said.textContent = '受け取りました。ありがとうございます。';
+          setTimeout(recordBox, 1500);
+        })
+        .catch(function (err) {
+          said.className = 'org__said is-err';
+          said.textContent = err.message;
+          btn.disabled = false;
+        });
     }
 
     function postAction(payload, said, onOk) {
