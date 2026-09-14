@@ -68,7 +68,7 @@ async function build(env, request, gate) {
     sheetValues(token, MASTER_ID, `${tab}!A2:R`),
     sheetValues(token, PART_SHEET_ID, '参加可否!A2:D'),
     listTournamentKVs(env, request, token),
-    sheetValues(token, PART_SHEET_ID, '主催者!A2:H'),
+    sheetValues(token, PART_SHEET_ID, '主催者!A2:I'),
   ]);
 
   // 大会名 → 回答（VTuber名 → ○△×）
@@ -144,6 +144,7 @@ async function build(env, request, gate) {
       mirror: head ? permOf(head.partner, head.casual) : '',
       closeOnResult: flagOf(myRow[6]),
       allowMultiMirror: flagOf(myRow[7]),
+      allDatesFinal: flagOf(myRow[8]),   // I列：「これで全日程です」（Botが書く・2026-09-15）
     },
     kvSkip: !!gate.kvSkip,
     seasonKv: !!gate.seasonKv,

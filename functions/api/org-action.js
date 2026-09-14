@@ -181,6 +181,17 @@ export async function onRequestPost({ request, env }) {
       return json({ ok: true, days: fresh, note: 'reflect-async' });
     }
 
+    // ───────── 「これで全日程です」（2026-09-15）
+    //   まとめ契約の請求書は、この印が付くまでBotが出さない（Day1だけ終わった時点で請求が出る穴の対策）。
+    //   ★ここでは書かない。Botが organizer_rooms.json と「主催者」タブ I列に書く（bcast と同じ形）。
+    if (action === 'alldates') {
+      if (typeof body.final !== 'boolean') return json({ ok: false, error: '選び方が正しくありません' }, 400);
+      if (!gate.channelId) return json({ ok: false, error: 'お部屋が分かりませんでした。運営までお知らせください' }, 409);
+      await tellBot(env, { kind: 'alldates', channelId: gate.channelId, final: body.final });
+      await dropCache(request, key);
+      return json({ ok: true, final: body.final, note: 'reflect-async' });
+    }
+
     // ───────── 大会の中止
     if (action === 'cancel') {
       const rows = asRows(body.rows != null ? body.rows : body.row);

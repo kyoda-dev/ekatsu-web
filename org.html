@@ -637,6 +637,31 @@
         });
         setTimeout(function () { go.disabled = false; }, 3000);
       });
+      // ★2026-09-15：「これで全日程です」。請求書のご案内は、これが選ばれてから出す（Day1だけで締めない）。
+      //   2択にして、いま選ばれている方を光らせる（押したらどうなったかが見える形）。
+      var fin = el('div', 'org__field');
+      fin.appendChild(el('p', 'org__sub', '日程はこれで全部ですか？　全部そろったら「これで全日程です」をお選びください。協賛金の請求書のご案内は、そのあとにお送りします。'));
+      var finRow = el('div', 'org__actions');
+      var finSaid = el('p', 'org__said', '');
+      var nowFinal = DATA.settings && DATA.settings.allDatesFinal === true;
+      [[false, 'まだ日程が増える予定'], [true, 'これで全日程です']].forEach(function (o) {
+        var on = nowFinal === o[0];
+        var b = el('button', 'org__btn' + (on ? ' is-on' : ' org__btn--sub'), o[1]);
+        b.type = 'button';
+        b.addEventListener('click', function () {
+          if (on) return;
+          postAction({ action: 'alldates', final: o[0] }, finSaid, function () {
+            DATA.settings.allDatesFinal = o[0];
+            addDateBox();
+            var s2 = document.querySelector('#orgAddDate .org__said:last-child');
+            if (s2) { s2.className = 'org__said is-ok'; s2.textContent = '「' + o[1] + '」で承りました。'; }
+          });
+        });
+        finRow.appendChild(b);
+      });
+      fin.appendChild(finRow);
+      wrap.appendChild(fin);
+      wrap.appendChild(finSaid);
       sec.insertBefore(wrap, list);
     }
 
