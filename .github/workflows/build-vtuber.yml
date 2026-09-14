@@ -2,8 +2,14 @@ name: VTuber・サポーター掲載の自動更新
 
 # 掲載は毎週月曜と木曜（2026-09-06 依田の指示で木曜を追加。それまでは月曜だけ）。
 # 素材（2Dデータ・写真）が揃った人だけをサイトに載せる。素材が無い人はそのまま待ち。
-# 掲載された人は tools/vtuber_published.json に記録され、
-# e活Botがそれを読んで その日の19時のX紹介ポストを #x投稿 に予約する。
+# 掲載された人は tools/vtuber_published.json に記録される。
+# ★2026-09-14 依田の指示：Xの紹介ポストは自動で入れない。
+#   （9/13に作った記事を Bot がそのまま下書きに入れ、ご本人の直しが入る前の
+#     9/14 19時にポストされてしまったため。お約束は 9/15(火) 19時だった）
+#   このワークフローが作るのはサイトの掲載と記事まで。Xの紹介は
+#   tools/supporter_news_pending.json に「承認待ち」で止まる。
+#   ご本人の確認が取れたら tools/approve-supporter-post.js でOKを出すと
+#   Botが読む tools/supporter_news.json に入る。
 # ★2026-08-31：自動実行を再開した（依田の指示）。
 #   止める時はまた schedule の行をコメントに戻す。
 on:
@@ -45,6 +51,6 @@ jobs:
         run: |
           git config user.name "e-katsu-bot"
           git config user.email "k_yoda@alonzo.jp"
-          git add vtuber.html index.html news.html assets/img/vtuber/ assets/img/news/ news/ tools/vtuber_published.json tools/supporter_news.json
+          git add vtuber.html index.html news.html assets/img/vtuber/ assets/img/news/ news/ tools/vtuber_published.json tools/supporter_news.json tools/supporter_news_pending.json
           git diff --cached --quiet || git commit -m "auto: サポーターの掲載を更新"
           git push

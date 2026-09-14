@@ -1,105 +1,122 @@
 {
-  "_readme": "初めてサイトに載せた日の記録。X紹介ポストが「今週の新顔」を決めるのに使う。手で消すとその人がもう一度「新顔」になるので注意。",
+  "_readme": "初めてサイトに載せた日の記録。X紹介ポストが「今週の新顔」を決めるのに使う。手で消すとその人がもう一度「新顔」になるので注意。xPost は Xの紹介ポストを出してよいかの目印で、\"approved\" の人だけXに出す（既存の人は紹介済みなので approved。2026-09-14 依田の指示で、新しく載せた人は pending から始めるようにした）。",
   "葉月こより": {
     "firstPublished": "2026-06-17",
     "slug": "koyori",
     "x": "@HadukiKoyori",
-    "tier": "partner"
+    "tier": "partner",
+    "xPost": "approved"
   },
   "白峰　凱志": {
     "firstPublished": "2026-06-17",
     "slug": "shiramine",
     "x": "@shiraminekaito",
-    "tier": "partner"
+    "tier": "partner",
+    "xPost": "approved"
   },
   "まぐまぐです": {
     "firstPublished": "2026-06-17",
     "slug": "magmag",
     "x": "@magmag_live",
-    "tier": "partner"
+    "tier": "partner",
+    "xPost": "approved"
   },
   "M4gari（まがり）": {
     "firstPublished": "2026-06-26",
     "slug": "m4gari",
     "x": "@M4gari_619",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "茅花まりえ": {
     "firstPublished": "2026-06-26",
     "slug": "marie",
     "x": "@kayahanamarie",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "ぱわぁぱふこだま": {
     "firstPublished": "2026-07-24",
     "slug": "kodama",
     "x": "@pwpkdm29",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "NOA♪": {
     "firstPublished": "2026-08-31",
     "slug": "noa",
     "x": "@NOAxxxPUBG",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "セレーネ": {
     "firstPublished": "2026-08-31",
     "slug": "selene",
     "x": "@selene_witch9",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "neru": {
     "firstPublished": "2026-08-31",
     "slug": "neru",
     "x": "@nerulifx",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "AMEPERO": {
     "firstPublished": "2026-09-07",
     "slug": "amepero",
     "x": "@ameperocandy",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "月詠サキ": {
     "firstPublished": "2026-09-07",
     "slug": "vt11",
     "x": "@72525Osaka2",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "夜更カシ": {
     "firstPublished": "2026-09-07",
     "slug": "vt7",
     "x": "@yohukashi__game",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "バジル・セグリア": {
     "firstPublished": "2026-09-10",
     "slug": "vt12",
     "x": "@baziru_ttv",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "進翔芽吹": {
     "firstPublished": "2026-09-10",
     "slug": "vt14",
     "x": "@sinsyoumebuki",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "うさらいと": {
     "firstPublished": "2026-09-10",
     "slug": "vt15",
     "x": "",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "approved"
   },
   "JELOM": {
     "firstPublished": "2026-09-13",
     "slug": "jelom",
     "x": "@JELOM_yokomore",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "pending"
   },
   "月夜きらり": {
     "firstPublished": "2026-09-13",
     "slug": "kirari",
     "x": "@Kaguyakirari_V",
-    "tier": "casual"
+    "tier": "casual",
+    "xPost": "pending"
   }
 }

@@ -21,6 +21,7 @@
      vtuber.html … VT_PARTNER / VT_CASUAL マーカーの間
      index.html  … VT_LINEUP マーカーの間
      tools/vtuber_published.json … 誰をいつ初めて載せたかの記録（X紹介ポストが読む）
+                                    xPost が "approved" の人だけXに出す（2026-09-14）
 
    - 認証: e活Bot の .env（GOOGLE_CLIENT_ID / SECRET / REFRESH_TOKEN）を流用
            （既定: ../../e-katsu/.env。環境変数 ENV_PATH で変更可）
@@ -401,14 +402,19 @@ function replaceBlock(html, marker, body, file) {
   let added = 0;
   for (const p of people) if (!published[p.name]) {
     if (SITE_ONLY) continue;   // 記事に出していないので「掲載済み」にはしない（次の回の新顔になる）
-    published[p.name] = { firstPublished: today, slug: p.slug, x: p.xHandle, tier: p.tier }; added++;
+    // xPost: Xの紹介ポストを出してよいか。★2026-09-14 依田の指示で "pending" から始める。
+    //   （自動で出すのをやめた。tools/approve-supporter-post.js でOKを出すと "approved" になる）
+    published[p.name] = { firstPublished: today, slug: p.slug, x: p.xHandle, tier: p.tier, xPost: "pending" }; added++;
   }
   fs.writeFileSync(PUBLISHED_PATH, JSON.stringify(published, null, 2) + "\n");
 
   console.log(`\n書き込み完了。vtuber.html / index.html を更新、初掲載の記録を ${added} 件追加した。`);
 
   // ★2026-08-29 依田の指示：カードを足すだけでなく、掲載した週ごとに「お知らせ記事」も出す。
-  //   その記事をXでもポストする（Botが supporter_news.json を読む）。
+  // ★2026-09-14 依田の指示：Xのポストはここでは出さない。
+  //   記事は作るが、Xの紹介は tools/supporter_news_pending.json に「承認待ち」で止まる。
+  //   ご本人に紹介文を確認いただいてから tools/approve-supporter-post.js でOKを出すと、
+  //   Botが読む supporter_news.json に入る。
   if (newcomers.length && SITE_ONLY) {
     console.log(`\n--site-only：お知らせ記事とXの紹介は作っていない。次に回した時の新顔として残してある（${newcomers.map(p => p.displayName).join(" / ")}）。`);
   } else if (newcomers.length) {

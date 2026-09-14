@@ -1,0 +1,25 @@
+{
+  "_readme": "Xの紹介ポストの承認待ち。Botはこのファイルを読まない（読むのは supporter_news.json）。ご本人に紹介文を確認いただいてから、tools/approve-supporter-post.js で supporter_news.json に移すこと。",
+  "articles": [
+    {
+      "slug": "supporter-2026-09-13",
+      "date": "2026-09-13",
+      "title": "新しいe活カジュアルサポーターのご紹介（2026.09.13）",
+      "url": "https://ekatsu-web.pages.dev/news/supporter-2026-09-13",
+      "people": [
+        {
+          "name": "JELOM",
+          "display": "JELOM",
+          "x": "@JELOM_yokomore"
+        },
+        {
+          "name": "月夜きらり",
+          "display": "月夜きらり",
+          "x": "@Kaguyakirari_V"
+        }
+      ],
+      "addedAt": "2026-09-14",
+      "_メモ": "2026-09-14：本人の直しが入る前に自動でポストされてしまったため、投稿を削除して承認待ちに戻した。紹介文を直したうえで 9/15(火) 19時に出し直す。"
+    }
+  ]
+}
