@@ -11,6 +11,14 @@
      ・呼び方は「e活カジュアルサポーター」（旧「ネクストVTuber」は使わない）
      ・記事は**掲載した週ごとに1本**（月まとめではない）
      ・この記事をXでもポストする → tools/supporter_news.json に記録し、Botがそれを読む
+
+   ★2026-09-14 依田の指示：Xの紹介ポストを自動で入れるのはやめる
+     9/13 に作った記事を Bot がそのまま下書き（#x投稿）に入れてしまい、
+     ご本人からいただいた紹介文の直しが入る前の 9/14 19時にポストされてしまった。
+     （お約束していたのは 9/15(火) 19時）
+     そこでこのスクリプトは supporter_news.json（＝Botが読む列）には書かず、
+     tools/supporter_news_pending.json に「承認待ち」として置くだけにする。
+     ご本人の確認が取れたら tools/approve-supporter-post.js で列に移す。
    ========================================================= */
 const fs = require("fs");
 const path = require("path");
@@ -21,8 +29,15 @@ const NEWS_DIR = path.join(ROOT, "news");
 const NEWS_IMG_DIR = path.join(ROOT, "assets", "img", "news");
 const VT_IMG_DIR = path.join(ROOT, "assets", "img", "vtuber");
 const LOGO = path.join(ROOT, "assets", "img", "logo.webp");
-const INDEX_JSON = path.join(__dirname, "supporter_news.json");
+const INDEX_JSON = path.join(__dirname, "supporter_news.json");          // Botが読む列（＝ここに入った記事がXに出る）
+const PENDING_JSON = path.join(__dirname, "supporter_news_pending.json"); // 承認待ち（Botは読まない）
 const SITE = "https://ekatsu-web.pages.dev";
+const PENDING_README =
+  "Xの紹介ポストの承認待ち。Botはこのファイルを読まない（読むのは supporter_news.json）。" +
+  "ご本人に紹介文を確認いただいてから、tools/approve-supporter-post.js で supporter_news.json に移すこと。";
+
+const readJson = (f, fallback) => (fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : fallback);
+const writeJson = (f, obj) => fs.writeFileSync(f, JSON.stringify(obj, null, 2) + "\n");
 
 const esc = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -262,16 +277,27 @@ async function publishSupporterNews(people, today, { dry = false } = {}) {
 
   insertNewsCard({ slug, iso, disp, title, imgFile });
 
-  // Botが読む記録。ここにある記事をXでポストする。
-  const idx = fs.existsSync(INDEX_JSON) ? JSON.parse(fs.readFileSync(INDEX_JSON, "utf8")) : { articles: [] };
-  if (!idx.articles.some(a => a.slug === slug)) {
-    idx.articles.unshift({
+  // ★2026-09-14：Xの紹介ポストは自動で入れない（→ 冒頭の経緯）。
+  //   ここでは「承認待ち」に置くだけ。ご本人の確認が取れてから
+  //   node approve-supporter-post.js <slug> で Botが読む列に移す。
+  const posted = readJson(INDEX_JSON, { articles: [] });
+  const pending = readJson(PENDING_JSON, { _readme: PENDING_README, articles: [] });
+  if (posted.articles.some(a => a.slug === slug)) {
+    console.log("  Xの紹介ポスト: supporter_news.json にもう入っている（承認済み）");
+  } else if (pending.articles.some(a => a.slug === slug)) {
+    console.log("  Xの紹介ポスト: すでに承認待ちに入っている（tools/supporter_news_pending.json）");
+  } else {
+    pending._readme = PENDING_README;
+    pending.articles.unshift({
       slug, date: iso, title,
       url: `${SITE}/news/${slug}`,
       people: people.map(p => ({ name: p.name, display: p.displayName, x: p.xHandle || "" })),
+      addedAt: new Date().toISOString().slice(0, 10),
     });
-    fs.writeFileSync(INDEX_JSON, JSON.stringify(idx, null, 2) + "\n");
-    console.log(`  supporter_news.json に記録した（Botがこれを読んでXに出す）`);
+    writeJson(PENDING_JSON, pending);
+    console.log("  Xの紹介ポスト: 承認待ちにした（tools/supporter_news_pending.json）");
+    console.log("    ご本人に紹介文をご確認いただき、OKが出て・出す日が来たら:");
+    console.log(`      cd tools && node approve-supporter-post.js ${slug}`);
   }
   return { slug, title, url: `${SITE}/news/${slug}` };
 }
