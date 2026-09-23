@@ -5,6 +5,7 @@
    2026-09-07 依田指示：この3つもDiscordではなくサイトからできるようにする。
 
    受け取るもの（JSON）
+     { k, action: 'adddate', days: [{date,time}...], xText: 'Xで出す文' }
      { k, action: 'date',   row, newDate: 'YYYY-MM-DD' }
      { k, action: 'cancel', rows: [行番号...] }
      { k, action: 'rename', newName: '◯◯ vol.2' }
@@ -176,7 +177,11 @@ export async function onRequestPost({ request, env }) {
       }
       const fresh = days.filter(d => !have.has(d.date));
       if (!fresh.length) return json({ ok: false, error: 'その日程はすでに登録されています' }, 400);
-      await tellBot(env, { kind: 'adddate', channelId: gate.channelId, days: fresh });
+      // ★2026-09-23 依田指示：開催日の登録と一緒に「Xで出す文」（R列）も受ける。
+      //   ★ここでは書かない。行を足すのはBotなので、行番号を知っているのもBotだけ。
+      //     行ができたあとにBotの applyOrgSync がR列へ入れる（org-update と同じ600字で丸める）。
+      const xText = clean(body.xText, 600);
+      await tellBot(env, { kind: 'adddate', channelId: gate.channelId, days: fresh, xText });
       await dropCache(request, key);
       return json({ ok: true, days: fresh, note: 'reflect-async' });
     }

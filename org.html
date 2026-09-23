@@ -128,12 +128,13 @@
   .org__field label{display:block;font-size:12px;font-weight:500;margin-bottom:5px}
   .org__field .org__hint{display:block;font-size:11.5px;color:var(--o-muted);font-weight:400;
     margin-top:2px;line-height:1.7}
-  .org__field input,.org__field textarea{width:100%;font-family:inherit;font-size:14px;
+  .org__field input,.org__field textarea,.org__field select{width:100%;font-family:inherit;font-size:14px;
     color:var(--o-ink);background:#fff;border:1px solid var(--o-line-strong);border-radius:5px;
     padding:10px 12px;line-height:1.7}
   .org__field textarea{min-height:96px;resize:vertical}
-  .org__field input:focus,.org__field textarea:focus{outline:2px solid var(--o-ink);outline-offset:-1px;border-color:var(--o-ink)}
-  .org__field input[type="time"]{max-width:160px}
+  .org__field input:focus,.org__field textarea:focus,.org__field select:focus{outline:2px solid var(--o-ink);outline-offset:-1px;border-color:var(--o-ink)}
+  /* 開始時間は選ぶだけにした（2026-09-23）。手打ちの表記ゆれ・打ち間違いを止める。 */
+  .org__field select{max-width:220px}
   /* Xで出す文（100字まで）。見どころ欄より浅くして、長く書く欄ではないことを形で伝える。2026-09-23 */
   .org__field textarea.org__short{min-height:54px}
   .org__count{margin-top:4px;font-size:11.5px;color:var(--o-muted);text-align:right}
@@ -594,7 +595,7 @@
       var wrap = el('div', 'org__card');
       wrap.id = 'orgAddDate';
       wrap.appendChild(el('h3', 'org__name', '開催日を登録する'));
-      wrap.appendChild(el('p', 'org__sub', '決まっている日程をご登録ください。複数日ある場合は「日程を1つ増やす」で続けて入れられます。開始時間が未定なら空欄で大丈夫です。'));
+      wrap.appendChild(el('p', 'org__sub', '決まっている日程をご登録ください。複数日ある場合は「日程を1つ増やす」で続けて入れられます。開始時間が未定なら「未定」のままで大丈夫です。'));
       var rows = el('div', 'org__form');
       function addRow() {
         var line = el('div', 'org__field');
@@ -603,10 +604,9 @@
         var d = document.createElement('input');
         d.type = 'date';
         d.setAttribute('aria-label', '開催日');
-        var t = document.createElement('input');
-        t.type = 'text';
-        t.maxLength = 40;
-        t.placeholder = '開始時間（例：21:00）';
+        // ★2026-09-23 依田指示：手打ちをやめて選ぶだけにした（timeSelect のコメント参照）。
+        //   先頭の「未定」は空で送る＝これまでの空欄と同じ扱い（Botが J列へ「未定」と書く）。
+        var t = timeSelect('');
         t.setAttribute('aria-label', '開始時間');
         line.appendChild(d);
         line.appendChild(t);
@@ -614,6 +614,15 @@
       }
       addRow();
       wrap.appendChild(rows);
+      // ★2026-09-23 依田指示：ここからも「Xで出す文」を入れられるようにした。
+      //   これまでは大会が1本でも登録されたあとに出る「大会情報を登録・変更する」の中にしか無く、
+      //   開催日を登録する時点では書く場所が無かった。中身はそちらの欄と同じ（100字・そのままXに出る）。
+      //   ★書き込み先はマスターのR列。サイトは行を足さない（ORGSYNCでBotが足す）ので、
+      //     R列へ書くのも行を足したBot側（applyOrgSync）。ここは文を渡すだけ。
+      var fX = field('addXtext', 'Xで出す文',
+        '大会を一言で。ここに書いた文が、そのままe活の公式Xに出ます。',
+        'short', '');
+      wrap.appendChild(fX);
       var said = el('p', 'org__said', '');
       var act = el('div', 'org__actions');
       var more = el('button', 'org__btn org__btn--sub', '日程を1つ増やす');
@@ -628,12 +637,13 @@
       go.addEventListener('click', function () {
         var days = [];
         Array.prototype.forEach.call(rows.children, function (line) {
-          var ins = line.querySelectorAll('input');
-          if (ins[0].value) days.push({ date: ins[0].value, time: ins[1].value.trim() });
+          var d = line.querySelector('input[type="date"]');
+          var t = line.querySelector('select');
+          if (d && d.value) days.push({ date: d.value, time: t ? t.value : '' });
         });
         if (!days.length) { said.className = 'org__said is-err'; said.textContent = '開催日をお選びください'; return; }
         go.disabled = true;
-        postAction({ action: 'adddate', days: days }, said, function (j) {
+        postAction({ action: 'adddate', days: days, xText: fX._input.value.trim() }, said, function (j) {
           said.className = 'org__said';
           said.textContent = 'ありがとうございます。' + ((j.days || days).length) + '日分を受け付けました。反映まで少しお待ちください（お部屋にもお知らせが届きます）。';
           setTimeout(function () { load(); }, 10000);
@@ -977,25 +987,59 @@
       return d;
     }
 
+    // ★2026-09-23 依田指示：開始時間は選ぶだけにする（手打ちだと表記ゆれと打ち間違いが出る）。
+    //   刻みは30分。マスターに入っている開始時間を全部見たら、:00 と :30 しか無かった。
+    //   ★<input type="time"> は使わない。マスターには「21:00　(本配信20時半スタート)」のように
+    //     但し書きが付いた行が実在し、type="time" はそれを読めず黙って空にする＝
+    //     開いただけで主催者の補足が消える事故になる。
+    //   ★同じ理由で、いま入っている値が選択肢に無いときは、その値を選択肢に足して選んでおく。
+    //     空にして保存されるのが一番まずいので、消さないことを最優先にする。
+    //   「未定」は空（value=""）で送る。空で出せるいまの作りをそのまま残す。
+    function timeSelect(current) {
+      var s = document.createElement('select');
+      var add = function (v, t) {
+        var o = document.createElement('option');
+        o.value = v; o.textContent = t;
+        s.appendChild(o);
+        return o;
+      };
+      add('', '未定');
+      var list = [];
+      for (var h = 0; h < 24; h++) {
+        for (var m = 0; m < 60; m += 30) list.push(('0' + h).slice(-2) + ':' + ('0' + m).slice(-2));
+      }
+      list.forEach(function (t) { add(t, t); });
+      var cur = String(current == null ? '' : current).trim();
+      if (cur && cur !== '未定' && list.indexOf(cur) < 0) {
+        var o = document.createElement('option');
+        o.value = cur; o.textContent = cur;
+        s.insertBefore(o, s.firstChild.nextSibling);
+      }
+      s.value = (cur === '未定') ? '' : cur;
+      return s;
+    }
+
     function field(id, label, hint, kind, value) {
       var f = el('div', 'org__field');
       var lab = el('label', null, label);
       lab.setAttribute('for', id);
       if (hint) lab.appendChild(el('span', 'org__hint', hint));
       f.appendChild(lab);
-      var input = document.createElement((kind === 'text' || kind === 'short') ? 'textarea' : 'input');
+      var input;
+      // ★開始時間は選ぶだけ（2026-09-23）。理由と、入っている値を消さない作りは timeSelect のコメント。
+      if (kind === 'time') {
+        input = timeSelect(value);
+      } else {
+        input = document.createElement((kind === 'text' || kind === 'short') ? 'textarea' : 'input');
+        if (kind === 'url') { input.type = 'url'; input.placeholder = 'https://'; }
+        else if (kind === 'date') { input.type = 'date'; }
+        // ★2026-09-23：100字までの短い入力。Xに出る文はここだけ。
+        //   いつもの見どころ欄（min-height 96px）より浅くして、長く書く欄ではないことを形で伝える。
+        //   残り字数をその場に出す。既に入っている長い文は消さない（赤字で知らせるだけ）。
+        else if (kind === 'short') { input.maxLength = 100; input.classList.add('org__short'); }
+        input.value = value || '';
+      }
       input.id = id;
-      // ★開始時間は <input type="time"> にしない。
-      //   マスターには「21:00　(本配信20時半スタート)」のように但し書きが付いた行が実際にある。
-      //   type="time" はそれを読めず黙って空にするので、開いただけで補足が消える事故になる。
-      if (kind === 'time') { input.type = 'text'; input.placeholder = '20:00'; input.setAttribute('inputmode', 'numeric'); }
-      else if (kind === 'url') { input.type = 'url'; input.placeholder = 'https://'; }
-      else if (kind === 'date') { input.type = 'date'; }
-      // ★2026-09-23：100字までの短い入力。Xに出る文はここだけ。
-      //   いつもの見どころ欄（min-height 96px）より浅くして、長く書く欄ではないことを形で伝える。
-      //   残り字数をその場に出す。既に入っている長い文は消さない（赤字で知らせるだけ）。
-      else if (kind === 'short') { input.maxLength = 100; input.classList.add('org__short'); }
-      input.value = value || '';
       f.appendChild(input);
       if (kind === 'short') {
         var cnt = el('div', 'org__count', '');
@@ -1067,7 +1111,12 @@
         if (sending) return;
         // 変わったところだけ送る（触っていない欄は上書きしない）
         var fields = {};
-        if (fTime._input.value !== (t.time || '')) fields.time = fTime._input.value;
+        // 「未定」は空欄と同じ意味（選択肢の「未定」は空で送る）。触っていないのに送らないよう、そろえて比べる。
+        var sameTime = function (a, b) {
+          var n = function (x) { x = String(x == null ? '' : x).trim(); return x === '未定' ? '' : x; };
+          return n(a) === n(b);
+        };
+        if (!sameTime(fTime._input.value, t.time)) fields.time = fTime._input.value;
         if (fUrl._input.value.trim() !== (t.streamUrl || '')) fields.streamUrl = fUrl._input.value.trim();
         if (fHl._input.value.trim() !== (t.highlight || '')) fields.highlight = fHl._input.value.trim();
         if (fRule._input.value.trim() !== (t.rule || '')) fields.rule = fRule._input.value.trim();
