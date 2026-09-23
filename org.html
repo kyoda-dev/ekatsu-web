@@ -200,7 +200,7 @@
 
       <div class="org__sec" id="orgUpcomingSec" hidden>
         <h2>これからの大会</h2>
-        <p class="org__lead">開始時間・本番配信枠URL・見どころ・ミラー配信のルールは、こちらから直接ご登録いただけます。<br /><strong>開催の3日前まで</strong>にご登録をお願いいたします（応援配信の枠取りとサムネイルの準備に、日数がかかるためです）。<br />開催日の登録と変更、大会名の変更、大会の中止も、こちらから承ります。KV画像のご提出だけ、これまでどおりDiscordのお部屋でお願いいたします。</p>
+        <p class="org__lead">開始時間・本番配信枠URL・見どころ・ミラー配信のルールは、こちらから直接ご登録いただけます。<br /><strong>開催の3日前まで</strong>にご登録をお願いいたします（応援配信の枠取りとサムネイルの準備に、日数がかかるためです）。<br />開催日の登録と変更、大会名の変更、大会の中止、大会メイン告知画像（KV）のご提出も、こちらから承ります。</p>
         <div id="orgUpcoming"></div>
       </div>
 
@@ -371,9 +371,7 @@
       dl.appendChild(row('ミラー配信のルール', t.rule, t.rule ? null : '未登録'));
       if (t.cancelled) dl.appendChild(row('この大会', '中止として登録されています', null));
       if (t.note) dl.appendChild(row('備考', t.note, null));
-      dl.appendChild(row('大会KV画像',
-        (t.kv || t.kvInDrive) ? 'お預かりしています' : (DATA.kvSkip || DATA.seasonKv ? 'このシリーズは受領済みのものを使用します' : ''),
-        (t.kv || t.kvInDrive || DATA.kvSkip || DATA.seasonKv) ? null : 'Discordのお部屋の「KV画像を提出」ボタンからお願いいたします'));
+      dl.appendChild(kvRow(t));
       c.appendChild(dl);
 
       // ミラー配信をする方
@@ -664,6 +662,93 @@
       wrap.appendChild(fin);
       wrap.appendChild(finSaid);
       sec.insertBefore(wrap, list);
+    }
+
+    // ★2026-09-23：大会メイン告知画像（KV）の提出欄。
+    //   これまでKVだけはDiscordのお部屋のボタンでしか受け取れず、
+    //   「大会情報ページからご登録ください」という催促の文と食い違っていた（相手が迷って止まる）。
+    //   開催記録と同じで、ファイルはサイトを通さずブラウザからDriveへ直接送る
+    //   （/api/org-kv は送り先を発行して、届いたらマスターのM列に書くだけ）。
+    //   Day1・Day2…がある大会は、同じ大会の行すべてに同じ画像が記録される。
+    function kvRow(t) {
+      var d = el('div', 'org__row');
+      d.appendChild(el('dt', null, '大会KV画像'));
+      var dd = el('dd');
+      var have = !!(t.kv || t.kvInDrive);
+      var covered = have || DATA.kvSkip || DATA.seasonKv;
+      dd.appendChild(el('span', 'org__flag ' + (covered ? 'is-ok' : 'is-miss'),
+        have ? '✓ お預かりしています' : covered ? '受領済みのものを使用します' : 'まだです'));
+      dd.appendChild(el('span', 'org__hint',
+        '　画像1枚（20MBまで）。応援配信のサムネイル制作に使わせていただきます。'));
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.hidden = true;
+      var pick = el('button', 'org__btn' + (covered ? ' org__btn--sub' : ' is-primary'),
+        covered ? '画像を出し直す' : 'ファイルを選んで送る');
+      pick.type = 'button';
+      pick.style.display = 'block';
+      pick.style.marginTop = '8px';
+      var said = el('p', 'org__said', '');
+      pick.addEventListener('click', function () { input.click(); });
+      input.addEventListener('change', function () {
+        var f = input.files && input.files[0];
+        if (f) sendKv(t, f, pick, said);
+        input.value = '';
+      });
+      dd.appendChild(pick);
+      dd.appendChild(input);
+      dd.appendChild(said);
+      d.appendChild(dd);
+      return d;
+    }
+
+    function sendKv(t, file, btn, said) {
+      if (file.size > 20 * 1024 * 1024) {
+        said.className = 'org__said is-err';
+        said.textContent = '20MBまでの画像でお願いいたします';
+        return;
+      }
+      var ext = (String(file.name).match(/\.([A-Za-z0-9]{1,5})$/) || [, ''])[1];
+      btn.disabled = true;
+      said.className = 'org__said';
+      said.textContent = '準備しています…';
+      var api = function (payload) {
+        return fetch('/api/org-kv', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(Object.assign({ k: secret }, payload)),
+        }).then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.ok) throw new Error(j.error || '受け付けられませんでした'); return j; }); });
+      };
+      api({ action: 'start', row: t.row, size: file.size, mime: file.type || '', ext: ext, name: file.name })
+        .then(function (s) {
+          return new Promise(function (resolve, reject) {
+            var x = new XMLHttpRequest();
+            x.open('PUT', s.uploadUrl);
+            if (file.type) x.setRequestHeader('content-type', file.type);
+            x.upload.onprogress = function (e) {
+              if (e.lengthComputable) said.textContent = '送っています… ' + Math.floor(e.loaded / e.total * 100) + '%（画面を閉じないでください）';
+            };
+            x.onload = function () {
+              if (x.status >= 200 && x.status < 300) {
+                try { resolve(JSON.parse(x.responseText).id); } catch (e) { reject(new Error('送り終わりを確かめられませんでした')); }
+              } else reject(new Error('送れませんでした（' + x.status + '）。時間をおいてお試しください'));
+            };
+            x.onerror = function () { reject(new Error('通信が切れました。時間をおいてお試しください')); };
+            x.send(file);
+          });
+        })
+        .then(function (fileId) { return api({ action: 'done', fileId: fileId }); })
+        .then(function (j) {
+          said.className = 'org__said';
+          said.textContent = '受け取りました。ありがとうございます。'
+            + ((j.rows || []).length > 1 ? '（' + j.rows.length + '日ぶんに登録しました）' : '');
+          setTimeout(load, 1500);   // 札と「まだです」の数を取り直す
+        })
+        .catch(function (err) {
+          said.className = 'org__said is-err';
+          said.textContent = err.message;
+          btn.disabled = false;
+        });
     }
 
     // ★2026-09-15：開催記録（依田指示・社長「協賛した大会が開催された証拠を残す」）。

@@ -54,6 +54,14 @@ export async function firstTabTitle(token, id) {
   return meta.sheets[0].properties.title;
 }
 
+// ---- シリーズもの（Day1／Day2…）の共通部分 ----
+//   ★org.html の seriesBase と同じ式。片方だけ直すと、画面の見え方と書き込む先が食い違う。
+//   「Ludovate Cup Day1」「Ludovate Cup Day2」→「Ludovate Cup」。
+//   「Japan REMATCH League 8/8」はDayN表記ではないので、そのまま1本として扱う（回ごとにKVが違うため）。
+export function seriesBase(n) {
+  return String(n || '').replace(/[　\s]*(?:Day\s*\d+|D\d+|第?\s*\d+\s*日目?)\s*$/i, '').trim() || String(n || '');
+}
+
 // ---- 大会名と部屋名の結び付け（Botと同じ規則） ----
 const spaceNorm = s => String(s || '').replace(/[　]/g, ' ').replace(/\s+/g, ' ').trim();
 export function belongsToRoom(tournamentName, roomName) {
@@ -168,4 +176,4 @@ export function missingInfo(t, opts) {
   return miss;
 }
 
-export { PART_SHEET_ID, ORG_TAB };
+export { PART_SHEET_ID, ORG_TAB, PARENT_ID, KV_FOLDER };
