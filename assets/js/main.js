@@ -30,29 +30,39 @@
 })();
 
 /* =========================================================
-   協賛大会（works）: まだ開催されていない大会カードは非表示にする。
-   各カードの <time datetime="YYYY-MM-DD"> を見て、開催日が「今日」より後なら隠す。
-   → 日付が過ぎれば次回アクセス時に自動的に表示される（再ビルド不要）。
-   ※ 日付なし（毎週・定期開催）のカードは常に表示。
+   協賛大会（works）: 「これからの大会」の後始末だけをする。
+   ★2026-09-23 依田指示で作りを変えた。
+     それまではここで「未開催のカードを全部隠す」ことをしていたので、
+     公開サイトに次の予定が1つも出ていなかった（HTMLには入っていたのに見えないだけ）。
+     いまは build-works.js が「これから」と「これまで」の2段に分けて作る。
+   ここに残すのは、作り直し（6時間ごと）とのすき間を埋めるぶんだけ：
+     ・data-last（そのシリーズの最後の日）が過ぎたカードは隠す
+     ・「これから」が空になったら、見出しごと section を消す
    ========================================================= */
 (function () {
   "use strict";
-  const cards = document.querySelectorAll(".work-card");
-  if (!cards.length) return;
+  const sec = document.getElementById("worksUpcomingSec");
+  if (!sec) return;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  const cards = sec.querySelectorAll(".work-card");
+  let alive = 0;
   cards.forEach((card) => {
-    const t = card.querySelector("time[datetime]");
-    if (!t) return; // 日付なし（毎週/定期）は常に表示
-    const d = new Date(t.getAttribute("datetime"));
-    if (isNaN(d.getTime())) return;
-    d.setHours(0, 0, 0, 0);
-    if (d.getTime() > today.getTime()) {
-      card.style.display = "none"; // 未開催 → 非表示
+    const last = card.getAttribute("data-last");
+    const d = last ? new Date(last) : null;
+    if (d && !isNaN(d.getTime())) {
+      d.setHours(0, 0, 0, 0);
+      if (d.getTime() < today.getTime()) {
+        card.style.display = "none"; // 終わった → 次の作り直しで「これまで」へ移る
+        return;
+      }
     }
+    alive++;
   });
+
+  if (!alive) sec.style.display = "none";
 })();
 
 /* =========================================================

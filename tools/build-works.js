@@ -6,6 +6,12 @@
 
    使い方:  cd tools && node build-works.js
 
+   - 2026-09-23：「これからの大会」と「これまでの大会」の2段に分けた（依田指示）。
+     それまでは未開催のカードを main.js が隠していたので、公開サイトに次の予定が1つも出ていなかった。
+     ・これから＝同じシリーズを1枚にまとめる（Day1〜Day14 が14行並ばないように）
+     ・主催者が「告知OK日」（Q列）を入れている大会は、その日が来るまで出さない
+       （空＝欄の説明どおり「こちらの都合のよいときに発表します」なので出してよい）
+
    - 掲載対象: マスターの「情報公開」列(D) が ○ の大会のみ
    - リンク: 配信URL(H) 優先、無ければ 大会X(I)
    - 画像: 大会KV画像(M) があれば assets/img/works/ に取得して使用、
@@ -41,6 +47,12 @@ function parseDate(s) {
   const [, y, mo, d] = m;
   const pad = (n) => String(n).padStart(2, "0");
   return { disp: `${y}.${pad(mo)}.${pad(d)}`, iso: `${y}-${pad(mo)}-${pad(d)}`, t: new Date(+y, +mo - 1, +d).getTime() };
+}
+
+// 「UnderGroundREMATCH Day1」「… Day14」→「UnderGroundREMATCH」
+// ★functions/_lib/orgGate.js の seriesBase と同じ式。片方だけ直すと主催者ページと食い違う。
+function seriesBase(n) {
+  return String(n || "").replace(/[　\s]*(?:Day\s*\d+|D\d+|第?\s*\d+\s*日目?)\s*$/i, "").trim() || String(n || "");
 }
 
 function asciiSlug(name, fallback) {
@@ -125,13 +137,37 @@ function cardHtml(t) {
         </a>`;
 }
 
+// これからの大会のカード。シリーズは1枚にまとめて、日付を並べて出す。
+// data-last ＝ そのシリーズの最後の日付。ビルドとビルドの間（6時間）に日が過ぎたら main.js が隠す。
+function upcomingCardHtml(t) {
+  const link = t.link || "#";
+  const target = link !== "#" ? ' target="_blank" rel="noopener"' : "";
+  const SHOW = 8;
+  const md = (d) => (d.iso ? `${+d.iso.slice(5, 7)}/${+d.iso.slice(8, 10)}` : d.disp);
+  const rest = t.dates.length - SHOW;
+  const dates = t.dates.length > 1
+    ? `\n          <p class="work-card__dates">${esc(t.dates.slice(0, SHOW).map(md).join("・"))}${rest > 0 ? ` ほか${rest}日` : ""}</p>`
+    : "";
+  return `        <a class="work-card reveal" href="${esc(link)}"${target} data-last="${esc(t.last.iso)}">
+          <img class="work-card__thumb" src="${esc(t.img)}" alt="${esc(t.name)}" width="320" height="180" loading="lazy" />
+          <div class="work-card__meta">
+            ${t.first.iso ? `<time datetime="${esc(t.first.iso)}">${esc(t.first.disp)}</time>` : `<span>${esc(t.first.disp)}</span>`}
+            ${t.game ? `<span class="work-card__cat">${esc(t.game)}</span>` : ""}
+          </div>
+          <h2 class="work-card__title">${esc(t.name)}</h2>${dates}
+          <p class="work-card__excerpt">${esc(t.excerpt)}</p>
+        </a>`;
+}
+
 async function main() {
   const sheets = google.sheets({ version: "v4", auth: getAuth() });
   const drive = google.drive({ version: "v3", auth: getAuth() });
   const meta = await sheets.spreadsheets.get({ spreadsheetId: MASTER_ID, fields: "sheets.properties.title" });
   const tab = meta.data.sheets[0].properties.title;
-  const res = await sheets.spreadsheets.values.get({ spreadsheetId: MASTER_ID, range: `${tab}!A2:P` });
+  const res = await sheets.spreadsheets.values.get({ spreadsheetId: MASTER_ID, range: `${tab}!A2:R` });
   const rows = res.data.values || [];
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const todayT = today.getTime();
 
   // 大会名がある行はすべて掲載（情報公開フラグでの絞り込みは廃止）。
   // ※「情報公開」列(D)は残してあるが現在は不問。将来は主催者側の掲載可否選択などに転用予定。
@@ -146,20 +182,72 @@ async function main() {
     console.log(`  非表示: ${String(r[0]).trim()}（works-hidden.json の指定）`);
   }
 
-  const items = [];
+  // ※ 備考(L列)は協賛依頼文・担当名・社内数値などの内部情報なので公開しない
+  // リンクは配信URL(H)優先→大会X(I)。複数URL混在に備え最初のURLだけ抽出
+  const firstUrl = (s) => (String(s || "").match(/https?:\/\/[^\s"'<>]+/) || [])[0] || "";
+
+  // ---- これから／これまで に分ける（2026-09-23）----
+  //   ★これからの分は「告知OK日」(Q列)を見る。日付が入っていて、その日がまだ来ていなければ出さない。
+  //     空＝欄の説明どおり「こちらの都合のよいときに発表します」なので出してよい。
+  //     ここで外すと、その大会名はHTMLに入らない（表示だけ隠す作りにはしない）。
+  const past = [];
+  const soon = [];
   for (const r of pub) {
+    const d = parseDate(r[4]);
+    if (d.t && d.t >= todayT) {
+      const ok = parseDate(r[16]);
+      if (ok.t && ok.t > todayT) {
+        console.log(`  これからに出さない: ${String(r[0]).trim()}（告知OK日 ${ok.disp} がまだ）`);
+        continue;
+      }
+      soon.push(r);
+    } else {
+      past.push(r);   // 日付なし（毎週・定期開催）もこれまで側に置く（今までと同じ扱い）
+    }
+  }
+
+  const items = [];
+  for (const r of past) {
     const name = (r[0] || "").trim();
     const date = parseDate(r[4]);
     const game = (r[6] || "").trim();
-    // ※ 備考(L列)は協賛依頼文・担当名・社内数値などの内部情報なので公開しない
-    // リンクは配信URL(H)優先→大会X(I)。複数URL混在に備え最初のURLだけ抽出
-    const firstUrl = (s) => (String(s || "").match(/https?:\/\/[^\s"'<>]+/) || [])[0] || "";
     const link = firstUrl(r[7]) || firstUrl(r[8]) || "#";
     const slug = `${date.iso || "x"}-${asciiSlug(name, "tour")}`.slice(0, 60);
     const img = await fetchImage(drive, r[12], slug);
     const excerpt = "e活が協賛・ミラー配信でサポートしたコミュニティ大会です。";
     items.push({ name, date, game, link, img, excerpt });
   }
+
+  // ---- これからの大会：同じシリーズは1枚にまとめる ----
+  //   Day1〜Day14 が14行並ぶと、他の大会が見えなくなるため。
+  const groups = new Map();
+  for (const r of soon) {
+    const base = seriesBase((r[0] || "").trim());
+    if (!groups.get(base)) groups.set(base, []);
+    groups.get(base).push(r);
+  }
+  const upcoming = [];
+  for (const [base, rs] of groups) {
+    rs.sort((a, b) => parseDate(a[4]).t - parseDate(b[4]).t);
+    const dates = rs.map((r) => parseDate(r[4]));
+    const head = rs[0];
+    const slug = `${dates[0].iso || "x"}-${asciiSlug(base, "tour")}`.slice(0, 60);
+    // KV画像は、そのシリーズで最初に入っている行のものを使う（Day1に無くてDay2にあることがある）
+    const kvRow = rs.find((r) => String(r[12] || "").trim());
+    const img = await fetchImage(drive, kvRow ? kvRow[12] : "", slug);
+    upcoming.push({
+      name: base,
+      first: dates[0],
+      last: dates[dates.length - 1],
+      dates,
+      game: String((rs.find((r) => (r[6] || "").trim()) || [])[6] || "").trim(),
+      link: firstUrl((rs.find((r) => firstUrl(r[7])) || [])[7]) || firstUrl((rs.find((r) => firstUrl(r[8])) || [])[8]) || "#",
+      img,
+      excerpt: "e活が協賛・ミラー配信でサポートするコミュニティ大会です。",
+    });
+  }
+  upcoming.sort((a, b) => a.first.t - b.first.t);   // 近い順
+  console.log(`これからの大会: ${upcoming.length} 件（日程 ${soon.length} 本）／これまでの大会: ${past.length} 件`);
 
   // Web掲載専用の追加分（マスターに無い過去大会など）を extra-works.json から合成。
   // ※ Botも使うマスターに行を足さずに、サイトだけに載せたい実績を管理するため。
@@ -190,13 +278,24 @@ async function main() {
   items.sort((a, b) => (hasImg(b) - hasImg(a)) || (b.date.t - a.date.t));
 
   const cards = items.length ? items.map(cardHtml).join("\n\n") : `        <p class="works__empty">公開中の活動はまだありません。</p>`;
+  // これからの大会が0件のときは何も入れない。見出しごと消すのは main.js（ビルド後に日が過ぎた分も同じ扱いにするため）
+  const soonCards = upcoming.map(upcomingCardHtml).join("\n\n");
 
   let html = fs.readFileSync(HTML_PATH, "utf8");
-  const re = /(<!-- WORKS:START -->)[\s\S]*?(<!-- WORKS:END -->)/;
-  if (!re.test(html)) { console.error("works.html に WORKS:START/END マーカーが見つかりません"); process.exit(1); }
-  html = html.replace(re, `$1\n${cards}\n        $2`);
+  // マーカーの間を入れ替える。正規表現は使わない（テンプレート文字列の中で
+  // バックスラッシュが食われて [sS] になる事故があったため・2026-09-23）。
+  const put = (marker, body) => {
+    const head = `<!-- ${marker}:START -->`;
+    const tail = `<!-- ${marker}:END -->`;
+    const i = html.indexOf(head);
+    const j = html.indexOf(tail);
+    if (i < 0 || j < 0 || j < i) { console.error(`works.html に ${marker}:START/END マーカーが見つかりません`); process.exit(1); }
+    html = html.slice(0, i + head.length) + (body ? `\n${body}\n        ` : `\n        `) + html.slice(j);
+  };
+  put("WORKS:UPCOMING", soonCards);
+  put("WORKS", cards);
   fs.writeFileSync(HTML_PATH, html);
-  console.log(`works.html を更新しました（カード ${items.length} 件）`);
+  console.log(`works.html を更新しました（これから ${upcoming.length} 件／これまで ${items.length} 件）`);
 }
 
 main().catch((e) => { console.error("❌", e.message); process.exit(1); });
