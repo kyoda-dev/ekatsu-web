@@ -70,8 +70,12 @@
            ※ WORKS:CAL:START 〜 END の間は手動編集しないでください（再生成で上書きされます） -->
       <div class="wcal__months reveal" id="worksCal">
         <!-- WORKS:CAL:START -->
-        <div class="wcal">
-          <p class="wcal__mon">2026年9月</p>
+        <div class="wcal is-on" data-m="2026-09">
+          <div class="wcal__bar">
+            <button type="button" class="wcal__nav" data-step="-1" aria-label="前の月">←</button>
+            <p class="wcal__mon">2026年9月</p>
+            <button type="button" class="wcal__nav" data-step="1" aria-label="次の月">→</button>
+          </div>
           <div class="wcal__dow"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
           <div class="wcal__grid">
           <div class="wcal__cell is-blank"></div>
@@ -176,8 +180,12 @@
           </div>
         </div>
 
-        <div class="wcal">
-          <p class="wcal__mon">2026年10月</p>
+        <div class="wcal" data-m="2026-10">
+          <div class="wcal__bar">
+            <button type="button" class="wcal__nav" data-step="-1" aria-label="前の月">←</button>
+            <p class="wcal__mon">2026年10月</p>
+            <button type="button" class="wcal__nav" data-step="1" aria-label="次の月">→</button>
+          </div>
           <div class="wcal__dow"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
           <div class="wcal__grid">
           <div class="wcal__cell is-blank"></div>

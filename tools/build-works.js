@@ -179,8 +179,15 @@ function calendarHtml(ev) {
       const more = here.length > SHOW ? `\n            <span class="wcal__more">＋${here.length - SHOW}</span>` : "";
       cells.push(`          <div class="wcal__cell" data-d="${iso}">\n            <span class="wcal__num">${d}</span>${chips}${more}\n          </div>`);
     }
-    out.push(`        <div class="wcal">
-          <p class="wcal__mon">${y}年${m + 1}月</p>
+    // ★2026-09-23 依田指示：出すのは1か月だけ。次の月は「→」で行く。
+    //   月は全部作っておいて、表示の切り替えは main.js がやる（is-on が付いた月だけ見える）。
+    //   ここで先頭に is-on を付けておくのは、JSが動かなくても今月が見えるようにするため。
+    out.push(`        <div class="wcal${out.length ? "" : " is-on"}" data-m="${y}-${String(m + 1).padStart(2, "0")}">
+          <div class="wcal__bar">
+            <button type="button" class="wcal__nav" data-step="-1" aria-label="前の月">←</button>
+            <p class="wcal__mon">${y}年${m + 1}月</p>
+            <button type="button" class="wcal__nav" data-step="1" aria-label="次の月">→</button>
+          </div>
           <div class="wcal__dow">${DOW.map((x) => `<span>${x}</span>`).join("")}</div>
           <div class="wcal__grid">
 ${cells.join("\n")}

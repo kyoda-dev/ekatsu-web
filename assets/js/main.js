@@ -57,6 +57,34 @@
     else if (d < todayIso) cell.classList.add("is-past");   // YYYY-MM-DD は文字のまま比べられる
   });
 
+  // 出すのは1か月だけ。次の月は「→」で行く（2026-09-23 依田指示）
+  const cal = document.getElementById("worksCal");
+  if (cal) {
+    const months = Array.prototype.slice.call(cal.querySelectorAll(".wcal"));
+    if (months.length) {
+      // 今月から始める。作り直し前で今月が無ければ先頭（＝一番近い月）から
+      let at = months.findIndex((el) => el.getAttribute("data-m") === todayIso.slice(0, 7));
+      if (at < 0) at = 0;
+      const show = (i) => {
+        at = Math.min(Math.max(i, 0), months.length - 1);
+        months.forEach((el, n) => el.classList.toggle("is-on", n === at));
+        months[at].querySelectorAll(".wcal__nav").forEach((b) => {
+          const step = Number(b.getAttribute("data-step"));
+          b.disabled = at + step < 0 || at + step > months.length - 1;
+        });
+      };
+      // 月が1つしか無いなら、押せないボタンを置いておかない
+      if (months.length === 1) {
+        cal.querySelectorAll(".wcal__nav").forEach((b) => b.classList.add("is-hidden"));
+      }
+      cal.addEventListener("click", (e) => {
+        const b = e.target.closest(".wcal__nav");
+        if (b) show(at + Number(b.getAttribute("data-step")));
+      });
+      show(at);
+    }
+  }
+
   const cards = sec.querySelectorAll(".work-card");
   let alive = 0;
   cards.forEach((card) => {

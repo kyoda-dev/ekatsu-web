@@ -611,16 +611,38 @@ a { color: inherit; text-decoration: none; }
    ========================================================= */
 /* 1か月を横いっぱいに出す。2か月を横に並べるとマスが62pxになり、
    大会名が「Under…」としか読めなくなるため（2026-09-23 目視で確認） */
-.wcal__months {
-  display: grid;
-  gap: 3rem;
-  margin-bottom: 3.6rem;
+.wcal__months { margin-bottom: 3.6rem; }
+/* 出すのは1か月だけ。次の月は「→」で行く（2026-09-23 依田指示）。
+   切り替えは main.js。is-on はビルドが今月に付けてあるので、JSが動かなくても今月は見える */
+.wcal { display: none; }
+.wcal.is-on { display: block; }
+.wcal__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 0.9rem;
 }
 .wcal__mon {
   font-size: 0.92rem;
   letter-spacing: 0.12em;
-  margin-bottom: 0.9rem;
+  margin: 0;
 }
+.wcal__nav {
+  font-family: inherit;
+  font-size: 0.82rem;
+  line-height: 1;
+  color: var(--color-ink);
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 3px;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.wcal__nav:hover:not(:disabled) { border-color: var(--color-ink); }
+.wcal__nav:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 1px; }
+.wcal__nav:disabled { color: var(--color-line); cursor: default; }
+.wcal__nav.is-hidden { display: none; }
 .wcal__dow {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -679,6 +701,8 @@ a { color: inherit; text-decoration: none; }
 .wcal__ev:hover { background: #e9e4dc; }
 .wcal__more { font-size: 0.58rem; color: var(--color-muted); padding-left: 2px; }
 @media (max-width: 640px) {
+  /* 指で押すので、矢印は小さくしない（既定だと39x30しかない） */
+  .wcal__nav { min-width: 48px; min-height: 42px; font-size: 0.9rem; }
   .wcal__cell { min-height: 46px; }
   .wcal__ev {
     display: block;
