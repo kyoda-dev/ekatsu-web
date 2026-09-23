@@ -173,6 +173,9 @@ export function missingInfo(t, opts) {
   if (!t.rule) miss.push({ key: 'rule', label: 'ミラー配信のルール・条件' });
   const kvCovered = !!t.kv || !!o.kvInDrive || !!o.kvSkip || !!o.seasonKv;
   if (!kvCovered) miss.push({ key: 'kv', label: '大会メイン告知画像（KV）' });
+  // ★2026-09-23 依田指示：Xで出す文も「足りないもの」に入れる（Bot側 preEventRules.js と同じ並び）。
+  //   2026-09-07に欄を作ってから16日で書いてくれた主催者は1人だけだった。一度も催促していなかったのが原因。
+  if (!t.xText) miss.push({ key: 'xText', label: 'Xで出す文' });
   return miss;
 }
 
