@@ -78,7 +78,7 @@ function page({ title, excerpt, iso, date, body, thumb }) {
       <a href="../index.html#message">ご挨拶</a>
       <a href="../works.html">協賛大会</a>
       <a href="../reports.html">協賛レポート</a>
-      <a href="../sponsors.html">共同スポンサー</a>
+      <a href="../sponsors.html">パートナー企業</a>
       <a href="../vtuber.html">VTuber</a>
       <a href="../news.html">お知らせ</a>
       <a href="../index.html#company">会社情報</a>

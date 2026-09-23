@@ -26,7 +26,7 @@ export const COMPANIES = {
   //   name: "株式会社Vitalize 小海支社",
   //   entries: [
   //     { path: "/sponsor-vitalize", label: "五箇いわな手作りだし醤油の素 紹介ページ" },
-  //     { path: "/sponsors",         label: "共同スポンサー一覧" },
+  //     { path: "/sponsors",         label: "e活パートナー企業一覧" },
   //   ],
   // },
 };
