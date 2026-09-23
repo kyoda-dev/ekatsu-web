@@ -603,6 +603,95 @@ a { color: inherit; text-decoration: none; }
   transition: opacity 0.25s;
 }
 .work-card:hover .work-card__title { opacity: 0.6; }
+/* =========================================================
+   これからの大会のカレンダー（2026-09-23 依田指示）
+   build-works.js が作る静的な月表。中身は「これからの大会」と同じ元データ。
+   ★「今日」「過ぎた日」の印は main.js が実行時に付ける（ビルドは6時間ごとなので焼き込まない）。
+   ★狭い画面では名前が読めないので、印（棒）だけにして名前は下のカードで読んでもらう。
+   ========================================================= */
+/* 1か月を横いっぱいに出す。2か月を横に並べるとマスが62pxになり、
+   大会名が「Under…」としか読めなくなるため（2026-09-23 目視で確認） */
+.wcal__months {
+  display: grid;
+  gap: 3rem;
+  margin-bottom: 3.6rem;
+}
+.wcal__mon {
+  font-size: 0.92rem;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.9rem;
+}
+.wcal__dow {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+  margin-bottom: 3px;
+}
+.wcal__dow span {
+  text-align: center;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  padding: 2px 0;
+}
+.wcal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+}
+.wcal__cell {
+  min-width: 0;
+  min-height: 82px;
+  border: 1px solid var(--color-line);
+  padding: 3px 3px 4px;
+}
+.wcal__cell.is-blank { border-color: transparent; }
+.wcal__cell.is-past { opacity: 0.4; }
+.wcal__cell.is-today { border-color: var(--color-ink); }
+.wcal__num {
+  display: block;
+  font-size: 0.66rem;
+  color: var(--color-muted);
+  text-align: right;
+  margin-bottom: 2px;
+}
+.wcal__cell.is-today .wcal__num { color: var(--color-ink); font-weight: 700; }
+/* 名前は2行まで折り返す（1行で切ると、どの大会か分からなくなる） */
+.wcal__ev {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 0.64rem;
+  line-height: 1.4;
+  /* サイト共通の字間（0.96px）が乗ると18文字で17px広がり、入るはずの名前が
+     「UnderGroundREMAT / CH」に割れる。ここだけ字間を外す */
+  letter-spacing: 0;
+  color: var(--color-ink);
+  background: #f4f1ec;
+  border-left: 2px solid var(--color-ink);
+  padding: 2px 3px;
+  margin-bottom: 2px;
+  overflow: hidden;
+  /* word-break:break-word だと入る幅でも勝手に切れる（UnderGroundREMATCH が
+     「UnderGroundREMAT / CH」になった）。本当に入らない時だけ切る指定にする */
+  overflow-wrap: break-word;
+}
+.wcal__ev:hover { background: #e9e4dc; }
+.wcal__more { font-size: 0.58rem; color: var(--color-muted); padding-left: 2px; }
+@media (max-width: 640px) {
+  .wcal__cell { min-height: 46px; }
+  .wcal__ev {
+    display: block;
+    font-size: 0;
+    line-height: 0;
+    height: 5px;
+    padding: 0;
+    border-left: 0;
+    background: var(--color-ink);
+  }
+  .wcal__more { display: none; }
+}
+
 /* これからの大会のカードに出す日程の並び（シリーズは1枚にまとめるため・2026-09-23） */
 .work-card__dates {
   font-size: 0.82rem;

@@ -137,6 +137,59 @@ function cardHtml(t) {
         </a>`;
 }
 
+// これからの大会のカレンダー（2026-09-23 依田指示）。カードと同じ元データを月表にする。
+// ★「今日」「過ぎた日」の印はここでは付けない。作り直しは6時間ごとなので、
+//   ビルドした時刻の「今日」を焼き込むと日付をまたいだときにずれる。印は main.js が実行時に付ける。
+// ★狭い画面では名前が読めないので、CSS側で印（棒）だけにしてある（名前は下のカードで読める）。
+// ev = [{ iso, name, link }]
+function calendarHtml(ev) {
+  if (!ev.length) return "";
+  const DOW = ["日", "月", "火", "水", "木", "金", "土"];
+  const SHOW = 2;                     // 1日に出す大会は2つまで。あとは「＋N」
+  const MONTHS = 4;                   // 出す月数の上限（今月から）
+  const key = (y, m) => y * 12 + m;
+
+  const byDay = new Map();
+  for (const e of ev) {
+    if (!byDay.has(e.iso)) byDay.set(e.iso, []);
+    byDay.get(e.iso).push(e);
+  }
+
+  const now = new Date();
+  const from = key(now.getFullYear(), now.getMonth());
+  let last = from;
+  for (const e of ev) last = Math.max(last, key(+e.iso.slice(0, 4), +e.iso.slice(5, 7) - 1));
+  last = Math.min(last, from + MONTHS - 1);
+
+  const out = [];
+  for (let k = from; k <= last; k++) {
+    const y = Math.floor(k / 12);
+    const m = k % 12;
+    const offset = new Date(y, m, 1).getDay();       // その月の1日の曜日（日曜=0）
+    const days = new Date(y, m + 1, 0).getDate();
+    const cells = [];
+    for (let i = 0; i < offset; i++) cells.push(`          <div class="wcal__cell is-blank"></div>`);
+    for (let d = 1; d <= days; d++) {
+      const iso = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      const here = byDay.get(iso) || [];
+      const chips = here.slice(0, SHOW).map((e) => {
+        const target = e.link && e.link !== "#" ? ' target="_blank" rel="noopener"' : "";
+        return `\n            <a class="wcal__ev" href="${esc(e.link || "#")}"${target} title="${esc(e.name)}">${esc(e.name)}</a>`;
+      }).join("");
+      const more = here.length > SHOW ? `\n            <span class="wcal__more">＋${here.length - SHOW}</span>` : "";
+      cells.push(`          <div class="wcal__cell" data-d="${iso}">\n            <span class="wcal__num">${d}</span>${chips}${more}\n          </div>`);
+    }
+    out.push(`        <div class="wcal">
+          <p class="wcal__mon">${y}年${m + 1}月</p>
+          <div class="wcal__dow">${DOW.map((x) => `<span>${x}</span>`).join("")}</div>
+          <div class="wcal__grid">
+${cells.join("\n")}
+          </div>
+        </div>`);
+  }
+  return out.join("\n\n");
+}
+
 // これからの大会のカード。シリーズは1枚にまとめて、日付を並べて出す。
 // data-last ＝ そのシリーズの最後の日付。ビルドとビルドの間（6時間）に日が過ぎたら main.js が隠す。
 function upcomingCardHtml(t) {
@@ -247,6 +300,15 @@ async function main() {
     });
   }
   upcoming.sort((a, b) => a.first.t - b.first.t);   // 近い順
+
+  // カレンダー用。日程1本＝1件（カードはシリーズでまとめるが、こちらは日ごとに置く）
+  const calEvents = [];
+  for (const u of upcoming) {
+    for (const d of u.dates) {
+      if (d.iso) calEvents.push({ iso: d.iso, name: u.name, link: u.link });
+    }
+  }
+  calEvents.sort((a, b) => a.iso.localeCompare(b.iso) || a.name.localeCompare(b.name));
   console.log(`これからの大会: ${upcoming.length} 件（日程 ${soon.length} 本）／これまでの大会: ${past.length} 件`);
 
   // Web掲載専用の追加分（マスターに無い過去大会など）を extra-works.json から合成。
@@ -292,6 +354,7 @@ async function main() {
     if (i < 0 || j < 0 || j < i) { console.error(`works.html に ${marker}:START/END マーカーが見つかりません`); process.exit(1); }
     html = html.slice(0, i + head.length) + (body ? `\n${body}\n        ` : `\n        `) + html.slice(j);
   };
+  put("WORKS:CAL", calendarHtml(calEvents));
   put("WORKS:UPCOMING", soonCards);
   put("WORKS", cards);
   fs.writeFileSync(HTML_PATH, html);

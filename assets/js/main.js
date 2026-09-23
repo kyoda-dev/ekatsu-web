@@ -36,6 +36,7 @@
      公開サイトに次の予定が1つも出ていなかった（HTMLには入っていたのに見えないだけ）。
      いまは build-works.js が「これから」と「これまで」の2段に分けて作る。
    ここに残すのは、作り直し（6時間ごと）とのすき間を埋めるぶんだけ：
+     ・カレンダーの「今日」「過ぎた日」の印を付ける（ビルド時刻を焼き込むと日付をまたいでずれる）
      ・data-last（そのシリーズの最後の日）が過ぎたカードは隠す
      ・「これから」が空になったら、見出しごと section を消す
    ========================================================= */
@@ -46,6 +47,15 @@
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
+  // カレンダーの日付に印を付ける
+  const pad = (n) => String(n).padStart(2, "0");
+  const todayIso = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+  sec.querySelectorAll(".wcal__cell[data-d]").forEach((cell) => {
+    const d = cell.getAttribute("data-d");
+    if (d === todayIso) cell.classList.add("is-today");
+    else if (d < todayIso) cell.classList.add("is-past");   // YYYY-MM-DD は文字のまま比べられる
+  });
 
   const cards = sec.querySelectorAll(".work-card");
   let alive = 0;
