@@ -134,6 +134,10 @@
   .org__field textarea{min-height:96px;resize:vertical}
   .org__field input:focus,.org__field textarea:focus{outline:2px solid var(--o-ink);outline-offset:-1px;border-color:var(--o-ink)}
   .org__field input[type="time"]{max-width:160px}
+  /* Xで出す文（100字まで）。見どころ欄より浅くして、長く書く欄ではないことを形で伝える。2026-09-23 */
+  .org__field textarea.org__short{min-height:54px}
+  .org__count{margin-top:4px;font-size:11.5px;color:var(--o-muted);text-align:right}
+  .org__count.is-over{color:#c0392b;font-weight:600}
   .org__also{display:block;margin:2px 0 14px;font-size:12.5px;color:var(--o-ink-2);
     line-height:1.8;cursor:pointer}
   .org__also input{margin-right:5px;vertical-align:middle}
@@ -979,7 +983,7 @@
       lab.setAttribute('for', id);
       if (hint) lab.appendChild(el('span', 'org__hint', hint));
       f.appendChild(lab);
-      var input = document.createElement(kind === 'text' ? 'textarea' : 'input');
+      var input = document.createElement((kind === 'text' || kind === 'short') ? 'textarea' : 'input');
       input.id = id;
       // ★開始時間は <input type="time"> にしない。
       //   マスターには「21:00　(本配信20時半スタート)」のように但し書きが付いた行が実際にある。
@@ -987,8 +991,23 @@
       if (kind === 'time') { input.type = 'text'; input.placeholder = '20:00'; input.setAttribute('inputmode', 'numeric'); }
       else if (kind === 'url') { input.type = 'url'; input.placeholder = 'https://'; }
       else if (kind === 'date') { input.type = 'date'; }
+      // ★2026-09-23：100字までの短い入力。Xに出る文はここだけ。
+      //   いつもの見どころ欄（min-height 96px）より浅くして、長く書く欄ではないことを形で伝える。
+      //   残り字数をその場に出す。既に入っている長い文は消さない（赤字で知らせるだけ）。
+      else if (kind === 'short') { input.maxLength = 100; input.classList.add('org__short'); }
       input.value = value || '';
       f.appendChild(input);
+      if (kind === 'short') {
+        var cnt = el('div', 'org__count', '');
+        var upd = function () {
+          var n = Array.from(input.value).length;
+          cnt.textContent = n + ' / 100字';
+          cnt.className = 'org__count' + (n > 100 ? ' is-over' : '');
+        };
+        input.addEventListener('input', upd);
+        f.appendChild(cnt);
+        upd();
+      }
       f._input = input;
       return f;
     }
@@ -1006,11 +1025,16 @@
       var fRule = field(id + 'rule', 'ミラー配信のルール・条件', '「遅延◯分」「実況の音声は流さない」など、守っていただきたいことをご記入ください。未記入の場合は、e活の標準ルール（大会画面を20分以上／配信タイトルに大会名／画面とロゴを隠さない）が適用されます。', 'text', t.rule);
       var fNote = field(id + 'note', '備考', 'そのほか、お伝えいただきたいことがあればご記入ください。', 'text', t.note);
       // ★2026-09-07 依田指示：協賛の発表を出してよい日を主催者が選べるようにした
-      var fX = field(id + 'xtext', 'Xで出す文（任意）',
-        'e活の公式Xで紹介するときの文です。ご記入いただいた文は、そのまま出します。空のままなら、こちらで用意した文でお出しします。',
-        'text', t.xText);
+      // ★2026-09-23：「（任意）」と「空ならこちらで用意します」をやめた。
+      //   2026-09-07に欄を作ってから16日で、書いてくれた主催者は1人だけだった。
+      //   欄の説明が「書かなくていい」と読める作りになっていたのが原因。
+      var fX = field(id + 'xtext', 'Xで出す文',
+        '大会を一言で。ここに書いた文が、そのままe活の公式Xに出ます。',
+        'short', t.xText);
       var fPub = field(id + 'pub', '告知してよい日', 'e活の公式Xで「この大会に協賛します」と発表してよい日です。大会側の発表より先に出したくない場合にご指定ください。空のままなら、こちらの都合のよいときに発表します。', 'date', t.publishAt);
-      [fTime, fUrl, fHl, fRule, fNote, fPub, fX].forEach(function (f) { form.appendChild(f); });
+      // ★2026-09-23：「Xで出す文」を見どころの真下へ上げた。
+      //   いちばん下（告知してよい日の次）に置いていたので、そこまで読まれていなかった。
+      [fTime, fUrl, fHl, fX, fRule, fNote, fPub].forEach(function (f) { form.appendChild(f); });
 
       // シリーズもの＝残りの日程にもまとめて入れられるようにする（1日ずつ入力させない）
       var sibs = siblingsOf(t);
