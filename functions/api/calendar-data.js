@@ -98,7 +98,7 @@ async function build(env, origin) {
 
   const part = new Map();
   for (const r of pRows) {
-    const tname = (r[0] || '').trim(), who = (r[1] || '').trim(), st = (r[2] || '').trim();
+    const tname = oneLine(r[0], 500), who = (r[1] || '').trim(), st = (r[2] || '').trim();   // 空白の数を無視（2026-09-26）
     if (!tname || !who || !st) continue;
     if (!part.has(tname)) part.set(tname, new Map());
     part.get(tname).set(who, st);
@@ -120,7 +120,7 @@ async function build(env, origin) {
     if (String(r[15] || '').trim()) continue;
     const d = parseDate((r[4] || '').trim(), now);
     if (!d || d.t < from || d.t > to) continue;
-    const ans = part.get(name) || new Map();
+    const ans = part.get(oneLine(name, 500)) || new Map();
     const pick = mark => [...ans.entries()].filter(([, s]) => s.includes(mark)).map(([n]) => n);
     const cleanName = name.replace(/\s+/g, ' ');
     events.push({

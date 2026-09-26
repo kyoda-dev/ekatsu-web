@@ -23,6 +23,9 @@ import { checkAccess } from '../_lib/gate.js';
 
 const PART_SHEET_ID = '1GwQPo1rx6sHAQKdyoVAYlyYjTZYPmEJP7bsX0QBrTOU';
 const STATUS_MARK = { yes: '○', maybe: '△', no: '×' };
+// ★2026-09-26：大会名は空白の数を無視して照合する。マスターが「NOBORI Season1  Day7」（空白2つ）で、
+//   こちらは空白1つの名前で別の行を足していた。Botに届かず、本人の変更が効かないように見えていた。
+const normT = s => String(s || '').replace(/\s+/g, ' ').trim();
 
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), { status, headers: { 'content-type': 'application/json; charset=utf-8' } });
@@ -126,7 +129,7 @@ export async function onRequestPost({ request, env }) {
     const stamp = new Date().toISOString();
     let target = -1;
     for (let i = 0; i < rows.length; i++) {
-      if (String(rows[i][0] || '').trim() === tournament && String(rows[i][1] || '').trim() === who) { target = i; break; }
+      if (normT(rows[i][0]) === normT(tournament) && String(rows[i][1] || '').trim() === who) { target = i; break; }
     }
 
     if (target >= 0) {
@@ -134,7 +137,7 @@ export async function onRequestPost({ request, env }) {
       const r = await fetch(sheetUrl(range, '?valueInputOption=RAW'), {
         method: 'PUT',
         headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' },
-        body: JSON.stringify({ values: [[tournament, who, mark, stamp]] }),
+        body: JSON.stringify({ values: [[rows[target][0], who, mark, stamp]] }),   // 大会名は元の行のまま（Botと同じ綴りを保つ）
       });
       if (!r.ok) throw new Error('シートに書けませんでした');
     } else {
