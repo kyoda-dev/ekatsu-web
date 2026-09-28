@@ -2,6 +2,20 @@
   "_readme": "Xの紹介ポストの承認待ち。Botはこのファイルを読まない（読むのは supporter_news.json）。ご本人に紹介文を確認いただいてから、tools/approve-supporter-post.js で supporter_news.json に移すこと。",
   "articles": [
     {
+      "slug": "supporter-2026-09-28",
+      "date": "2026-09-28",
+      "title": "新しいe活カジュアルサポーターのご紹介（2026.09.28）",
+      "url": "https://ekatsu-web.pages.dev/news/supporter-2026-09-28",
+      "people": [
+        {
+          "name": "ぺんぺん",
+          "display": "ぺんぺん",
+          "x": "@Nissy14843663"
+        }
+      ],
+      "addedAt": "2026-09-28"
+    },
+    {
       "slug": "supporter-2026-09-24",
       "date": "2026-09-24",
       "title": "新しいe活カジュアルサポーターのご紹介（2026.09.24）",
