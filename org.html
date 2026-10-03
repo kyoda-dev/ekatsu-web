@@ -245,7 +245,7 @@
       <!-- ★2026-10-03 依田「主催者側もまず最初にカレンダーが見れるように」。見るだけ。登録や変更はこの下の欄から -->
       <div class="org__sec" id="orgCalSec" hidden>
         <h2>e活の協賛大会カレンダー</h2>
-        <p class="org__lead">e活が協賛している大会の予定です。日付を押すと、その日の大会が下に出ます。<br />ほかの大会は、主催者の方が公開にしているものだけを載せています。</p>
+        <p class="org__lead">e活が協賛している大会の予定です。<br />ほかの大会は、主催者の方が公開にしているものだけを載せています。</p>
         <div class="ocal__mon">
           <div class="ocal__mlabel" id="ocalLabel">　</div>
           <button class="ocal__nav" id="ocalPrev" type="button" aria-label="前の月">←</button>
@@ -430,14 +430,18 @@
       var list = DATA.calendar || [], byDate = {};
       list.forEach(function (e) { (byDate[e.date] = byDate[e.date] || []).push(e); });
       var y = calView.getFullYear(), m = calView.getMonth(), todayKey = calKey(new Date());
+      var narrow = window.matchMedia && window.matchMedia('(max-width:640px)').matches;
+      if (!narrow) calSel = '';
       document.getElementById('ocalLabel').textContent = y + '年 ' + (m + 1) + '月';
       var grid = document.getElementById('ocalGrid'); grid.textContent = '';
       var first = new Date(y, m, 1), last = new Date(y, m + 1, 0).getDate();
       for (var b = 0; b < first.getDay(); b++) grid.appendChild(el('div', 'ocal__cell is-blank'));
       for (var d = 1; d <= last; d++) {
         var date = new Date(y, m, d), key = calKey(date), evs = byDate[key] || [];
-        var cell = document.createElement(evs.length ? 'button' : 'div');
-        if (evs.length) { cell.type = 'button'; cell.setAttribute('data-d', key); }
+        // ★パソコンの幅では押せない升目にする（升目に大会名が出ているので、下の一覧は出さない・2026-10-03 依田）。携帯は名前が入らないので押すと下に出る
+        var tap = evs.length && narrow;
+        var cell = document.createElement(tap ? 'button' : 'div');
+        if (tap) { cell.type = 'button'; cell.setAttribute('data-d', key); }
         cell.className = 'ocal__cell' + (date.getDay() === 0 ? ' is-sun' : '') + (key === todayKey ? ' is-today' : '') + (key < todayKey ? ' is-past' : '') + (key === calSel ? ' is-sel' : '');
         cell.setAttribute('aria-label', (m + 1) + '月' + d + '日 大会' + evs.length + '件');
         cell.appendChild(el('span', 'ocal__num', String(d)));
