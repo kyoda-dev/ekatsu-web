@@ -23,7 +23,9 @@
         }
       });
     },
-    { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
+    // ★2026-10-03 threshold 0.15 だと、画面より何倍も縦に長い箱（スマホのカジュアルサポーター一覧＝約5,300px）は
+    //   15%が一度に画面に入ることが無く、ずっと透明のままだった。少しでも画面に入ったら出す
+    { threshold: 0, rootMargin: "0px 0px -8% 0px" }
   );
 
   targets.forEach((el) => observer.observe(el));
