@@ -123,6 +123,8 @@ export async function onRequestPost({ request, env }) {
     if ('rule' in f) write.O = clean(f.rule, LONG_MAX);
     if ('note' in f) write.L = clean(f.note, LONG_MAX);
     if ('xText' in f) write.R = clean(f.xText, 600);   // Xで出す文（2026-09-07）
+    // ★2026-10-04 依田指示：概要欄に載せてほしい文（S列）。ミラー配信をするサポーターの概要欄に、そのまま入る
+    if ('descText' in f) write.S = clean(f.descText, 600);
     // ★2026-09-07 依田指示：協賛の発表（Xの告知）を出してよい日。空＝いつでも出してよい。
     if ('publishAt' in f) {
       const v = String(f.publishAt || '').trim();

@@ -504,6 +504,8 @@
       dl.appendChild(row('本番配信枠URL', t.streamUrl, t.streamUrl ? null : '未登録', true));
       dl.appendChild(row('見どころ', t.highlight, t.highlight ? null : '未登録'));
       dl.appendChild(row('ミラー配信のルール', t.rule, t.rule ? null : '未登録'));
+      // ★2026-10-04：概要欄に載せてほしい文。書いていない大会には行を出さない（催促に見えないように）
+      if (t.descText) dl.appendChild(row('概要欄に載せる文', t.descText, null));
       if (t.cancelled) dl.appendChild(row('この大会', '中止として登録されています', null));
       if (t.note) dl.appendChild(row('備考', t.note, null));
       dl.appendChild(kvRow(t));
@@ -1198,6 +1200,11 @@
       var fUrl = field(id + 'url', '本番配信枠URL', '主催者さまの配信ページのURLです。応援配信からご案内いたします。', 'url', t.streamUrl);
       var fHl = field(id + 'hl', '見どころ', '注目選手・強豪チーム・特別ルールなど。ミラー配信で触れさせていただきます。', 'text', t.highlight);
       var fRule = field(id + 'rule', 'ミラー配信のルール・条件', '「遅延◯分」「実況の音声は流さない」など、守っていただきたいことをご記入ください。未記入の場合は、e活の標準ルール（大会画面を20分以上／配信タイトルに大会名／画面とロゴを隠さない）が適用されます。', 'text', t.rule);
+      // ★2026-10-04 依田指示：ミラー配信の概要欄に載せてほしい文を、項目として受け取る。
+      //   それまでは「ミラー配信のルール」の中に書かれたURLを拾って概要欄に入れていた（主催者が何を載せたいかを聞く欄が無かった）。
+      var fDesc = field(id + 'desc', 'ミラー配信の概要欄に載せてほしい文（任意）',
+        '大会の公式リンク・ハッシュタグ・クレジット表記など。ここに書いた文を、ミラー配信をする方の概要欄にそのまま入れます。空のままでも大丈夫です。',
+        'text', t.descText);
       var fNote = field(id + 'note', '備考', 'そのほか、お伝えいただきたいことがあればご記入ください。', 'text', t.note);
       // ★2026-09-07 依田指示：協賛の発表を出してよい日を主催者が選べるようにした
       // ★2026-09-23：「（任意）」と「空ならこちらで用意します」をやめた。
@@ -1211,7 +1218,7 @@
       var fPub = field(id + 'pub', '告知してよい日', 'e活の公式XとWebサイトで「この大会に協賛します」と発表してよい日です。大会側の発表より先に出したくない場合にご指定ください。空のままなら、こちらの都合のよいときに発表します。', 'date', t.publishAt);
       // ★2026-09-23：「Xで出す文」を見どころの真下へ上げた。
       //   いちばん下（告知してよい日の次）に置いていたので、そこまで読まれていなかった。
-      [fTime, fUrl, fHl, fX, fRule, fNote, fPub].forEach(function (f) { form.appendChild(f); });
+      [fTime, fUrl, fHl, fX, fRule, fDesc, fNote, fPub].forEach(function (f) { form.appendChild(f); });
 
       // シリーズもの＝残りの日程にもまとめて入れられるようにする（1日ずつ入力させない）
       var sibs = siblingsOf(t);
@@ -1253,6 +1260,7 @@
         if (fUrl._input.value.trim() !== (t.streamUrl || '')) fields.streamUrl = fUrl._input.value.trim();
         if (fHl._input.value.trim() !== (t.highlight || '')) fields.highlight = fHl._input.value.trim();
         if (fRule._input.value.trim() !== (t.rule || '')) fields.rule = fRule._input.value.trim();
+        if (fDesc._input.value.trim() !== (t.descText || '')) fields.descText = fDesc._input.value.trim();
         if (fNote._input.value.trim() !== (t.note || '')) fields.note = fNote._input.value.trim();
         if (fPub._input.value !== (t.publishAt || '')) fields.publishAt = fPub._input.value;
         if (fX._input.value.trim() !== (t.xText || '')) fields.xText = fX._input.value.trim();
