@@ -332,6 +332,11 @@ function replaceBlock(html, marker, body, file) {
 
     const m = meta[name] || {};
     if (m.hide) { skipped.push({ name, why: "meta で hide 指定" }); continue; }
+    // ★2026-10-03 依田の指示：新しい人は、本人に紹介文を確認してもらってから載せる（自動の月曜・木曜には載せない）。
+    //   それまでは素材が揃うと確認の前にサイトへ出ていた（ぱんみみさん・ぺんぺんさん）。
+    //   確認が取れたら vtuber_meta.json のその人に "confirmed": true（と直した bio）を書く → 次の作り直しで載る。
+    //   もう載っている人（vtuber_published.json にいる人）はそのまま。
+    if (!published[name] && !m.confirmed) { skipped.push({ name, why: "本人の紹介文の確認がまだ（確認が取れたら vtuber_meta.json に confirmed: true）" }); continue; }
 
     const slug = m.slug || norm(name).replace(/[^a-z0-9]/g, "") || `vt${people.length + 1}`;
     const icon = await ensureIcon(drive, name, slug, m.crop);
