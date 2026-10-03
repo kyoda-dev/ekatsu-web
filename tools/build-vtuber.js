@@ -45,6 +45,13 @@ const PROFILE_TAB = "プロフィール一覧";
 // VTuberごとのフォルダが並んでいる親フォルダ（e活Botと同じもの）
 const DRIVE_PARENT = process.env.VTUBER_DELIVERY_PARENT_ID || "1OYvATSqyoo8E-sl2WvVS4Ev9pFgwoH7U";
 const ASSET_SUBFOLDER = "02_2Dデータ素材";
+// ★2026-10-04 依田の指示：プロフィールは e活アプリで本人が入れ、依田が e活管理サイトでOKを出したものをサイトに出す。
+//   置き場＝参加可否シート（名簿のあるシート）のタブ「プロフィール（アプリ）」。読むのは K列（公開中の中身）だけ。
+//   K列は、依田がOKを押した時点の ひとこと・リンク・アイコン の写し（JSON）。本人が書き換えても、OKが出るまで K列は変わらない。
+//   K列がある人は、ひとこと・リンク・アイコンをそこから取る（vtuber_meta.json の bio / links / crop より優先）。
+//   新しい人は、K列があれば「本人の確認が取れた」として載せる（meta の confirmed と同じ扱い）。
+const APP_PROF_SHEET_ID = process.env.PART_SHEET_ID || "1GwQPo1rx6sHAQKdyoVAYlyYjTZYPmEJP7bsX0QBrTOU";
+const APP_PROF_TAB = "プロフィール（アプリ）";
 
 const ROOT = path.join(__dirname, "..");
 const VT_HTML = path.join(ROOT, "vtuber.html");
@@ -274,6 +281,18 @@ async function ensureIcon(drive, name, slug, crop) {
   return { ok: true, picked: pick.name };
 }
 
+// アプリで本人が位置を合わせたアイコン（Driveのファイル）を、そのまま 400px にして置く。
+// 前に置いたものと同じファイルなら何もしない（vtuber_published.json の iconFile で見分ける）。
+async function appIcon(drive, slug, fileId, lastFileId) {
+  const dest = path.join(IMG_DIR, `${slug}.webp`);
+  if (fileId === lastFileId && fs.existsSync(dest)) return { ok: true, reused: true };
+  const res = await drive.files.get({ fileId, alt: "media", supportsAllDrives: true }, { responseType: "arraybuffer" });
+  if (DRY) return { ok: true, picked: "アプリのアイコン", dry: true };
+  fs.mkdirSync(IMG_DIR, { recursive: true });
+  await sharp(Buffer.from(res.data)).flatten({ background: "#ffffff" }).resize(ICON_SIZE, ICON_SIZE, { fit: "cover" }).webp({ quality: 88 }).toFile(dest);
+  return { ok: true, picked: "アプリのアイコン" };
+}
+
 // ---- HTML の組み立て --------------------------------------------------------
 function cardHtml(p, lazy) {
   const links = p.links.map(l => `            <a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join("\n");
@@ -320,6 +339,19 @@ function replaceBlock(html, marker, body, file) {
   const rows = (res.data.values || []).filter(r => r && String(r[1] || "").trim());
   console.log(`公開用プロフィール一覧: ${rows.length} 名`);
 
+  // アプリで入れて、依田がOKしたプロフィール（活動名 → 公開中の中身）。タブが無い・読めない時は、今までどおりで作る
+  const appProf = new Map();
+  try {
+    const ap = await sheets.spreadsheets.values.get({ spreadsheetId: APP_PROF_SHEET_ID, range: `'${APP_PROF_TAB}'!A2:K` });
+    for (const r of (ap.data.values || [])) {
+      const k = String(r[10] || "").trim();
+      if (!String(r[0] || "").trim() || !k) continue;
+      try { appProf.set(norm(r[0]), JSON.parse(k)); } catch (e) { console.log(`  ⚠ ${r[0]} の公開中の中身が読めない（飛ばす）`); }
+    }
+    console.log(`アプリのプロフィール（OK済み）: ${appProf.size} 名`);
+  } catch (e) { console.log(`アプリのプロフィールは読めなかった（今までどおりで作る）: ${e.message}`); }
+  const iconFiles = {};   // 今回アプリのアイコンを使った人（活動名 → DriveのファイルID）
+
   const people = [];
   const skipped = [];
 
@@ -336,15 +368,27 @@ function replaceBlock(html, marker, body, file) {
     //   それまでは素材が揃うと確認の前にサイトへ出ていた（ぱんみみさん・ぺんぺんさん）。
     //   確認が取れたら vtuber_meta.json のその人に "confirmed": true（と直した bio）を書く → 次の作り直しで載る。
     //   もう載っている人（vtuber_published.json にいる人）はそのまま。
-    if (!published[name] && !m.confirmed) { skipped.push({ name, why: "本人の紹介文の確認がまだ（確認が取れたら vtuber_meta.json に confirmed: true）" }); continue; }
+    const app = appProf.get(norm(name)) || null;
+    if (!published[name] && !m.confirmed && !app) { skipped.push({ name, why: "本人の紹介文の確認がまだ（確認が取れたら vtuber_meta.json に confirmed: true）" }); continue; }
 
     const slug = m.slug || norm(name).replace(/[^a-z0-9]/g, "") || `vt${people.length + 1}`;
-    const icon = await ensureIcon(drive, name, slug, m.crop);
+    let icon = null;
+    if (app && /^[A-Za-z0-9_-]{10,}$/.test(String(app.icon || ""))) {
+      try { icon = await appIcon(drive, slug, app.icon, (published[name] || {}).iconFile); iconFiles[name] = app.icon; }
+      catch (e) { console.log(`  ⚠ ${name} のアプリのアイコンを取れなかった（今までのアイコンで作る）: ${e.message}`); icon = null; }
+    }
+    if (!icon) icon = await ensureIcon(drive, name, slug, m.crop);
     if (!icon.ok) { skipped.push({ name, why: icon.why }); continue; }
 
     const xUrl = xUrlOf(r[2]);
     const chUrls = cleanUrls(r[4]);
-    const links = m.links || [
+    const appLinks = app ? [
+      xUrlOf(app.x) && { label: "X", url: xUrlOf(app.x) },
+      cleanUrl(app.youtube) && { label: "YouTube", url: cleanUrl(app.youtube) },
+      cleanUrl(app.twitch) && { label: "Twitch", url: cleanUrl(app.twitch) },
+      cleanUrl(app.other) && { label: serviceOf(app.other, ""), url: cleanUrl(app.other) },
+    ].filter(Boolean) : [];
+    const links = appLinks.length ? appLinks : m.links || [
       xUrl && { label: "X", url: xUrl },
       // プラットフォーム欄（r[3]）は「主な配信先」なので、当てにしていいのは1本目だけ。
       // 2本目以降にこれを当てると、REALITYのURLに「YouTube」と付くような取り違えが起きる。
@@ -355,12 +399,12 @@ function replaceBlock(html, marker, body, file) {
     people.push({
       name, tier, slug, displayName,
       lineupName: m.lineupName || displayName,
-      bio: m.bio || autoBio(r[6], r[5]),
+      bio: (app && String(app.bio || "").trim()) || m.bio || autoBio(r[6], r[5]),
       links,
       order: typeof m.order === "number" ? m.order : 999,
       row: rowNo,   // 並び順を書いていない人は、シートの並び（＝古い順）で出す
       xHandle: xHandleOf(r[2]),
-      autoBio: !m.bio,
+      autoBio: !m.bio && !(app && app.bio),
       isNew: !published[name],
     });
     console.log(`  ${tier === "partner" ? "パートナー" : "カジュアル"} ${name}` +
@@ -411,6 +455,7 @@ function replaceBlock(html, marker, body, file) {
     //   （自動で出すのをやめた。tools/approve-supporter-post.js でOKを出すと "approved" になる）
     published[p.name] = { firstPublished: today, slug: p.slug, x: p.xHandle, tier: p.tier, xPost: "pending" }; added++;
   }
+  for (const n in iconFiles) if (published[n]) published[n].iconFile = iconFiles[n];
   fs.writeFileSync(PUBLISHED_PATH, JSON.stringify(published, null, 2) + "\n");
 
   console.log(`\n書き込み完了。vtuber.html / index.html を更新、初掲載の記録を ${added} 件追加した。`);
