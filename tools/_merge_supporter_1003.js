@@ -9,7 +9,7 @@ const ROOT = path.join(__dirname, "..");
 const { publishSupporterNews } = require("./supporter-news");
 
 const people = [
-  { slug: "vt18", name: "ぱんみみ", displayName: "ぱんみみ", bio: "Call of Dutyを中心に、視聴者さんとコミュニケーションを取りながら楽しく配信して… Call Of Duty。", xHandle: "@pan_33_mimi" },
+  { slug: "vt18", name: "ぱんみみ", displayName: "ぱんみみ", bio: "Call of Dutyを中心に、視聴者さんとコミュニケーションを取りながら楽しく配信しています。", xHandle: "@pan_33_mimi" },
   { slug: "vt19", name: "ぺんぺん", displayName: "ぺんぺん", bio: "方言をうまく利用して遊びに来てくれた人はみんな友達をテーマに配信しています。 VALORANT / APEX Legends。", xHandle: "@Nissy14843663" },
 ];
 const OLD = "supporter-2026-09-24", KEEP = "supporter-2026-09-28";
