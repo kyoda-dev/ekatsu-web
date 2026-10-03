@@ -58,6 +58,45 @@
 
   .org__btns{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
   .org__sec{margin-top:34px}
+  /* ---- e活の協賛大会のカレンダー（2026-10-03）。見るだけ。日を押すと下にその日の大会が出る ---- */
+  .ocal__mon{display:flex;align-items:center;gap:8px;margin:10px 0}
+  .ocal__mlabel{font-family:var(--o-mono);font-size:17px;font-weight:600;margin-right:auto}
+  .ocal__nav{font-family:inherit;font-size:13px;color:var(--o-ink-2);background:#fff;border:1px solid var(--o-line-strong);border-radius:4px;padding:6px 12px;cursor:pointer;line-height:1.4}
+  .ocal__nav:focus-visible{outline:2px solid var(--o-ink);outline-offset:1px}
+  .ocal__dow,.ocal__grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+  .ocal__dow span{text-align:center;font-size:11px;letter-spacing:.1em;color:var(--o-muted);padding:2px 0}
+  .ocal__dow span:first-child{color:var(--o-today)}
+  .ocal__cell{min-width:0;min-height:86px;background:var(--o-surface);border:1px solid var(--o-line);border-radius:4px;padding:6px;
+    font-family:inherit;color:inherit;text-align:left;display:flex;flex-direction:column;gap:3px}
+  button.ocal__cell{cursor:pointer}
+  button.ocal__cell:hover{background:var(--o-surface-2);border-color:var(--o-line-strong)}
+  button.ocal__cell:focus-visible{outline:2px solid var(--o-ink);outline-offset:1px}
+  .ocal__cell.is-blank{background:transparent;border-color:transparent}
+  .ocal__cell.is-today{border-color:var(--o-today);background:var(--o-today-soft)}
+  .ocal__cell.is-past{opacity:.45}
+  .ocal__cell.is-sel{border-color:var(--o-ink);border-width:2px;padding:5px}
+  .ocal__num{font-family:var(--o-mono);font-size:12.5px;color:var(--o-ink-2);line-height:1.3}
+  .ocal__cell.is-sun .ocal__num,.ocal__cell.is-today .ocal__num{color:var(--o-today)}
+  .ocal__ev{font-size:11px;line-height:1.35;padding:2px 4px;border-radius:3px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    word-break:break-word;border-left:3px solid var(--o-line-strong);background:var(--o-surface-2);color:var(--o-ink-2)}
+  .ocal__ev.is-mine{border-left-color:var(--o-go);background:var(--o-go-soft);color:var(--o-go)}
+  .ocal__legend{display:flex;gap:14px;flex-wrap:wrap;margin:10px 2px 0;font-size:11.5px;color:var(--o-muted)}
+  .ocal__legend i{display:inline-block;width:14px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  .ocal__day{margin-top:14px}
+  .ocal__day h3{margin:0 0 6px;font-family:var(--o-mono);font-size:15px;font-weight:600}
+  .ocal__row{display:flex;gap:10px;align-items:baseline;background:#fff;border:1px solid var(--o-line);border-radius:5px;padding:9px 12px;margin-top:6px;font-size:13.5px;line-height:1.6}
+  .ocal__row time{flex:none;width:44px;font-family:var(--o-mono);font-size:12.5px;color:var(--o-ink-2)}
+  .ocal__row b{font-weight:500;flex:1 1 auto;min-width:0;word-break:break-word}
+  .ocal__row small{display:block;font-size:11.5px;color:var(--o-muted);font-weight:400}
+  .ocal__row a{flex:none;font-size:12px;color:var(--o-ink)}
+  .ocal__row .ocal__me{flex:none;font-size:11px;border-radius:99px;padding:2px 9px;background:var(--o-go-soft);color:var(--o-go)}
+  @media(max-width:640px){
+    .ocal__cell{min-height:52px;padding:5px 3px;align-items:stretch}
+    .ocal__num{text-align:center;font-size:12px}
+    .ocal__ev{height:4px;padding:0;border-left:0;border-radius:2px;font-size:0;line-height:0;background:var(--o-line-strong)}
+    .ocal__ev.is-mine{background:var(--o-go)}
+    .ocal__cell.is-sel{padding:4px 2px}
+  }
   .org__sec h2{margin:0 0 4px;font-family:var(--o-mono);font-size:16px;font-weight:600;letter-spacing:.02em}
   .org__sec p.org__lead{margin:0 0 16px;font-size:12.5px;color:var(--o-muted);line-height:1.8}
 
@@ -203,6 +242,25 @@
 
       <p class="org__notice" id="orgNotice" hidden></p>
 
+      <!-- ★2026-10-03 依田「主催者側もまず最初にカレンダーが見れるように」。見るだけ。登録や変更はこの下の欄から -->
+      <div class="org__sec" id="orgCalSec" hidden>
+        <h2>e活の協賛大会カレンダー</h2>
+        <p class="org__lead">e活が協賛している大会の予定です。日付を押すと、その日の大会が下に出ます。<br />ほかの大会は、主催者の方が公開にしているものだけを載せています。</p>
+        <div class="ocal__mon">
+          <div class="ocal__mlabel" id="ocalLabel">　</div>
+          <button class="ocal__nav" id="ocalPrev" type="button" aria-label="前の月">←</button>
+          <button class="ocal__nav" id="ocalToday" type="button">今月</button>
+          <button class="ocal__nav" id="ocalNext" type="button" aria-label="次の月">→</button>
+        </div>
+        <div class="ocal__dow"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
+        <div class="ocal__grid" id="ocalGrid"></div>
+        <div class="ocal__legend">
+          <span><i style="background:var(--o-go)"></i>ご自身の大会</span>
+          <span><i style="background:var(--o-line-strong)"></i>ほかの協賛大会</span>
+        </div>
+        <div class="ocal__day" id="ocalDay" hidden></div>
+      </div>
+
       <div class="org__sec" id="orgUpcomingSec" hidden>
         <h2>これからの大会</h2>
         <p class="org__lead">開始時間・本番配信枠URL・見どころ・ミラー配信のルールは、こちらから直接ご登録いただけます。<br /><strong>開催の3日前まで</strong>にご登録をお願いいたします（応援配信の枠取りとサムネイルの準備に、日数がかかるためです）。<br />開催日の登録と変更、大会名の変更、大会の中止、大会メイン告知画像（KV）のご提出も、こちらから承ります。</p>
@@ -293,6 +351,7 @@
       nextCupBox();   // ★2026-09-07：次回大会の申し込みもサイトから
       addDateBox();   // ★2026-09-13：開催日の登録もサイトから（Discordの「📅 日程を入力する」をやめた）
       recordBox();    // ★2026-09-15：開催記録（優勝シーンの動画・ロゴの画面）の提出
+      calBox();       // ★2026-10-03：e活の協賛大会カレンダー（見るだけ）
 
       var upcoming = DATA.tournaments.filter(function (t) { return !t.past; });
       var past = DATA.tournaments.filter(function (t) { return t.past; }).reverse();
@@ -345,8 +404,75 @@
         + '　／　このページはあなた専用です。リンクを他の方にお渡しにならないようお願いいたします。';
     }
 
+    // ---- e活の協賛大会カレンダー（2026-10-03）。見るだけ。自分の大会を押すと、下の「これからの大会」のその大会へ ----
+    var calView = null, calSel = '', calWired = false;
+    function calKey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+    function calBox() {
+      var list = DATA.calendar || [];
+      var sec = document.getElementById('orgCalSec');
+      if (!list.length) { sec.hidden = true; return; }
+      sec.hidden = false;
+      var now = new Date();
+      if (!calView) calView = new Date(now.getFullYear(), now.getMonth(), 1);
+      if (!calWired) {
+        calWired = true;
+        document.getElementById('ocalPrev').addEventListener('click', function () { calView.setMonth(calView.getMonth() - 1); calSel = ''; calDraw(); });
+        document.getElementById('ocalNext').addEventListener('click', function () { calView.setMonth(calView.getMonth() + 1); calSel = ''; calDraw(); });
+        document.getElementById('ocalToday').addEventListener('click', function () { var n = new Date(); calView = new Date(n.getFullYear(), n.getMonth(), 1); calSel = ''; calDraw(); });
+        document.getElementById('ocalGrid').addEventListener('click', function (ev) {
+          var c = ev.target.closest('button[data-d]'); if (!c) return;
+          calSel = c.getAttribute('data-d'); calDraw();
+        });
+      }
+      calDraw();
+    }
+    function calDraw() {
+      var list = DATA.calendar || [], byDate = {};
+      list.forEach(function (e) { (byDate[e.date] = byDate[e.date] || []).push(e); });
+      var y = calView.getFullYear(), m = calView.getMonth(), todayKey = calKey(new Date());
+      document.getElementById('ocalLabel').textContent = y + '年 ' + (m + 1) + '月';
+      var grid = document.getElementById('ocalGrid'); grid.textContent = '';
+      var first = new Date(y, m, 1), last = new Date(y, m + 1, 0).getDate();
+      for (var b = 0; b < first.getDay(); b++) grid.appendChild(el('div', 'ocal__cell is-blank'));
+      for (var d = 1; d <= last; d++) {
+        var date = new Date(y, m, d), key = calKey(date), evs = byDate[key] || [];
+        var cell = document.createElement(evs.length ? 'button' : 'div');
+        if (evs.length) { cell.type = 'button'; cell.setAttribute('data-d', key); }
+        cell.className = 'ocal__cell' + (date.getDay() === 0 ? ' is-sun' : '') + (key === todayKey ? ' is-today' : '') + (key < todayKey ? ' is-past' : '') + (key === calSel ? ' is-sel' : '');
+        cell.setAttribute('aria-label', (m + 1) + '月' + d + '日 大会' + evs.length + '件');
+        cell.appendChild(el('span', 'ocal__num', String(d)));
+        evs.slice(0, 2).forEach(function (e) { cell.appendChild(el('span', 'ocal__ev' + (e.mine ? ' is-mine' : ''), seriesBase(e.name))); });
+        if (evs.length > 2) cell.appendChild(el('span', 'ocal__ev', 'ほか' + (evs.length - 2) + '件'));
+        grid.appendChild(cell);
+      }
+      // 選んだ日の大会（時間と名前。ほかの大会はゲーム名と告知のリンクまで）
+      var day = document.getElementById('ocalDay'); day.textContent = '';
+      if (!calSel || !byDate[calSel]) { day.hidden = true; return; }
+      day.appendChild(el('h3', null, jpDate(calSel) + ' の大会'));
+      byDate[calSel].forEach(function (e) {
+        var row = el('div', 'ocal__row');
+        row.appendChild(el('time', null, e.time ? String(e.time).slice(0, 5) : '未定'));
+        var b = el('b', null, e.name);
+        if (e.game) b.appendChild(el('small', null, e.game));
+        row.appendChild(b);
+        if (e.mine) {
+          var mineRow = (DATA.tournaments || []).filter(function (t) { return t.date === e.date && String(t.name).replace(/\s+/g, ' ') === e.name; })[0];
+          if (mineRow && !mineRow.past) {
+            var a = el('a', null, '登録内容を見る'); a.href = '#org-t-' + mineRow.row;
+            row.appendChild(a);
+          } else row.appendChild(el('span', 'ocal__me', 'ご自身の大会'));
+        } else if (/^https?:\/\//.test(e.xUrl || '')) {
+          var x = el('a', null, '告知を見る'); x.href = e.xUrl; x.target = '_blank'; x.rel = 'noopener noreferrer';
+          row.appendChild(x);
+        }
+        day.appendChild(row);
+      });
+      day.hidden = false;
+    }
+
     function card(t) {
       var c = el('div', 'org__card' + (t.daysUntil <= 10 ? ' is-soon' : ''));
+      c.id = 'org-t-' + t.row;   // カレンダーの「登録内容を見る」の飛び先
 
       var head = el('div', 'org__head');
       head.appendChild(el('span', 'org__date', jpDate(t.date)));
@@ -388,7 +514,7 @@
         ppl.appendChild(el('span', 'org__tag is-none', 'まだ決まっていません（募集中）'));
       } else {
         yes.forEach(function (n) { ppl.appendChild(el('span', 'org__tag', n)); });
-        may.forEach(function (n) { ppl.appendChild(el('span', 'org__tag is-may', n + '（未定）')); });
+        may.forEach(function (n) { ppl.appendChild(el('span', 'org__tag', n)); });   // ★2026-10-03：答えは「配信希望」の1つ。前の「未定」も同じに出す
       }
       c.appendChild(ppl);
 
@@ -562,9 +688,10 @@
       sec.appendChild(yesno("closeOnResult", "結果発表のとき、ミラー配信は閉じてほしいですか",
         "優勝の発表などを、大会の配信で先に見せたい場合にお使いください。", st.closeOnResult,
         "閉じてほしい", "そのままでOK"));
-      sec.appendChild(yesno("allowMultiMirror", "他のe活協賛大会と同じ枠で一緒に流すのは大丈夫ですか",
-        "1つの配信枠で、複数の大会を行き来しながら応援する形です。", st.allowMultiMirror,
-        "一緒でOK", "この大会だけにしてほしい"));
+      // ★2026-10-03 依田「別の枠を準備してやる分にはOKですか、みたいな言い方を入れておく」。保存する中身（はい／いいえ）は今までと同じ
+      sec.appendChild(yesno("allowMultiMirror", "同じ時間にほかのe活協賛大会がある時、同じ配信枠で一緒に流してもよいですか",
+        "「一緒でOK」は、1つの配信枠で複数の大会を行き来しながら応援する形です。「別の枠ならOK」は、この大会の配信枠ではこの大会だけを流し、ほかの大会は配信者が別の枠を用意して応援する形です。", st.allowMultiMirror,
+        "一緒でOK", "別の枠ならOK"));
 
       host.insertBefore(sec, document.getElementById("orgUpcomingSec").nextSibling);
     }

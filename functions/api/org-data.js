@@ -26,6 +26,7 @@ import {
 const MASTER_ID = '1J3A9VXi72s4mEsBUVr6tpO3X_lzalCS7L6wweGj11dU';
 const MONTHS_BACK = 6;
 const CACHE_SEC = 60;
+const CAL_MONTHS_AHEAD = 4;   // カレンダーに出すのは今月から4か月先まで（サポーターのカレンダーと同じ幅）
 
 const json = (obj, status = 200, extra = {}) =>
   new Response(JSON.stringify(obj), {
@@ -130,6 +131,29 @@ async function build(env, request, gate) {
   }
   tournaments.sort((a, b) => a.date.localeCompare(b.date) || String(a.time).localeCompare(String(b.time)));
 
+  // ── カレンダー（2026-10-03 依田「主催者側もまず最初にカレンダーが見れるように」）──────────
+  //   自分の大会は全部。ほかの主催者の大会は「情報公開」（マスターD列）が○のものだけ
+  //   ＝主催者サーバーの #大会カレンダー（Botの refreshCalendar）と同じ線。
+  //   さらに「告知してよい日」（Q列）がまだ来ていない大会は出さない（公開サイトの「これからの大会」と同じ線）。
+  //   ほかの大会について渡すのは 名前・日付・開始時間・ゲーム・告知URL だけ（配信する人やルールは渡さない）。
+  const calTo = Date.UTC(now.y, now.m - 1 + CAL_MONTHS_AHEAD + 1, 0);
+  const calFrom = Date.UTC(now.y, now.m - 1, 1);
+  const calendar = [];
+  for (const r of mRows) {
+    const name = String((r || [])[0] || '').trim();
+    if (!name || String(r[15] || '').trim()) continue;            // 中止は出さない
+    const d = parseDate(String(r[4] || '').trim(), now);
+    if (!d || d.t < calFrom || d.t > calTo) continue;
+    const mine = belongsToRoom(name, gate.room);
+    if (!mine) {
+      if (!String(r[3] || '').includes('○')) continue;
+      const pub = parseDate(String(r[16] || '').trim(), now);
+      if (pub && pub.t > todayT) continue;
+    }
+    calendar.push({ date: ymd(d), name: name.replace(/\s+/g, ' '), time: cut(r[9], 12), game: cut(r[6], 80), xUrl: cut(r[8], 400), mine });
+  }
+  calendar.sort((a, b) => a.date.localeCompare(b.date) || String(a.time).localeCompare(String(b.time)));
+
   // ── いまの設定（ミラー許諾／配信の扱い）────────────────────
   //   許諾はマスターB/C列。これからの大会の1件目を代表にする（部屋ごとに同じ値で運用している）。
   const head = tournaments.find(t => !t.past) || tournaments[tournaments.length - 1] || null;
@@ -149,6 +173,7 @@ async function build(env, request, gate) {
     kvSkip: !!gate.kvSkip,
     seasonKv: !!gate.seasonKv,
     tournaments,
+    calendar,
   };
 }
 
