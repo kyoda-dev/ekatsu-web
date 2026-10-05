@@ -98,6 +98,10 @@
     .ocal__cell.is-sel{padding:4px 2px}
   }
   .org__sec h2{margin:0 0 4px;font-family:var(--o-mono);font-size:16px;font-weight:600;letter-spacing:.02em}
+  .org__kei{border:1px solid var(--o-line);border-radius:10px;padding:14px 16px;margin:0 0 10px;background:#fff}
+  .org__kei b{display:block;font-size:14px;margin:0 0 2px}
+  .org__kei small{display:block;white-space:pre-line;color:var(--o-muted);font-size:12.5px;line-height:1.7;margin:0 0 10px}
+  .org__kei.is-open{border-color:var(--o-go)}
   .org__intro{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:14px;line-height:1.85;color:var(--o-ink);background:var(--o-surface-2);border:1px solid var(--o-line);border-radius:8px;padding:14px 16px;margin:0 0 10px}
   .org__sec p.org__lead{margin:0 0 16px;font-size:12.5px;color:var(--o-muted);line-height:1.8}
 
@@ -243,6 +247,12 @@
 
       <p class="org__notice" id="orgNotice" hidden></p>
 
+      <!-- ★2026-10-06 契約書の締結と控え。まだ締結していない契約書がある時は、一番上に出す（締結は e活管理サイトの締結ページ） -->
+      <div class="org__sec" id="orgKeiSec" hidden>
+        <h2>契約書</h2>
+        <div id="orgKei"></div>
+      </div>
+
       <!-- ★2026-10-03 依田「主催者側もまず最初にカレンダーが見れるように」。見るだけ。登録や変更はこの下の欄から -->
       <div class="org__sec" id="orgCalSec" hidden>
         <h2>e活の協賛大会カレンダー</h2>
@@ -362,6 +372,7 @@
       recordBox();    // ★2026-09-15：開催記録（優勝シーンの動画・ロゴの画面）の提出
       calBox();       // ★2026-10-03：e活の協賛大会カレンダー（見るだけ）
       introBox();     // ★2026-10-06：配信・概要欄で紹介していただく文（コピー用）
+      keiBox();       // ★2026-10-06：契約書（締結へ進む／控えを開く）
 
       var upcoming = DATA.tournaments.filter(function (t) { return !t.past; });
       var past = DATA.tournaments.filter(function (t) { return t.past; }).reverse();
@@ -412,6 +423,29 @@
       document.getElementById('orgFoot').textContent =
         '最終更新 ' + new Date(DATA.generatedAt).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
         + '　／　このページはあなた専用です。リンクを他の方にお渡しにならないようお願いいたします。';
+    }
+
+    // ---- 契約書（2026-10-06）。その主催者の契約書だけが返る。無ければ欄ごと出さない。締結・控えは別のページ（新しいタブ）で開く ----
+    function keiBox() {
+      var sec = document.getElementById('orgKeiSec'), box = document.getElementById('orgKei');
+      fetch('/api/org-keiyaku?k=' + encodeURIComponent(secret)).then(function (r) { return r.json(); }).then(function (j) {
+        var list = (j && j.list) || [];
+        if (!list.length) { sec.hidden = true; return; }
+        box.textContent = '';
+        list.forEach(function (x) {
+          var c = el('div', 'org__kei' + (x.signed ? '' : ' is-open'));
+          c.appendChild(el('b', null, x.signed ? '締結済み（' + x.when + '）' : 'ご確認と締結をお願いします'));
+          c.appendChild(el('small', null, (x.docs || []).map(function (d) { return d.taikai + '（' + d.plan + '）'; }).join('\n')));
+          var a = document.createElement('a');
+          a.className = 'org__btn' + (x.signed ? '' : ' is-primary');
+          a.href = x.url; a.target = '_blank'; a.rel = 'noopener';
+          a.textContent = x.signed ? '控えを開く' : '契約書を確認して締結する';
+          a.style.display = 'inline-block'; a.style.textDecoration = 'none';
+          c.appendChild(a);
+          box.appendChild(c);
+        });
+        sec.hidden = false;
+      }).catch(function () { sec.hidden = true; });
     }
 
     // ---- 配信・概要欄でのご紹介のお願い（2026-10-06）。文は e活管理サイトで依田が直すもの。これからの大会がある主催者にだけ出す ----
