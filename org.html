@@ -98,6 +98,7 @@
     .ocal__cell.is-sel{padding:4px 2px}
   }
   .org__sec h2{margin:0 0 4px;font-family:var(--o-mono);font-size:16px;font-weight:600;letter-spacing:.02em}
+  .org__intro{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:14px;line-height:1.85;color:var(--o-ink);background:var(--o-surface-2);border:1px solid var(--o-line);border-radius:8px;padding:14px 16px;margin:0 0 10px}
   .org__sec p.org__lead{margin:0 0 16px;font-size:12.5px;color:var(--o-muted);line-height:1.8}
 
   /* ---- 大会1本のカード ---- */
@@ -267,6 +268,14 @@
         <div id="orgUpcoming"></div>
       </div>
 
+      <!-- ★2026-10-06 依田「紹介文もサイト側で。主催者側でコピーできるように」。文の正は e活管理サイト（/api/org-intro が取り次ぐ） -->
+      <div class="org__sec" id="orgIntroSec" hidden>
+        <h2>配信・概要欄でのご紹介のお願い</h2>
+        <p class="org__lead">大会の配信の中や概要欄で、下の文をご紹介いただけますと嬉しいです。<br />そのままコピーしてお使いください。言い回しは、大会に合わせて整えていただいて構いません。</p>
+        <pre class="org__intro" id="orgIntro"></pre>
+        <div class="org__btns"><button class="org__btn" id="orgIntroCopy" type="button">この文をコピーする</button></div>
+      </div>
+
       <details class="org__past" id="orgPastSec" hidden>
         <summary id="orgPastLabel">終了した大会</summary>
         <div id="orgPast"></div>
@@ -352,6 +361,7 @@
       addDateBox();   // ★2026-09-13：開催日の登録もサイトから（Discordの「📅 日程を入力する」をやめた）
       recordBox();    // ★2026-09-15：開催記録（優勝シーンの動画・ロゴの画面）の提出
       calBox();       // ★2026-10-03：e活の協賛大会カレンダー（見るだけ）
+      introBox();     // ★2026-10-06：配信・概要欄で紹介していただく文（コピー用）
 
       var upcoming = DATA.tournaments.filter(function (t) { return !t.past; });
       var past = DATA.tournaments.filter(function (t) { return t.past; }).reverse();
@@ -402,6 +412,31 @@
       document.getElementById('orgFoot').textContent =
         '最終更新 ' + new Date(DATA.generatedAt).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
         + '　／　このページはあなた専用です。リンクを他の方にお渡しにならないようお願いいたします。';
+    }
+
+    // ---- 配信・概要欄でのご紹介のお願い（2026-10-06）。文は e活管理サイトで依田が直すもの。これからの大会がある主催者にだけ出す ----
+    //   ゲームが VALORANT の大会は、募集の飛び先が公式Xになった文が返る（出し分けは管理サイト側）。取れなければ欄ごと出さない
+    var introWired = false;
+    function introBox() {
+      var sec = document.getElementById('orgIntroSec');
+      var up = (DATA.tournaments || []).filter(function (t) { return !t.past; });
+      if (!up.length) { sec.hidden = true; return; }
+      var game = '';
+      up.forEach(function (t) { if (!game && t.game) game = t.game; });
+      fetch('/api/org-intro?game=' + encodeURIComponent(game)).then(function (r) { return r.json(); }).then(function (j) {
+        if (!j || !j.ok || !j.text) { sec.hidden = true; return; }
+        document.getElementById('orgIntro').textContent = j.text;
+        sec.hidden = false;
+      }).catch(function () { sec.hidden = true; });
+      if (introWired) return;
+      introWired = true;
+      var btn = document.getElementById('orgIntroCopy');
+      btn.addEventListener('click', function () {
+        var t = document.getElementById('orgIntro').textContent;
+        var done = function () { btn.textContent = 'コピーしました'; setTimeout(function () { btn.textContent = 'この文をコピーする'; }, 1800); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, function () { window.prompt('この文をコピーしてください', t); });
+        else window.prompt('この文をコピーしてください', t);
+      });
     }
 
     // ---- e活の協賛大会カレンダー（2026-10-03）。見るだけ。自分の大会を押すと、下の「これからの大会」のその大会へ ----
