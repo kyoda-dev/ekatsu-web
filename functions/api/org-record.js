@@ -21,6 +21,7 @@
    GET  ?k=                                  … 対象の月と、もう届いているか
    POST { k, action:'start', kind, size, mime, ext } … 送り先URLを発行
    POST { k, action:'done',  fileId }        … 届いたファイルを確かめて、Botに合図（ORGSYNC kind:'record'）
+   POST { k, action:'stats', ccu, views }    … 本配信の最大同時視聴・総再生数（2026-10-06）。マスターの T列・U列（その主催者の一番新しい大会の行）へ書く
 
    守っていること
      ・Driveの既存フォルダは動かさない・消さない（月フォルダが無い時だけ作る）
@@ -60,17 +61,19 @@ function parseDate(s) {
 // 対象の月＝その部屋の、今日までで一番新しい大会（中止は除く）
 async function targetOf(token, gate) {
   const tab = await firstTabTitle(token, MASTER_ID);
-  const rows = await sheetValues(token, MASTER_ID, `${tab}!A2:P`);
+  const rows = await sheetValues(token, MASTER_ID, `${tab}!A2:U`);
   const n = new Date(Date.now() + 9 * 3600 * 1000);
   const today = Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate());
   let best = null;
-  for (const r of rows) {
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i];
     const name = String((r || [])[0] || '').trim();
     if (!name || !belongsToRoom(name, gate.room)) continue;
     if (String((r || [])[15] || '').trim()) continue;   // P列＝中止
     const d = parseDate((r || [])[4]);
     if (!d || d.u > today) continue;
-    if (!best || d.u > best.u) best = d;
+    // 数字（T・U列）を書く行＝一番新しい大会の行。同じ日が2行あれば下の行
+    if (!best || d.u >= best.u) best = Object.assign(d, { row: i + 2, name, ccu: String((r || [])[19] || '').trim(), views: String((r || [])[20] || '').trim() });
   }
   if (!best || today - best.u > LOOKBACK_DAYS * 86400000) return null;
   return {
@@ -79,6 +82,7 @@ async function targetOf(token, gate) {
     label: `${best.y}年${best.m}月`,
     prefix: `${best.y}${best.m}月`,
     lastDate: `${best.y}-${String(best.m).padStart(2, '0')}-${String(best.d).padStart(2, '0')}`,
+    tab, row: best.row, rowName: best.name, stats: { ccu: best.ccu, views: best.views },
   };
 }
 
@@ -144,7 +148,7 @@ export async function onRequestGet({ request, env }) {
     const target = await targetOf(token, g.gate);
     if (!target) return json({ ok: true, target: null });
     const have = await received(token, g.gate.channelId, target.key);
-    return json({ ok: true, target: { label: target.label, lastDate: target.lastDate }, have });
+    return json({ ok: true, target: { label: target.label, lastDate: target.lastDate }, have, stats: target.stats });
   } catch (e) {
     return json({ ok: false, error: e.message || '読めませんでした' }, 500);
   }
@@ -212,6 +216,25 @@ export async function onRequestPost({ request, env }) {
         name: f.name, url: f.webViewLink || '', size: Number(f.size || 0),
       });
       return json({ ok: true });
+    }
+
+    // ───────── 本配信の数字（最大同時視聴・総再生数）。マスターの T・U列へ。書く行は、いま読み直した「一番新しい大会の行」だけ
+    if (action === 'stats') {
+      const num = v => { const s = String(v == null ? '' : v).replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/[,，\s人回]/g, ''); if (s === '') return ''; return /^\d{1,9}$/.test(s) ? String(Number(s)) : null; };
+      const ccu = num(body.ccu), views = num(body.views);
+      if (ccu === null || views === null) return json({ ok: false, error: '数字だけでご入力ください' }, 400);
+      if (ccu === '' && views === '') return json({ ok: false, error: '数字をご入力ください' }, 400);
+      const target = await targetOf(token, gate);
+      if (!target || !target.row) return json({ ok: false, error: '終わった大会が見つかりませんでした。運営までお知らせください' }, 409);
+      const data = [{ range: `${target.tab}!T1:U1`, values: [['本配信の最大同時視聴', '総再生数']] }];
+      if (ccu !== '') data.push({ range: `${target.tab}!T${target.row}`, values: [[ccu]] });
+      if (views !== '') data.push({ range: `${target.tab}!U${target.row}`, values: [[views]] });
+      const w = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${MASTER_ID}/values:batchUpdate`, {
+        method: 'POST', headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' },
+        body: JSON.stringify({ valueInputOption: 'RAW', data }),
+      });
+      if (!w.ok) return json({ ok: false, error: '保存できませんでした (' + w.status + ')。時間をおいてお試しください' }, 502);
+      return json({ ok: true, stats: { ccu: ccu !== '' ? ccu : target.stats.ccu, views: views !== '' ? views : target.stats.views } });
     }
 
     return json({ ok: false, error: '受け付けられない操作です' }, 400);

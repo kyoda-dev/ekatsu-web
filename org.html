@@ -102,6 +102,13 @@
   .org__kei b{display:block;font-size:14px;margin:0 0 2px}
   .org__kei small{display:block;white-space:pre-line;color:var(--o-muted);font-size:12.5px;line-height:1.7;margin:0 0 10px}
   .org__kei.is-open{border-color:var(--o-go)}
+  .org__sup{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin:10px 0 0}
+  .org__supc{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--o-line);border-radius:10px;padding:12px;background:#fff}
+  .org__supc img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;background:var(--o-surface-2)}
+  .org__supc b{display:block;font-size:14px;line-height:1.4}
+  .org__supc p{margin:2px 0 4px;font-size:12.5px;color:var(--o-ink-2);line-height:1.6}
+  .org__supc small{display:block;font-size:12px;color:var(--o-muted)}
+  .org__supc a{font-size:12px;margin-right:10px}
   .org__intro{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:14px;line-height:1.85;color:var(--o-ink);background:var(--o-surface-2);border:1px solid var(--o-line);border-radius:8px;padding:14px 16px;margin:0 0 10px}
   .org__sec p.org__lead{margin:0 0 16px;font-size:12.5px;color:var(--o-muted);line-height:1.8}
 
@@ -286,6 +293,13 @@
         <div class="org__btns"><button class="org__btn" id="orgIntroCopy" type="button">この文をコピーする</button></div>
       </div>
 
+      <!-- ★2026-10-06 依田「VTuberたちのプロフィールと、どのくらいミラー配信してくれているかを、主催者用に出してあげたい」。中身は公開済みのサポーター紹介と同じ＋ミラー配信した大会の数 -->
+      <details class="org__past" id="orgSupSec" hidden>
+        <summary id="orgSupLabel">e活のサポーター</summary>
+        <p class="org__lead" style="margin:10px 0 0">大会をミラー配信で応援するメンバーです。全員、e活と契約を結んでいます。<br />実際にどなたが配信するかは、大会ごとのカードの「ミラー配信をする方」でご確認いただけます。</p>
+        <div class="org__sup" id="orgSup"></div>
+      </details>
+
       <details class="org__past" id="orgPastSec" hidden>
         <summary id="orgPastLabel">終了した大会</summary>
         <div id="orgPast"></div>
@@ -373,6 +387,7 @@
       calBox();       // ★2026-10-03：e活の協賛大会カレンダー（見るだけ）
       introBox();     // ★2026-10-06：配信・概要欄で紹介していただく文（コピー用）
       keiBox();       // ★2026-10-06：契約書（締結へ進む／控えを開く）
+      supBox();       // ★2026-10-06：e活のサポーターの一覧（プロフィールと、ミラー配信した大会の数）
 
       var upcoming = DATA.tournaments.filter(function (t) { return !t.past; });
       var past = DATA.tournaments.filter(function (t) { return t.past; }).reverse();
@@ -444,6 +459,52 @@
           c.appendChild(a);
           box.appendChild(c);
         });
+        sec.hidden = false;
+      }).catch(function () { sec.hidden = true; });
+    }
+
+    // ---- e活のサポーターの一覧（2026-10-06）。プロフィールは公開済みのサポーター紹介（/vtuber）をそのまま読む＝公開していない人は出ない。
+    //      数は「これまでにミラー配信した大会の数」だけ。並びは名前順（数で並べない）。0の人には数を書かない ----
+    var supDone = false;
+    function supBox() {
+      if (supDone) return;
+      supDone = true;
+      var sec = document.getElementById('orgSupSec'), box = document.getElementById('orgSup');
+      var nk = function (s) { return String(s || '').toLowerCase().replace(/[ 　]/g, ''); };
+      Promise.all([
+        fetch('/vtuber').then(function (r) { return r.text(); }),
+        fetch('/api/org-supporters?k=' + encodeURIComponent(secret)).then(function (r) { return r.json(); }).catch(function () { return { list: [] }; }),
+      ]).then(function (res) {
+        var doc = new DOMParser().parseFromString(res[0], 'text/html');
+        var counts = (res[1] && res[1].list) || [];
+        var cards = [];
+        doc.querySelectorAll('article.vt-card').forEach(function (a) {
+          var name = ((a.querySelector('.vt-card__name') || {}).textContent || '').trim();
+          if (!name) return;
+          var img = a.querySelector('img.vt-card__photo');
+          var links = [];
+          a.querySelectorAll('.vt-card__links a').forEach(function (l) { var h = l.getAttribute('href') || ''; if (h.indexOf('https://') === 0) links.push([l.textContent.trim(), h]); });
+          var n = 0, key = nk(name);
+          counts.forEach(function (c) { var ck = nk(c.name); if (ck && (ck === key || ck.indexOf(key) === 0 || key.indexOf(ck) === 0)) n = Math.max(n, c.count); });
+          cards.push({ name: name, bio: ((a.querySelector('.vt-card__bio') || {}).textContent || '').trim(), img: img ? img.getAttribute('src') : '', links: links, n: n });
+        });
+        if (!cards.length) { sec.hidden = true; return; }
+        cards.sort(function (x, y) { return x.name.localeCompare(y.name, 'ja'); });
+        box.textContent = '';
+        cards.forEach(function (c) {
+          var d = el('div', 'org__supc');
+          if (c.img) { var i = document.createElement('img'); i.src = c.img; i.alt = ''; i.loading = 'lazy'; d.appendChild(i); }
+          var t = el('div');
+          t.appendChild(el('b', null, c.name));
+          if (c.bio) t.appendChild(el('p', null, c.bio));
+          if (c.n) t.appendChild(el('small', null, 'これまでにミラー配信した大会：' + c.n));
+          var ls = el('div');
+          c.links.forEach(function (l) { var a = document.createElement('a'); a.href = l[1]; a.target = '_blank'; a.rel = 'noopener'; a.textContent = l[0]; ls.appendChild(a); });
+          t.appendChild(ls);
+          d.appendChild(t);
+          box.appendChild(d);
+        });
+        document.getElementById('orgSupLabel').textContent = 'e活のサポーター（' + cards.length + '名）';
         sec.hidden = false;
       }).catch(function () { sec.hidden = true; });
     }
@@ -1017,6 +1078,40 @@
             r.appendChild(dd);
             rows.appendChild(r);
           });
+          // ★2026-10-06：本配信の数字（最大同時視聴・総再生数）。協賛の記録として、この2つだけいただく
+          (function () {
+            var st = j.stats || {};
+            var r = el('div', 'org__row');
+            r.appendChild(el('dt', null, '本配信の数字'));
+            var dd = el('dd');
+            var have = !!(st.ccu || st.views);
+            dd.appendChild(el('span', 'org__flag ' + (have ? 'is-ok' : 'is-miss'), have ? '✓ 受け取りました' : 'まだです'));
+            dd.appendChild(el('span', 'org__hint', '　大会の本配信の数字です。分かる範囲で大丈夫です'));
+            var mk = function (label, val) {
+              var w = el('label', null, label + '　');
+              w.style.display = 'block'; w.style.margin = '8px 0 0'; w.style.fontSize = '13px';
+              var i = document.createElement('input');
+              i.type = 'text'; i.inputMode = 'numeric'; i.value = val || ''; i.maxLength = 12;
+              i.style.width = '9em'; i.style.padding = '6px 8px'; i.style.border = '1px solid var(--o-line)'; i.style.borderRadius = '6px'; i.style.font = 'inherit';
+              w.appendChild(i);
+              dd.appendChild(w);
+              return i;
+            };
+            var iCcu = mk('最大同時視聴（人）', st.ccu), iViews = mk('総再生数（回）', st.views);
+            var go = el('button', 'org__btn' + (have ? ' org__btn--sub' : ' is-primary'), have ? '数字を直す' : 'この数字を送る');
+            go.type = 'button'; go.style.display = 'block'; go.style.marginTop = '10px';
+            var said = el('p', 'org__said', '');
+            go.addEventListener('click', function () {
+              go.disabled = true; said.className = 'org__said'; said.textContent = '送っています…';
+              fetch('/api/org-record', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ k: secret, action: 'stats', ccu: iCcu.value, views: iViews.value }) })
+                .then(function (x) { return x.json().then(function (y) { if (!x.ok || !y.ok) throw new Error(y.error || '受け付けられませんでした'); return y; }); })
+                .then(function () { said.className = 'org__said is-ok'; said.textContent = '受け取りました。ありがとうございます。'; go.disabled = false; go.textContent = '数字を直す'; })
+                .catch(function (e) { said.className = 'org__said is-err'; said.textContent = e.message; go.disabled = false; });
+            });
+            dd.appendChild(go); dd.appendChild(said);
+            r.appendChild(dd);
+            rows.appendChild(r);
+          })();
           c.appendChild(rows);
           sec.appendChild(c);
           var host = document.getElementById('orgUpcomingSec');
