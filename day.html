@@ -63,6 +63,7 @@
   .day__t{display:flex;gap:11px;align-items:baseline;flex-wrap:wrap}
   .day__time{font-family:var(--cal-mono);font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
   .day__name{font-size:19px;font-weight:700;line-height:1.45;margin:0;text-wrap:balance}
+  .day__goal{margin:6px 0 0;padding:8px 10px;border-left:4px solid currentColor;font-size:15px;font-weight:700;line-height:1.5}
   .day__game{font-size:12px;color:var(--cal-muted);letter-spacing:.05em;margin:4px 0 0}
 
   .day__people{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
@@ -311,6 +312,7 @@
           var t = el('div', 'day__t');
           t.appendChild(el('span', 'day__time', ev.time || '時間未定'));
           t.appendChild(el('h2', 'day__name', ev.name));
+          if (ev.goal) t.appendChild(el('p', 'day__goal', ev.goal));   // 大会の目標（主催者が書いたひとこと・2026-10-07）
           card.appendChild(t);
           if (ev.game) card.appendChild(el('p', 'day__game', ev.game));
 

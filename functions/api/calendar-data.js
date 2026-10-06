@@ -83,7 +83,7 @@ async function build(env, origin) {
   const meta = await gget(token, `https://sheets.googleapis.com/v4/spreadsheets/${MASTER_ID}?fields=sheets.properties.title`);
   const tab = meta.sheets[0].properties.title;
   const [mRows, pRows, rRows] = await Promise.all([
-    values(token, MASTER_ID, `${tab}!A2:P`),
+    values(token, MASTER_ID, `${tab}!A2:V`),
     values(token, PART_ID, '参加可否!A2:D'),
     values(token, PART_ID, '名簿!A2:D'),
   ]);
@@ -135,6 +135,7 @@ async function build(env, origin) {
       xUrl: (r[8] || '').trim(),
       rule: oneLine(r[14], 300),
       highlight: oneLine(r[13], 300),
+      goal: oneLine(r[21], 60),   // V列：大会の目標（2026-10-07）
       yes: pick('○'), maybe: pick('△'), no: pick('×'),
     });
   }

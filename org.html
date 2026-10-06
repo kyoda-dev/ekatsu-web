@@ -675,6 +675,8 @@
 
       // いま入っている情報
       var dl = el('dl', 'org__rows');
+      // ★2026-10-07：大会の目標。書いていない大会には行を出さない
+      if (t.goal) dl.appendChild(row('大会の目標', t.goal, null));
       dl.appendChild(row('開始時間', t.time, t.time ? null : '未登録'));
       dl.appendChild(row('本番配信枠URL', t.streamUrl, t.streamUrl ? null : '未登録', true));
       dl.appendChild(row('見どころ', t.highlight, t.highlight ? null : '未登録'));
@@ -1406,6 +1408,10 @@
         'ここでご登録いただいた内容は、応援配信をするVTuberへそのままお伝えします。見どころとミラー配信のルールは、本人が配信の準備に使います。'));
       var id = 'f' + t.row;
 
+      // ★2026-10-07 依田指示：大会の目標をひとことで。サポーターの大会ページとアプリの一番上に大きく出す
+      var fGoal = field(id + 'goal', 'この大会の目標（ひとことで・任意）',
+        '例：「初心者が初めて大会に出られる場をつくる」。どんな大会かが一目で伝わるよう、大会ページの一番上に出します。60字まで。',
+        'text', t.goal);
       var fTime = field(id + 'time', '開始時間', '大会の開始時刻です。応援配信の枠取りに使わせていただきます。', 'time', t.time);
       var fUrl = field(id + 'url', '本番配信枠URL', '主催者さまの配信ページのURLです。応援配信からご案内いたします。', 'url', t.streamUrl);
       var fHl = field(id + 'hl', '見どころ', '注目選手・強豪チーム・特別ルールなど。ミラー配信で触れさせていただきます。', 'text', t.highlight);
@@ -1428,7 +1434,7 @@
       var fPub = field(id + 'pub', '告知してよい日', 'e活の公式XとWebサイトで「この大会に協賛します」と発表してよい日です。大会側の発表より先に出したくない場合にご指定ください。空のままなら、こちらの都合のよいときに発表します。', 'date', t.publishAt);
       // ★2026-09-23：「Xで出す文」を見どころの真下へ上げた。
       //   いちばん下（告知してよい日の次）に置いていたので、そこまで読まれていなかった。
-      [fTime, fUrl, fHl, fX, fRule, fDesc, fNote, fPub].forEach(function (f) { form.appendChild(f); });
+      [fGoal, fTime, fUrl, fHl, fX, fRule, fDesc, fNote, fPub].forEach(function (f) { form.appendChild(f); });
 
       // シリーズもの＝残りの日程にもまとめて入れられるようにする（1日ずつ入力させない）
       var sibs = siblingsOf(t);
@@ -1471,6 +1477,7 @@
         if (fHl._input.value.trim() !== (t.highlight || '')) fields.highlight = fHl._input.value.trim();
         if (fRule._input.value.trim() !== (t.rule || '')) fields.rule = fRule._input.value.trim();
         if (fDesc._input.value.trim() !== (t.descText || '')) fields.descText = fDesc._input.value.trim();
+        if (fGoal._input.value.trim() !== (t.goal || '')) fields.goal = fGoal._input.value.trim();
         if (fNote._input.value.trim() !== (t.note || '')) fields.note = fNote._input.value.trim();
         if (fPub._input.value !== (t.publishAt || '')) fields.publishAt = fPub._input.value;
         if (fX._input.value.trim() !== (t.xText || '')) fields.xText = fX._input.value.trim();
