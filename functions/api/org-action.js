@@ -257,6 +257,17 @@ export async function onRequestPost({ request, env }) {
       return json({ ok: true, note: 'reflect-async' });
     }
 
+    // ───────── お打ち合わせの日を選ぶ（2026-10-06）。決めるのは Bot（部屋のボタンと同じ関数）。ここは合図を送るだけ
+    if (action === 'mtgpick') {
+      if (!gate.channelId) return json({ ok: false, error: 'お部屋が分かりませんでした。運営までお知らせください' }, 409);
+      if (body.none === true) { await tellBot(env, { kind: 'mtgpick', channelId: gate.channelId, none: true }); await dropCache(request, key); return json({ ok: true, note: 'reflect-async' }); }
+      const iso = String(body.iso || ''), time = String(body.time || '');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(iso) || !/^\d{1,2}:\d{2}$/.test(time)) return json({ ok: false, error: '選び方が正しくありません' }, 400);
+      await tellBot(env, { kind: 'mtgpick', channelId: gate.channelId, iso, time });
+      await dropCache(request, key);
+      return json({ ok: true, note: 'reflect-async' });
+    }
+
     // ───────── 次回大会の申し込み（申請フォームの代わり）
     //   ★部屋を作る・日程の枠表を出す・契約判断を出す、は全部Botがやる（Discordのボタンと同じ関数）。
     if (action === 'nextcup') {
