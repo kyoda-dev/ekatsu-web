@@ -255,6 +255,11 @@
       <p class="org__notice" id="orgNotice" hidden></p>
 
       <!-- ★2026-10-06 契約書の締結と控え。まだ締結していない契約書がある時は、一番上に出す（締結は e活管理サイトの締結ページ） -->
+      <div class="org__sec" id="orgMtgSec" hidden>
+        <h2>お打ち合わせの日程</h2>
+        <div id="orgMtg"></div>
+      </div>
+
       <div class="org__sec" id="orgKeiSec" hidden>
         <h2>契約書</h2>
         <div id="orgKei"></div>
@@ -387,6 +392,7 @@
       calBox();       // ★2026-10-03：e活の協賛大会カレンダー（見るだけ）
       introBox();     // ★2026-10-06：配信・概要欄で紹介していただく文（コピー用）
       keiBox();       // ★2026-10-06：契約書（締結へ進む／控えを開く）
+      mtgBox();       // ★2026-10-06：お打ち合わせの日を選ぶ（前はDiscordの部屋のボタンだけ）
       supBox();       // ★2026-10-06：e活のサポーターの一覧（プロフィールと、ミラー配信した大会の数）
 
       var upcoming = DATA.tournaments.filter(function (t) { return !t.past; });
@@ -441,6 +447,45 @@
     }
 
     // ---- 契約書（2026-10-06）。その主催者の契約書だけが返る。無ければ欄ごと出さない。締結・控えは別のページ（新しいタブ）で開く ----
+    // ---- お打ち合わせの日程（2026-10-06）。候補は Bot が出したもの。選ぶと Bot が決めて、Discordのお部屋に確定の連絡を出す ----
+    function mtgBox() {
+      var sec = document.getElementById('orgMtgSec'), box = document.getElementById('orgMtg');
+      var m = DATA.mtg || {}, pool = m.pool || [];
+      if (!m.confirmed && !pool.length) { sec.hidden = true; return; }
+      box.textContent = '';
+      var c = el('div', 'org__kei' + (m.confirmed ? '' : ' is-open'));
+      if (m.confirmed) {
+        c.appendChild(el('b', null, m.confirmed + ' に決まりました'));
+        c.appendChild(el('small', null, '当日は、Discordのサーバーの「MTG」ボイスチャンネルにお入りください。カメラはオフのままで大丈夫です。\n進行の記録のため、打ち合わせの音声を録音させていただいております。'));
+        box.appendChild(c); sec.hidden = false; return;
+      }
+      c.appendChild(el('b', null, 'ご都合のよい日時をお選びください'));
+      c.appendChild(el('small', null, 'オンラインで30分ほどです。先にお選びいただいた方から順に埋まります。'));
+      var wrap = el('div'); wrap.style.display = 'flex'; wrap.style.flexWrap = 'wrap'; wrap.style.gap = '8px';
+      var said = el('p', 'org__said', '');
+      var send = function (payload, askText) {
+        if (!window.confirm(askText)) return;
+        Array.prototype.forEach.call(wrap.querySelectorAll('button'), function (b) { b.disabled = true; });
+        said.className = 'org__said'; said.textContent = '送っています…';
+        fetch('/api/org-action', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({ k: secret, action: 'mtgpick' }, payload)) })
+          .then(function (x) { return x.json().then(function (y) { if (!x.ok || !y.ok) throw new Error(y.error || '受け付けられませんでした'); return y; }); })
+          .then(function () { wrap.hidden = true; said.className = 'org__said is-ok'; said.textContent = payload.none ? '承知しました。別の日程を改めてご連絡いたします。' : '受け付けました。確定のご連絡を、Discordのお部屋にお送りします。'; })
+          .catch(function (e) { said.className = 'org__said is-err'; said.textContent = e.message; Array.prototype.forEach.call(wrap.querySelectorAll('button'), function (b) { b.disabled = false; }); });
+      };
+      pool.forEach(function (s) {
+        var b = el('button', 'org__btn is-primary', s.label || (s.iso + ' ' + s.time));
+        b.type = 'button';
+        b.addEventListener('click', function () { send({ iso: s.iso, time: s.time }, (s.label || (s.iso + ' ' + s.time)) + ' でお願いしますか？'); });
+        wrap.appendChild(b);
+      });
+      var none = el('button', 'org__btn org__btn--sub', 'どれも合いません');
+      none.type = 'button';
+      none.addEventListener('click', function () { send({ none: true }, 'どの日時も合わない、とお伝えします。よろしいですか？'); });
+      wrap.appendChild(none);
+      c.appendChild(wrap); c.appendChild(said);
+      box.appendChild(c); sec.hidden = false;
+    }
+
     function keiBox() {
       var sec = document.getElementById('orgKeiSec'), box = document.getElementById('orgKei');
       fetch('/api/org-keiyaku?k=' + encodeURIComponent(secret)).then(function (r) { return r.json(); }).then(function (j) {

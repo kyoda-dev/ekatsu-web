@@ -69,7 +69,7 @@ async function build(env, request, gate) {
     sheetValues(token, MASTER_ID, `${tab}!A2:S`),
     sheetValues(token, PART_SHEET_ID, '参加可否!A2:D'),
     listTournamentKVs(env, request, token),
-    sheetValues(token, PART_SHEET_ID, '主催者!A2:I'),
+    sheetValues(token, PART_SHEET_ID, '主催者!A2:J'),
   ]);
 
   // 大会名 → 回答（VTuber名 → ○△×）
@@ -171,6 +171,10 @@ async function build(env, request, gate) {
       allowMultiMirror: flagOf(myRow[7]),
       allDatesFinal: flagOf(myRow[8]),   // I列：「これで全日程です」（Botが書く・2026-09-15）
     },
+    // J列：打ち合わせの候補日（Botが書く・2026-10-06）。出すのは 日・時刻・表示の字 と、決まった日だけ
+    mtg: (() => { try { const j = JSON.parse(String(myRow[9] || '') || '{}'); return {
+      pool: (Array.isArray(j.pool) ? j.pool : []).slice(0, 24).map(c => ({ iso: cut(c.iso, 10), time: cut(c.time, 5), label: cut(c.label, 30) })).filter(c => /^\d{4}-\d{2}-\d{2}$/.test(c.iso) && /^\d{1,2}:\d{2}$/.test(c.time)),
+      confirmed: cut(j.confirmed, 30), none: !!j.none }; } catch (e) { return { pool: [], confirmed: '', none: false }; } })(),
     kvSkip: !!gate.kvSkip,
     seasonKv: !!gate.seasonKv,
     tournaments,
