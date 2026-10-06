@@ -38,6 +38,8 @@ const LOOKBACK_DAYS = 120;   // これより前に終わった大会しか無い
 const KINDS = {
   video: { label: '優勝シーン', mime: /^video\//, maxMb: 300, exts: /^(mp4|mov|m4v|webm|mkv|avi|wmv|flv|ts)$/i },
   logo:  { label: 'ロゴ',       mime: /^image\//, maxMb: 20,  exts: /^(png|jpe?g|webp|gif|heic|bmp)$/i },
+  // ★2026-10-06：請求書もこのページから。名前は Bot が部屋で受けた時と同じ形＝Botの「届いているか」の見方（月フォルダに、名前に部屋名を含むPDFがあるか）にそのまま当たる
+  invoice: { label: '請求書',   mime: /^application\/pdf$/, maxMb: 20, exts: /^pdf$/i, wrong: 'PDFのファイルをお選びください' },
 };
 
 const json = (obj, status = 200) =>
@@ -174,14 +176,14 @@ export async function onRequestPost({ request, env }) {
       const mime = String(body.mime || '').slice(0, 100);
       const ext = String(body.ext || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 5).toLowerCase();
       if (!(kind.mime.test(mime) || kind.exts.test(ext))) {
-        return json({ ok: false, error: body.kind === 'video' ? '動画のファイルをお選びください' : '画像のファイルをお選びください' }, 400);
+        return json({ ok: false, error: kind.wrong || (body.kind === 'video' ? '動画のファイルをお選びください' : '画像のファイルをお選びください') }, 400);
       }
       const target = await targetOf(token, gate);
       if (!target) return json({ ok: false, error: '終わった大会が見つかりませんでした。運営までお知らせください' }, 409);
 
       const folderId = await findOrMakeMonthFolder(token, target.folder);
       const safeRoom = String(gate.room).replace(/[\/:*?"<>|\\]/g, '_');
-      const name = `${target.prefix}${safeRoom}_開催記録_${kind.label}${ext ? '.' + ext : ''}`;
+      const name = body.kind === 'invoice' ? `${target.prefix}${safeRoom}_協賛金_e活（スポンサー）.pdf` : `${target.prefix}${safeRoom}_開催記録_${kind.label}${ext ? '.' + ext : ''}`;
       const origin = request.headers.get('origin') || new URL(request.url).origin;
       const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true', {
         method: 'POST',
@@ -195,7 +197,7 @@ export async function onRequestPost({ request, env }) {
         body: JSON.stringify({
           name,
           parents: [folderId],
-          description: `開催記録（${kind.label}）／大会：${gate.room}／最終開催日：${target.lastDate}／主催者ページから提出`,
+          description: `${body.kind === 'invoice' ? '請求書' : '開催記録（' + kind.label + '）'}／大会：${gate.room}／最終開催日：${target.lastDate}／主催者ページから提出`,
           appProperties: { ekatsuRecord: '1', ekatsuRoom: gate.channelId, ekatsuMonth: target.key, ekatsuKind: body.kind },
         }),
       });
