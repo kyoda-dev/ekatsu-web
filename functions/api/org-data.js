@@ -66,7 +66,7 @@ async function build(env, request, gate) {
   const token = await accessToken(env);
   const tab = await firstTabTitle(token, MASTER_ID);
   const [mRows, pRows, kvNames, oRows] = await Promise.all([
-    sheetValues(token, MASTER_ID, `${tab}!A2:V`),
+    sheetValues(token, MASTER_ID, `${tab}!A2:W`),
     sheetValues(token, PART_SHEET_ID, '参加可否!A2:D'),
     listTournamentKVs(env, request, token),
     sheetValues(token, PART_SHEET_ID, '主催者!A2:J'),
@@ -116,6 +116,7 @@ async function build(env, request, gate) {
       xText: cut(r[17], 600),      // R列：Xで出す文（主催者が書いたもの・2026-09-07）
       descText: cut(r[18], 600),   // S列：概要欄に載せてほしい文（2026-10-04）
       goal: cut(r[21], 60),        // V列：大会の目標（ひとことで・2026-10-07）
+      drink: /^(OK|NG)$/.test(String(r[22] || '').trim()) ? String(r[22]).trim() : '',   // W列：ミラー配信中の飲酒（OK／NG／空＝未回答・2026-10-07）
       partner: String(r[1] || '').includes('○'),
       casual: String(r[2] || '').includes('○'),
       yes: pick('○'), maybe: pick('△'),

@@ -386,6 +386,9 @@
           } else {
             card.appendChild(metaBlock("ミラー配信のルール（e活の標準）", STD));
           }
+          // ★2026-10-07 依田指示：ミラー配信中の飲酒は主催者が決める。答えがある大会にだけ出す（未回答は出さない）
+          if (ev.drink === 'OK') card.appendChild(metaBlock('配信中の飲酒', 'OK（主催者の確認済み）'));
+          else if (ev.drink === 'NG') card.appendChild(metaBlock('配信中の飲酒', 'NG（この大会のミラー配信中は飲酒をお控えください）'));
           if (ev.highlight) card.appendChild(metaBlock('見どころ', ev.highlight));
           if (ev.streamUrl) {
             var u = el('div', 'day__meta');

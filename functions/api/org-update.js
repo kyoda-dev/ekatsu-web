@@ -126,7 +126,14 @@ export async function onRequestPost({ request, env }) {
     // ★2026-10-04 依田指示：概要欄に載せてほしい文（S列）。ミラー配信をするサポーターの概要欄に、そのまま入る
     if ('descText' in f) write.S = clean(f.descText, 600);
     // ★2026-10-07 依田指示：大会の目標（V列・ひとことで）。サポーターの大会ページとアプリの一番上に出る
-    if ('goal' in f) write.V = clean(f.goal, 60).replace(/s+/g, ' ');
+    //   ★2026-10-07 直し：/s+/ になっていて、英字の s が空白に化けていた（バックスラッシュ落ち）
+    if ('goal' in f) write.V = clean(f.goal, 60).replace(/\s+/g, ' ');
+    // ★2026-10-07 依田指示：ミラー配信中の飲酒の可否（W列）。主催者が選ぶ。空＝まだ答えていない（どちらにも倒さない）
+    if ('drink' in f) {
+      const v = String(f.drink || '').trim();
+      if (v && v !== 'OK' && v !== 'NG') return json({ ok: false, error: '飲酒の可否は「OK」「NG」のどちらかでお願いします' }, 400);
+      write.W = v;
+    }
     // ★2026-09-07 依田指示：協賛の発表（Xの告知）を出してよい日。空＝いつでも出してよい。
     if ('publishAt' in f) {
       const v = String(f.publishAt || '').trim();

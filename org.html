@@ -186,6 +186,12 @@
   .org__field input:focus,.org__field textarea:focus,.org__field select:focus{outline:2px solid var(--o-ink);outline-offset:-1px;border-color:var(--o-ink)}
   /* 開始時間は選ぶだけにした（2026-09-23）。手打ちの表記ゆれ・打ち間違いを止める。 */
   .org__field select{max-width:220px}
+  /* 押して選ぶ欄（ミラー配信中の飲酒・2026-10-07）。プルダウンにしない */
+  .org__choicelab{font-size:12px;font-weight:500;margin-bottom:5px}
+  .org__choice{display:flex;gap:8px}
+  .org__choice button{min-width:84px;font-family:inherit;font-size:14px;color:var(--o-ink);background:#fff;
+    border:1px solid var(--o-line-strong);border-radius:5px;padding:9px 14px;cursor:pointer}
+  .org__choice button[aria-pressed="true"]{background:var(--o-ink);color:#fff;border-color:var(--o-ink)}
   /* Xで出す文（100字まで）。見どころ欄より浅くして、長く書く欄ではないことを形で伝える。2026-09-23 */
   .org__field textarea.org__short{min-height:54px}
   .org__count{margin-top:4px;font-size:11.5px;color:var(--o-muted);text-align:right}
@@ -681,6 +687,8 @@
       dl.appendChild(row('本番配信枠URL', t.streamUrl, t.streamUrl ? null : '未登録', true));
       dl.appendChild(row('見どころ', t.highlight, t.highlight ? null : '未登録'));
       dl.appendChild(row('ミラー配信のルール', t.rule, t.rule ? null : '未登録'));
+      // ★2026-10-07 依田指示：ミラー配信中の飲酒の可否（主催者が選ぶ）
+      dl.appendChild(row('配信中の飲酒', t.drink === 'OK' ? 'OK' : t.drink === 'NG' ? 'NG' : '', t.drink ? null : '未回答'));
       // ★2026-10-04：概要欄に載せてほしい文。書いていない大会には行を出さない（催促に見えないように）
       if (t.descText) dl.appendChild(row('概要欄に載せる文', t.descText, null));
       if (t.cancelled) dl.appendChild(row('この大会', '中止として登録されています', null));
@@ -1401,6 +1409,29 @@
       return f;
     }
 
+    // ★2026-10-07：押して選ぶ欄（プルダウンにしない）。もう一度押すと外れて「未回答」に戻る
+    //   opts＝[[値, 見える字], …]。field() と同じく ._input.value で今の値が取れる
+    function choice(id, label, hint, opts, value) {
+      var f = el('div', 'org__field');
+      var lab = el('div', 'org__choicelab', label);
+      if (hint) lab.appendChild(el('span', 'org__hint', hint));
+      f.appendChild(lab);
+      var hold = { value: value || '' };
+      var wrap = el('div', 'org__choice');
+      var btns = [];
+      var paint = function () { btns.forEach(function (b) { b.setAttribute('aria-pressed', b._v === hold.value ? 'true' : 'false'); }); };
+      opts.forEach(function (o) {
+        var b = el('button', null, o[1]);
+        b.type = 'button'; b._v = o[0]; b.id = id + '_' + o[0];
+        b.addEventListener('click', function () { hold.value = (hold.value === o[0]) ? '' : o[0]; paint(); });
+        btns.push(b); wrap.appendChild(b);
+      });
+      paint();
+      f.appendChild(wrap);
+      f._input = hold;
+      return f;
+    }
+
     function buildForm(t, onClose) {
       var form = el('div', 'org__form');
       // ★2026-09-07 依田指示：ここに入れた内容がそのまま配信者へ渡ることを、先に書いておく
@@ -1434,7 +1465,11 @@
       var fPub = field(id + 'pub', '告知してよい日', 'e活の公式XとWebサイトで「この大会に協賛します」と発表してよい日です。大会側の発表より先に出したくない場合にご指定ください。空のままなら、こちらの都合のよいときに発表します。', 'date', t.publishAt);
       // ★2026-09-23：「Xで出す文」を見どころの真下へ上げた。
       //   いちばん下（告知してよい日の次）に置いていたので、そこまで読まれていなかった。
-      [fGoal, fTime, fUrl, fHl, fX, fRule, fDesc, fNote, fPub].forEach(function (f) { form.appendChild(f); });
+      // ★2026-10-07 依田指示：ミラー配信中の飲酒を主催者に聞く。答えはそのままサポーターの大会ページに出る
+      var fDrink = choice(id + 'drink', 'ミラー配信中のお酒はOKですか',
+        '応援配信をするVTuberが、配信中にお酒を飲んでもよいかをお選びください。選ばないままでも保存できます。',
+        [['OK', 'OK'], ['NG', 'NG']], t.drink);
+      [fGoal, fTime, fUrl, fHl, fX, fRule, fDrink, fDesc, fNote, fPub].forEach(function (f) { form.appendChild(f); });
 
       // シリーズもの＝残りの日程にもまとめて入れられるようにする（1日ずつ入力させない）
       var sibs = siblingsOf(t);
@@ -1478,6 +1513,7 @@
         if (fRule._input.value.trim() !== (t.rule || '')) fields.rule = fRule._input.value.trim();
         if (fDesc._input.value.trim() !== (t.descText || '')) fields.descText = fDesc._input.value.trim();
         if (fGoal._input.value.trim() !== (t.goal || '')) fields.goal = fGoal._input.value.trim();
+        if (fDrink._input.value !== (t.drink || '')) fields.drink = fDrink._input.value;
         if (fNote._input.value.trim() !== (t.note || '')) fields.note = fNote._input.value.trim();
         if (fPub._input.value !== (t.publishAt || '')) fields.publishAt = fPub._input.value;
         if (fX._input.value.trim() !== (t.xText || '')) fields.xText = fX._input.value.trim();
