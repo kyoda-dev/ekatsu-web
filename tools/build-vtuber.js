@@ -417,7 +417,7 @@ function replaceBlock(html, marker, body, file) {
   const partners = people.filter(p => p.tier === "partner");
   const casuals = people.filter(p => p.tier === "casual");
 
-  console.log(`\n載せる: パートナー ${partners.length} 名 / カジュアルサポーター ${casuals.length} 名`);
+  console.log(`\n載せる: e活サポーター ${partners.length + casuals.length} 名（うち前のパートナー ${partners.length} 名）`);
   if (skipped.length) {
     console.log(`\n載せない（${skipped.length} 名）＝素材待ちなど:`);
     skipped.forEach(s => console.log(`  ・${s.name} … ${s.why}`));
@@ -437,8 +437,8 @@ function replaceBlock(html, marker, body, file) {
 
   // vtuber.html
   let vt = fs.readFileSync(VT_HTML, "utf8");
-  vt = replaceBlock(vt, "VT_PARTNER", partners.map((p, i) => cardHtml(p, i >= 3)).join("\n\n"), "vtuber.html");
-  vt = replaceBlock(vt, "VT_CASUAL", casuals.map((p, i) => cardHtml(p, i >= 1)).join("\n\n"), "vtuber.html");
+  // ★2026-10-08：枠を1つにした（全員「e活サポーター」）。並びは今までどおり＝前のパートナーの3人 → そのあと古い順
+  vt = replaceBlock(vt, "VT_ALL", [...partners, ...casuals].map((p, i) => cardHtml(p, i >= 3)).join("\n\n"), "vtuber.html");
   fs.writeFileSync(VT_HTML, vt);
 
   // index.html の顔ぶれ（トップは最大8名まで。パートナー優先）
