@@ -117,6 +117,7 @@ async function build(env, request, gate) {
       descText: cut(r[18], 600),   // S列：概要欄に載せてほしい文（2026-10-04）
       goal: cut(r[21], 60),        // V列：大会の目標（ひとことで・2026-10-07）
       drink: /^(OK|NG)$/.test(String(r[22] || '').trim()) ? String(r[22]).trim() : '',   // W列：ミラー配信中の飲酒（OK／NG／空＝未回答・2026-10-07）
+      shokai: /^(はい|いいえ)$/.test(String(r[23] || '').trim()) ? String(r[23]).trim() : '',   // X列：ミラー配信する方を大会の配信で紹介してもらえるか（はい／いいえ／空＝未回答・2026-10-07）
       partner: String(r[1] || '').includes('○'),
       casual: String(r[2] || '').includes('○'),
       yes: pick('○'), maybe: pick('△'),

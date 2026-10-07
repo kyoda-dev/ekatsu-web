@@ -134,6 +134,12 @@ export async function onRequestPost({ request, env }) {
       if (v && v !== 'OK' && v !== 'NG') return json({ ok: false, error: '飲酒の可否は「OK」「NG」のどちらかでお願いします' }, 400);
       write.W = v;
     }
+    // ★2026-10-07 依田指示：ミラー配信する方を大会の配信で紹介してもらえるか（X列）。空＝まだ答えていない（どちらにも倒さない）
+    if ('shokai' in f) {
+      const v = String(f.shokai || '').trim();
+      if (v && v !== 'はい' && v !== 'いいえ') return json({ ok: false, error: 'ご紹介の可否は「はい」「いいえ」のどちらかでお願いします' }, 400);
+      write.X = v;
+    }
     // ★2026-09-07 依田指示：協賛の発表（Xの告知）を出してよい日。空＝いつでも出してよい。
     if ('publishAt' in f) {
       const v = String(f.publishAt || '').trim();

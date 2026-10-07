@@ -139,6 +139,7 @@ async function build(env, origin) {
       highlight: oneLine(r[13], 300),
       goal: oneLine(r[21], 60),   // V列：大会の目標（2026-10-07）
       drink: /^(OK|NG)$/.test(String(r[22] || '').trim()) ? String(r[22]).trim() : '',   // W列：ミラー配信中の飲酒（2026-10-07）
+      shokai: /^(はい|いいえ)$/.test(String(r[23] || '').trim()) ? String(r[23]).trim() : '',   // X列：大会の配信でのサポーター紹介（2026-10-07）
       yes: pick('○'), maybe: pick('△'), no: pick('×'),
     });
   }

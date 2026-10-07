@@ -389,6 +389,9 @@
           // ★2026-10-07 依田指示：ミラー配信中の飲酒は主催者が決める。答えがある大会にだけ出す（未回答は出さない）
           if (ev.drink === 'OK') card.appendChild(metaBlock('配信中の飲酒', 'OK（主催者の確認済み）'));
           else if (ev.drink === 'NG') card.appendChild(metaBlock('配信中の飲酒', 'NG（この大会のミラー配信中は飲酒をお控えください）'));
+          // ★2026-10-07 依田指示：大会の配信でのサポーター紹介も主催者が決める。答えがある大会にだけ出す（未回答は出さない）
+          if (ev.shokai === 'はい') card.appendChild(metaBlock('大会の配信でのご紹介', 'あり（主催者の確認済み）'));
+          else if (ev.shokai === 'いいえ') card.appendChild(metaBlock('大会の配信でのご紹介', 'なし'));
           if (ev.highlight) card.appendChild(metaBlock('見どころ', ev.highlight));
           if (ev.streamUrl) {
             var u = el('div', 'day__meta');
