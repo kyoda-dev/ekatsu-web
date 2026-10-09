@@ -669,7 +669,10 @@
       var flags = el('div', 'org__flags');
       if (t.daysUntil === 0) flags.appendChild(el('span', 'org__flag is-soon', '本日'));
       else if (t.daysUntil <= 10) flags.appendChild(el('span', 'org__flag is-soon', 'あと' + t.daysUntil + '日'));
-      if (!t.mirror) {
+      // ★2026-10-09 依田指示：大会配信なしの日。ご登録のお願いも募集も出さない
+      if (t.noStream) {
+        flags.appendChild(el('span', 'org__flag', '大会配信なし'));
+      } else if (!t.mirror) {
         flags.appendChild(el('span', 'org__flag', '応援配信は未定'));
       } else if ((t.miss || []).length) {
         flags.appendChild(el('span', 'org__flag is-miss',
@@ -684,11 +687,16 @@
       // ★2026-10-07：大会の目標。書いていない大会には行を出さない
       if (t.goal) dl.appendChild(row('大会の目標', t.goal, null));
       dl.appendChild(row('開始時間', t.time, t.time ? null : '未登録'));
-      dl.appendChild(row('本番配信枠URL', t.streamUrl, t.streamUrl ? null : '未登録', true));
-      dl.appendChild(row('見どころ', t.highlight, t.highlight ? null : '未登録'));
-      dl.appendChild(row('ミラー配信のルール', t.rule, t.rule ? null : '未登録'));
-      // ★2026-10-07 依田指示：ミラー配信中の飲酒の可否（主催者が選ぶ）
-      dl.appendChild(row('配信中の飲酒', t.drink === 'OK' ? 'OK' : t.drink === 'NG' ? 'NG' : '', t.drink ? null : '未回答'));
+      if (t.noStream) {
+        // 配信の無い日＝配信のための欄は並べない（「未登録」が催促に見えるため）
+        dl.appendChild(row('大会配信', 'なし（この日はミラー配信もありません）', null));
+      } else {
+        dl.appendChild(row('本番配信枠URL', t.streamUrl, t.streamUrl ? null : '未登録', true));
+        dl.appendChild(row('見どころ', t.highlight, t.highlight ? null : '未登録'));
+        dl.appendChild(row('ミラー配信のルール', t.rule, t.rule ? null : '未登録'));
+        // ★2026-10-07 依田指示：ミラー配信中の飲酒の可否（主催者が選ぶ）
+        dl.appendChild(row('配信中の飲酒', t.drink === 'OK' ? 'OK' : t.drink === 'NG' ? 'NG' : '', t.drink ? null : '未回答'));
+      }
       // ★2026-10-04：概要欄に載せてほしい文。書いていない大会には行を出さない（催促に見えないように）
       if (t.descText) dl.appendChild(row('概要欄に載せる文', t.descText, null));
       if (t.cancelled) dl.appendChild(row('この大会', '中止として登録されています', null));
@@ -699,7 +707,9 @@
       // ミラー配信をする方
       var ppl = el('div', 'org__people');
       var yes = t.yes || [], may = t.maybe || [];
-      if (!t.mirror) {
+      if (t.noStream) {
+        ppl.appendChild(el('span', 'org__tag is-none', '大会配信がない日のため、ミラー配信はありません'));
+      } else if (!t.mirror) {
         ppl.appendChild(el('span', 'org__tag is-none', '応援配信の可否はこれから決まります'));
       } else if (!yes.length && !may.length) {
         ppl.appendChild(el('span', 'org__tag is-none', 'まだ決まっていません（募集中）'));
@@ -913,7 +923,7 @@
       var wrap = el('div', 'org__card');
       wrap.id = 'orgAddDate';
       wrap.appendChild(el('h3', 'org__name', '開催日を登録する'));
-      wrap.appendChild(el('p', 'org__sub', '決まっている日程をご登録ください。複数日ある場合は「日程を1つ増やす」で続けて入れられます。開始時間が未定なら「未定」のままで大丈夫です。'));
+      wrap.appendChild(el('p', 'org__sub', '決まっている日程をご登録ください。複数日ある場合は「日程を1つ増やす」で続けて入れられます。開始時間が未定なら「未定」のままで大丈夫です。予選など、大会の配信をしない日は「大会配信なし」に印を付けてください。'));
       var rows = el('div', 'org__form');
       function addRow() {
         var line = el('div', 'org__field');
@@ -928,6 +938,17 @@
         t.setAttribute('aria-label', '開始時間');
         line.appendChild(d);
         line.appendChild(t);
+        // ★2026-10-09 依田指示：日ごとに「大会配信なし」を選べる。印を付けた日は、ミラー配信の募集もご登録のお願いも出さない
+        line.style.flexWrap = 'wrap';
+        line.style.alignItems = 'center';
+        var ns = el('label', 'org__also');
+        ns.style.margin = '0';
+        var nsCb = document.createElement('input');
+        nsCb.type = 'checkbox';
+        nsCb.className = 'js-nostream';
+        ns.appendChild(nsCb);
+        ns.appendChild(document.createTextNode(' 大会配信なし'));
+        line.appendChild(ns);
         rows.appendChild(line);
       }
       addRow();
@@ -957,7 +978,8 @@
         Array.prototype.forEach.call(rows.children, function (line) {
           var d = line.querySelector('input[type="date"]');
           var t = line.querySelector('select');
-          if (d && d.value) days.push({ date: d.value, time: t ? t.value : '' });
+          var ns = line.querySelector('.js-nostream');
+          if (d && d.value) days.push({ date: d.value, time: t ? t.value : '', noStream: !!(ns && ns.checked) });
         });
         if (!days.length) { said.className = 'org__said is-err'; said.textContent = '開催日をお選びください'; return; }
         go.disabled = true;
@@ -1469,7 +1491,12 @@
       var fDrink = choice(id + 'drink', 'ミラー配信中のお酒はOKですか',
         '応援配信をするVTuberが、配信中にお酒を飲んでもよいかをお選びください。選ばないままでも保存できます。',
         [['OK', 'OK'], ['NG', 'NG']], t.drink);
-      [fGoal, fTime, fUrl, fHl, fX, fRule, fDrink, fDesc, fNote, fPub].forEach(function (f) { form.appendChild(f); });
+      // ★2026-10-09 依田指示：その日に大会の配信があるか。なしの日は、ミラー配信の募集・ご登録のお願い・当日の告知を出さない
+      //   日ごとに違うものなので、下の「残りの日程にも同じ内容」を選んでいても、この大会にだけ入る
+      var fStream = choice(id + 'stream', 'この日の大会配信',
+        '予選など、大会の配信をしない日は「なし」をお選びください。なしの日は、ミラー配信もお休みになります。この欄は、この日にだけ入ります。',
+        [['あり', 'あり'], ['なし', 'なし']], t.noStream ? 'なし' : 'あり');
+      [fGoal, fTime, fStream, fUrl, fHl, fX, fRule, fDrink, fDesc, fNote, fPub].forEach(function (f) { form.appendChild(f); });
 
       // シリーズもの＝残りの日程にもまとめて入れられるようにする（1日ずつ入力させない）
       var sibs = siblingsOf(t);
@@ -1514,6 +1541,7 @@
         if (fDesc._input.value.trim() !== (t.descText || '')) fields.descText = fDesc._input.value.trim();
         if (fGoal._input.value.trim() !== (t.goal || '')) fields.goal = fGoal._input.value.trim();
         if (fDrink._input.value !== (t.drink || '')) fields.drink = fDrink._input.value;
+        if ((fStream._input.value === 'なし') !== !!t.noStream) fields.stream = fStream._input.value === 'なし' ? 'なし' : 'あり';
         if (fNote._input.value.trim() !== (t.note || '')) fields.note = fNote._input.value.trim();
         if (fPub._input.value !== (t.publishAt || '')) fields.publishAt = fPub._input.value;
         if (fX._input.value.trim() !== (t.xText || '')) fields.xText = fX._input.value.trim();

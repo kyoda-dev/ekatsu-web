@@ -140,7 +140,15 @@ export async function onRequestPost({ request, env }) {
       if (v && !/^\d{4}-\d{2}-\d{2}$/.test(v)) return json({ ok: false, error: '告知してよい日は 2026-09-20 の形でお願いします' }, 400);
       write.Q = v;
     }
-    if (!Object.keys(write).length) return json({ ok: false, error: '変更するところがありませんでした' }, 400);
+    // ★2026-10-09 依田指示：大会配信の「あり／なし」（Y列）。なしの日は、ミラー配信の募集・ご登録のお願い・当日の告知を出さない。
+    //   日ごとに違うものなので、「残りの日程にも同じ内容」を選んでいても、押した大会（rows の先頭）にだけ書く。
+    const writeFirst = {};   // 列 → 値（先頭の行にだけ）
+    if ('stream' in f) {
+      const v = String(f.stream || '').trim();
+      if (v && v !== 'あり' && v !== 'なし') return json({ ok: false, error: '大会配信は「あり」「なし」のどちらかでお願いします' }, 400);
+      writeFirst.Y = v === 'なし' ? 'なし' : '';
+    }
+    if (!Object.keys(write).length && !Object.keys(writeFirst).length) return json({ ok: false, error: '変更するところがありませんでした' }, 400);
 
     const token = await accessToken(env);
     const tab = await firstTabTitle(token, MASTER_ID);
@@ -163,6 +171,9 @@ export async function onRequestPost({ request, env }) {
       for (const col of Object.keys(write)) {
         data.push({ range: `${tab}!${col}${t.row}`, values: [[write[col]]] });
       }
+    }
+    for (const col of Object.keys(writeFirst)) {
+      data.push({ range: `${tab}!${col}${rows[0]}`, values: [[writeFirst[col]]] });
     }
     const res = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${MASTER_ID}/values:batchUpdate`,

@@ -165,7 +165,8 @@ export async function onRequestPost({ request, env }) {
         if (nd.utc < todayUtc()) return json({ ok: false, error: '過ぎた日付は登録できません' }, 400);
         if (seen.has(nd.text)) continue;
         seen.add(nd.text);
-        days.push({ date: nd.text, time: clean(d && d.time, 40) });
+        // ★2026-10-09 依田指示：日ごとに「大会配信なし」を選べる（予選は配信なし・決勝だけ配信、の大会）。Botがマスターの Y列へ「なし」と書く
+        days.push({ date: nd.text, time: clean(d && d.time, 40), noStream: !!(d && d.noStream) });
       }
       // すでに登録してある日付は外す（二度押し・読み込み直し前の再送の対策）
       const cur = await sheetValues(token, MASTER_ID, `${tab}!A2:E`);

@@ -66,7 +66,7 @@ async function build(env, request, gate) {
   const token = await accessToken(env);
   const tab = await firstTabTitle(token, MASTER_ID);
   const [mRows, pRows, kvNames, oRows] = await Promise.all([
-    sheetValues(token, MASTER_ID, `${tab}!A2:W`),
+    sheetValues(token, MASTER_ID, `${tab}!A2:Y`),
     sheetValues(token, PART_SHEET_ID, '参加可否!A2:D'),
     listTournamentKVs(env, request, token),
     sheetValues(token, PART_SHEET_ID, '主催者!A2:J'),
@@ -125,9 +125,11 @@ async function build(env, request, gate) {
     //   足りないものも数えない（中止したのに催促されているように見えていた）。
     t.cancelled = String(r[15] || '').trim() ? true : false;
     t.mirror = t.partner || t.casual;
+    // ★2026-10-09：Y列「大会配信」＝なし。その日は大会の配信が無い＝ミラー配信も無いので、足りないものを数えない
+    t.noStream = String(r[24] || '').trim() === 'なし';
     t.kvInDrive = !t.kv && kvExistsFor(kvNames, name);
     // 「足りないもの」はミラー配信をする大会だけ数える（Botの催促と同じ線）
-    t.miss = t.mirror && !t.past && !t.cancelled
+    t.miss = t.mirror && !t.past && !t.cancelled && !t.noStream
       ? missingInfo(t, { kvInDrive: t.kvInDrive, kvSkip: gate.kvSkip, seasonKv: gate.seasonKv })
       : [];
     tournaments.push(t);
