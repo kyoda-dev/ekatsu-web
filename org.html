@@ -1121,6 +1121,23 @@
           sec.appendChild(el('h2', null, '請求書・開催の記録'));
           sec.appendChild(el('p', 'org__lead',
             '大会が終わりましたら、こちらからご提出ください。請求書もここで受け付けています。'));
+          // ★2026-10-09：請求書の書き方（前はDiscordの依頼文にだけ書いていた）
+          (function () {
+            var how = el('div', 'org__card');
+            how.appendChild(el('b', null, 'ご請求書に書いていただくこと'));
+            var ul = document.createElement('ul');
+            ul.style.margin = '8px 0 0'; ul.style.paddingLeft = '1.2em'; ul.style.fontSize = '13px'; ul.style.lineHeight = '1.9';
+            [
+              '宛先：A&L Project株式会社（〒103-0007 東京都中央区日本橋浜町2-33-6 O2 NIHONBASHI BLD 1F）',
+              '大会名／大会日程',
+              'ご請求金額：協賛プランの金額＋税',
+              'お振込先（口座名義はカタカナ）',
+              'お支払い：翌月末',
+            ].forEach(function (t) { var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+            how.appendChild(ul);
+            how.appendChild(el('p', 'org__sub', 'PDFでお願いいたします。メールでのご送付は行き違いが起きるため、お受けしておりません。'));
+            sec.appendChild(how);
+          })();
           var c = el('div', 'org__card');
           c.appendChild(el('p', 'org__sub', '対象：' + j.target.label + 'の大会（最終開催日 ' + jpDate(j.target.lastDate) + '）'));
           var rows = el('dl', 'org__rows');
