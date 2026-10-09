@@ -16,6 +16,9 @@ on:
   schedule:
     - cron: '0 23 * * 0'   # 日曜23:00 UTC ＝ 月曜08:00 JST
     - cron: '0 23 * * 3'   # 水曜23:00 UTC ＝ 木曜08:00 JST（2026-09-06 追加）
+    # ★2026-10-09 依田「もっと早くして欲しい」：毎時5分に、もう載っている人のプロフィール（アプリで保存した ひとこと・リンク・アイコン）だけ作り直す。
+    #   新しい人を載せるのは、上の月曜・木曜の回だけ（--known-only を付けない回）。止める時はこの1行をコメントにする
+    - cron: '5 * * * *'
   workflow_dispatch:        # 手動実行ボタン
 
 permissions:
@@ -45,7 +48,7 @@ jobs:
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           PUBLIC_PROFILE_SHEET_ID: ${{ secrets.PUBLIC_PROFILE_SHEET_ID }}
           VTUBER_DELIVERY_PARENT_ID: ${{ secrets.VTUBER_DELIVERY_PARENT_ID }}
-        run: cd tools && node build-vtuber.js
+        run: cd tools && node build-vtuber.js ${{ github.event.schedule == '5 * * * *' && '--known-only' || '' }}
 
       - name: 変更があればコミット＆プッシュ
         run: |

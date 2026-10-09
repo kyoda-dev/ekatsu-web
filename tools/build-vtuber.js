@@ -39,6 +39,10 @@ const DRY = process.argv.includes("--dry");
 //   サイトのカードだけ足して、お知らせ記事とXの紹介は次の回に回したい時に使う。
 //   その人を「初掲載の記録」にも書かないので、次に回した時ちゃんと新顔として記事に入る。
 const SITE_ONLY = process.argv.includes("--site-only");
+// ★2026-10-09 依田「（プロフィールの反映を）もっと早くして欲しい」
+//   毎時の回はこれを付けて回す＝もう載っている人（vtuber_published.json にいる人）の ひとこと・リンク・アイコン だけを作り直す。
+//   新しい人は載せない（初めて載せるのは、今までどおり月曜・木曜の回。お知らせ記事もその時）。
+const KNOWN_ONLY = process.argv.includes("--known-only");
 
 const PROFILE_ID = process.env.PUBLIC_PROFILE_SHEET_ID || "1byI6JCSV1rPTyZwCp9ospUmXbJm1GJ6g9wdtqGPZPvg";
 const PROFILE_TAB = "プロフィール一覧";
@@ -369,6 +373,7 @@ function replaceBlock(html, marker, body, file) {
     //   確認が取れたら vtuber_meta.json のその人に "confirmed": true（と直した bio）を書く → 次の作り直しで載る。
     //   もう載っている人（vtuber_published.json にいる人）はそのまま。
     const app = appProf.get(norm(name)) || null;
+    if (KNOWN_ONLY && !published[name]) { skipped.push({ name, why: "毎時の回は新しい人を載せない（月曜・木曜の回で載る）" }); continue; }
     if (!published[name] && !m.confirmed && !app) { skipped.push({ name, why: "本人の紹介文の確認がまだ（確認が取れたら vtuber_meta.json に confirmed: true）" }); continue; }
 
     const slug = m.slug || norm(name).replace(/[^a-z0-9]/g, "") || `vt${people.length + 1}`;
