@@ -134,5 +134,29 @@
     "x": "@Nissy14843663",
     "tier": "casual",
     "xPost": "pending"
+  },
+  "LEO3": {
+    "firstPublished": "2026-10-12",
+    "slug": "leo3",
+    "x": "@leo_6721",
+    "tier": "casual",
+    "xPost": "pending",
+    "iconFile": "1t8zo8t8ViSUxFQJQd89nvx5brXxXAidT"
+  },
+  "KAKERA": {
+    "firstPublished": "2026-10-12",
+    "slug": "kakera",
+    "x": "@Lh5pWDqQcZNy1cE",
+    "tier": "casual",
+    "xPost": "pending",
+    "iconFile": "1MYyGCVh4La_YN4lVEY8NTpBK5-nf8ct7"
+  },
+  "杜咲翠焔": {
+    "firstPublished": "2026-10-12",
+    "slug": "vt22",
+    "x": "@sakura_edh_t",
+    "tier": "casual",
+    "xPost": "pending",
+    "iconFile": "1HIFVfzrPkmL8DPOzHgqr5ESvjMAxHjnA"
   }
 }

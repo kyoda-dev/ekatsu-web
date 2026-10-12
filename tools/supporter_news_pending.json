@@ -2,6 +2,30 @@
   "_readme": "Xの紹介ポストの承認待ち。Botはこのファイルを読まない（読むのは supporter_news.json）。ご本人に紹介文を確認いただいてから、tools/approve-supporter-post.js で supporter_news.json に移すこと。",
   "articles": [
     {
+      "slug": "supporter-2026-10-12",
+      "date": "2026-10-12",
+      "title": "新しいe活カジュアルサポーターのご紹介（2026.10.12）",
+      "url": "https://ekatsu-web.pages.dev/news/supporter-2026-10-12",
+      "people": [
+        {
+          "name": "LEO3",
+          "display": "LEO3",
+          "x": "@leo_6721"
+        },
+        {
+          "name": "KAKERA",
+          "display": "KAKERA",
+          "x": "@Lh5pWDqQcZNy1cE"
+        },
+        {
+          "name": "杜咲翠焔",
+          "display": "杜咲翠焔",
+          "x": "@sakura_edh_t"
+        }
+      ],
+      "addedAt": "2026-10-12"
+    },
+    {
       "slug": "supporter-2026-09-28",
       "date": "2026-09-28",
       "title": "新しいe活カジュアルサポーターのご紹介（2026.09.28）",
