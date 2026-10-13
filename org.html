@@ -839,14 +839,14 @@
 
       // ── 誰に許すか
       var f1 = el("div", "org__field");
-      var l1 = el("label", null, "ミラー配信を許可する方");
-      l1.appendChild(el("span", "org__hint", "パートナーVTuber＝e活と深くご一緒している方。カジュアルサポーター＝大会を応援してくださる方。"));
+      var l1 = el("label", null, "ミラー配信の許可");
+      l1.appendChild(el("span", "org__hint", "e活サポーター（e活が協賛する大会を、ミラー配信で応援する配信者）に、ミラー配信を許可するかどうかです。"));
       f1.appendChild(l1);
       var row1 = el("div", "org__btns");
       var said1 = el("div", "org__said");
-      [["both", "両方に許可"], ["partner", "パートナーのみ"], ["next", "カジュアルのみ"], ["none", "許可しない"]]
+      [["both", "許可する"], ["none", "許可しない"]]   /* 2026-10-13：呼び方は全員「e活サポーター」。区分で分ける選び方はやめた（前に「〜のみ」を選んだ大会は、そのままの扱いで残る） */
         .forEach(function (o) {
-          var b = el("button", "org__btn" + (st.mirror === o[0] ? " is-on" : " org__btn--sub"), o[1]);
+          var b = el("button", "org__btn" + ((st.mirror === o[0] || (o[0] === "both" && (st.mirror === "partner" || st.mirror === "next"))) ? " is-on" : " org__btn--sub"), o[1]);
           b.type = "button";
           b.addEventListener("click", function () {
             if (st.mirror === o[0]) return;

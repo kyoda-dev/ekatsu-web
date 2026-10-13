@@ -120,7 +120,7 @@ export async function onRequestPost({ request, env }) {
     const isPartner = tier.includes('パートナー');
     const allowed = isPartner ? ev.partner : ev.casual;
     if (allowed === false) {
-      return json({ ok: false, error: 'この大会は' + (isPartner ? 'パートナー' : 'カジュアルサポーター') + 'の枠では募集していません' }, 403);
+      return json({ ok: false, error: 'この大会は、いまミラー配信を募集していません' }, 403);
     }
 
     // ---- 既にその大会に同じ人の行があれば書き換え、無ければ足す ----
