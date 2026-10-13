@@ -9,6 +9,7 @@
 
    ★2026-08-29 依田の指示
      ・呼び方は「e活カジュアルサポーター」（旧「ネクストVTuber」は使わない）
+       → ★2026-10-13：今は「e活サポーター」（10/7 に枠を1つにした）。9/28 までの記事は出した時点のまま
      ・記事は**掲載した週ごとに1本**（月まとめではない）
      ・この記事をXでもポストする → tools/supporter_news.json に記録し、Botがそれを読む
 
@@ -60,7 +61,7 @@ async function buildBanner(people, dateLabel, outPath) {
   // 背景（薄いグラデ）＋見出し。文字はSVGで描く。
   // 見出しは左上のロゴにぶつからない大きさまで自動で縮める。
   //   （元にした「NEXT VTuber」は短かったが「CASUAL SUPPORTER」は長く、74pxだとロゴに当たる）
-  const title = "CASUAL SUPPORTER";
+  const title = "NEW SUPPORTER";   // 2026-10-13：呼び方を「e活サポーター」1つにした（前は CASUAL SUPPORTER）
   const LOGO_W = 140, LOGO_X = 76, MIN_GAP = 70;
   const logoRight = LOGO_X + LOGO_W;
   let titleSize = 74;
@@ -84,7 +85,7 @@ async function buildBanner(people, dateLabel, outPath) {
   <text x="${W / 2}" y="145" font-family="${FONT}" font-size="${titleSize}" font-weight="700"
         fill="#14110f" text-anchor="middle" letter-spacing="2">${esc(title)}</text>
   <text x="${W / 2}" y="205" font-family="${FONT}" font-size="27" font-weight="500"
-        fill="#8c8682" text-anchor="middle">${esc(dateLabel)} ｜ e活カジュアルサポーター</text>
+        fill="#8c8682" text-anchor="middle">${esc(dateLabel)} ｜ e活サポーター</text>
   ${people.map((p, i) => {
     const x = startX + i * (d + gap) + d / 2;
     // 名前が長いと隣とぶつかるので、枠に収まるまで字を小さくする
@@ -132,8 +133,8 @@ function articleHtml({ title, iso, disp, imgFile, people }) {
   }).join("\n");
 
   const lead = people.length === 1
-    ? "e活が協賛する大会を、カジュアルに応援してくれる「e活カジュアルサポーター」に新しい仲間が加わりました。"
-    : `e活が協賛する大会を、カジュアルに応援してくれる「e活カジュアルサポーター」に、新しく${people.length}名の仲間が加わりました。`;
+    ? "コミュニティ大会をミラー配信で応援してくれる「e活サポーター」に新しい仲間が加わりました。"
+    : `コミュニティ大会をミラー配信で応援してくれる「e活サポーター」に、新しく${people.length}名の仲間が加わりました。`;
 
   return `<!DOCTYPE html>
 <html lang="ja">
@@ -198,7 +199,7 @@ function articleHtml({ title, iso, disp, imgFile, people }) {
 ${items}
         </ul>
         <p>プロフィールの詳細は <a href="../vtuber.html">VTuber一覧ページ</a> からご覧いただけます。応援よろしくお願いいたします！</p>
-        <p><strong>■ e活カジュアルサポーターを随時募集中です！</strong> e活では、共にコミュニティ大会を応援し、シーンを盛り上げてくださる配信者様を継続して募集しております。お気軽にお問い合わせください。</p>
+        <p><strong>■ e活サポーターを随時募集中です！</strong> e活では、共にコミュニティ大会を応援し、シーンを盛り上げてくださる配信者様を継続して募集しております。お気軽にお問い合わせください。</p>
       </div>
 
       <div class="article__nav reveal">
@@ -262,7 +263,7 @@ async function publishSupporterNews(people, today, { dry = false } = {}) {
   const disp = `${y}.${m}.${d}`;
   const slug = `supporter-${today}`;
   const imgFile = `${slug}.webp`;
-  const title = `新しいe活カジュアルサポーターのご紹介（${y}.${m}.${d}）`;
+  const title = `新しいe活サポーターのご紹介（${y}.${m}.${d}）`;
 
   console.log(`\n■ お知らせ記事を作る: ${title}`);
   console.log(`  紹介する人: ${people.map(p => p.displayName).join(" / ")}`);
